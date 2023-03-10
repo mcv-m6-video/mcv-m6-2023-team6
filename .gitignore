@@ -1,5 +1,5 @@
 wandb/
-datasets/
+dataset/
 *.h5
 *.err
 *.out
