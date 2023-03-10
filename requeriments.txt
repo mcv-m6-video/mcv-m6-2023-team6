@@ -1,0 +1,25 @@
+# --------- pytorch --------- #
+torch>=1.13.1
+torchvision>=0.14.1
+torch-summary>=1.4.5
+torchviz
+
+
+# --------- python --------- #
+pandas
+tqdm
+
+# --------- loggers --------- #
+wandb
+graphviz
+# neptune-client
+# mlflow
+# comet-ml
+
+# --------- others --------- #
+pre-commit      # hooks for applying linters on commit
+rich            # beautiful text formatting in terminal
+pytest          # tests
+# sh            # for running bash commands in some tests (linux/macos only)
+# nvitop          # for monitoring GPU usage
+# asitop          # for macOS monitoring GPU usage
