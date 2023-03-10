@@ -1,8 +1,5 @@
 wandb/
-./MIT_small_train1
-./MIT_small_train2
-./MIT_small_train3
-./MIT_small_train4
+datasets/
 *.h5
 *.err
 *.out
@@ -199,4 +196,3 @@ fabric.properties
 
 # MACOS
 .DS_Store
-./Week4/MIT_split/
