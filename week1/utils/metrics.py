@@ -1,5 +1,5 @@
 import numpy as np
-
+from collections import defaultdict
 
 # Intersection over Union (IoU)
 def iou(box1, box2):
@@ -17,8 +17,21 @@ def iou(box1, box2):
 
 
 # Generate noisy boxes for testing
-def generate_noisy_boxes(n_boxes, n_frames, n_classes, n_noise=0):
-    pass
+def generate_noisy_boxes(gt_boxes, del_prob, mean, std):
+    """
+    :gt_boxes: ground truth bounding boxes dict
+    :del_prob: probability to delete bounding boxes
+    :return: dictionary with the noisy bounding boxes
+    """
+    noisy_bboxes = defaultdict(list)
+    for frame,bboxes in gt_boxes.items():
+        for bbox in bboxes:
+            if np.random.random() > del_prob:
+                xtl, ytl, xbr, ybr = bbox
+                noise = np.random.normal(mean,std,4)
+                noisy_bboxes[frame].append([xtl+noise[0], ytl+noise[1], xbr+noise[2], ybr+noise[3]])
+
+    return noisy_bboxes
 
 # Average Precision (AP) for Object Detection
 def ap():
