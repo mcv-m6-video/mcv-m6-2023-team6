@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
     # Set the relative path to the XML file
-    relative_path = 'datasets/ai_challenge_s03_c010-full_annotation.xml'
+    relative_path = 'dataset/ai_challenge_s03_c010-full_annotation.xml'
 
     # Get the absolute path of the XML file
     path = os.path.join(parent_dir, relative_path)
