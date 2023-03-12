@@ -4,6 +4,12 @@ import os
 
 
 def load_from_xml(path):
+    """
+
+    :param path: path file
+
+    :return: dict[frame_num] = [[x1, y1, x2, y2]]
+    """
     frame_dict = defaultdict(list)
     for event, elem in ET.iterparse(path, events=('start',)):
         if elem.tag == 'track' and elem.attrib.get('label') == 'car':
