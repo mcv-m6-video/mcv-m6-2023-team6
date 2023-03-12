@@ -16,6 +16,10 @@ def iou(box1, box2):
     return iou
 
 
+# Generate noisy boxes for testing
+def generate_noisy_boxes(n_boxes, n_frames, n_classes, n_noise=0):
+    pass
+
 # Average Precision (AP) for Object Detection
 def ap():
     pass

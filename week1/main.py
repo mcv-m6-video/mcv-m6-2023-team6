@@ -4,6 +4,7 @@ import os
 import yaml
 
 from week1.utils.rendering import rendering_video
+from week1.utils.utils import load_from_xml
 
 
 def main(cfg):
@@ -11,7 +12,8 @@ def main(cfg):
     print(f'Run Name: {cfg.run_name}')
     print(f'Run Mode: {cfg.run_mode}')
 
-    rendering_video(cfg.video_path, cfg.run_name, cfg.display, cfg.save)
+    gt_boxes = load_from_xml(cfg.paths.annotations_path)
+    rendering_video(cfg, gt_boxes)
     
 
 

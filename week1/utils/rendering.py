@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 
 # Rendering Video AICity Challenge 2023
-def rendering_video(video_path, run_name, display=False, save=False):
+def rendering_video(cfg, gt_boxes=None):
     """
     :param path:
     :param visualize:
@@ -11,13 +11,13 @@ def rendering_video(video_path, run_name, display=False, save=False):
     """
     iou_list = []
     # TODO: Implement the rendering of the video WIP
-    cap = cv2.VideoCapture(video_path)
+    cap = cv2.VideoCapture(cfg.video_path)
     frame_cont = 0
     ret, frame = cap.read()
     wait_time = 1
     while ret:
         frame_cont += 1
-        if display:
+        if cfg.display:
             cv2.imshow('frame', frame)
             k = cv2.waitKey(wait_time)
             if k == ord('q'):
@@ -28,11 +28,11 @@ def rendering_video(video_path, run_name, display=False, save=False):
                 wait_time = int(not (bool(wait_time)))
         ret, frame = cap.read()
 
-    if save:
+    if cfg.save:
         plt.figure()
         plt.plot(iou_list)
         plt.xlim([0, 2140])
         plt.ylim([0, 1])
-        plt.savefig(f'runs/{run_name}/iou_plt_{frame_cont}.png')
+        plt.savefig(f'runs/{cfg.run_name}/iou_plt_{frame_cont}.png')
 
-        cv2.imwrite(f'runs/{run_name}/frame_{frame_cont}.png', frame)
+        cv2.imwrite(f'runs/{cfg.run_name}/frame_{frame_cont}.png', frame)
