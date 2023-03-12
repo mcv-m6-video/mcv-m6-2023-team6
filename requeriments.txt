@@ -1,6 +1,6 @@
 # --------- pytorch --------- #
-torch>=1.13.1
-torchvision>=0.14.1
+# torch>=1.13.1
+# torchvision>=0.14.1
 torch-summary>=1.4.5
 torchviz
 
@@ -8,7 +8,12 @@ torchviz
 # --------- python --------- #
 pandas
 tqdm
-yaml
+pyyaml
+ipywidgets
+notebook
+jupyterlab
+matplotlib
+opencv-contrib-python>=4.7.0.72
 
 # --------- loggers --------- #
 wandb
@@ -24,3 +29,4 @@ pytest          # tests
 # sh            # for running bash commands in some tests (linux/macos only)
 # nvitop          # for monitoring GPU usage
 # asitop          # for macOS monitoring GPU usage
+
