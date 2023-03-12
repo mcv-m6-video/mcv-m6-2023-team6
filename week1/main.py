@@ -3,10 +3,15 @@ import os
 
 import yaml
 
+from week1.utils.rendering import rendering_video
+
 
 def main(cfg):
     os.makedirs(f'runs/{cfg.run_name}/', exist_ok=True)
+    print(f'Run Name: {cfg.run_name}')
+    print(f'Run Mode: {cfg.run_mode}')
 
+    rendering_video(cfg.video_path, cfg.run_name, cfg.display, cfg.save)
     
 
 
