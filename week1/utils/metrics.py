@@ -49,7 +49,7 @@ def generate_noisy_boxes(gt_boxes, del_prob,gen_prob, mean, std,frame_shape=[108
 
 # Average Precision (AP) for Object Detection
 # https://github.com/facebookresearch/detectron2/blob/main/detectron2/evaluation/pascal_voc_evaluation.py
-def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes):
+def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
     """
     :gt_boxes: ground truth bounding boxes dict
     :N_gt: Total of ground truth bounding boxes
@@ -66,21 +66,21 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes):
         predicted = predicted_boxes[i][1:5]
         gt = gt_detected[frame]
         iou_score = []
-        for b in range(len(gt)):
-            iou_score.append(iou(gt[b],predicted))
+        if len(gt) != 0:
+            for b in range(len(gt)):
+                iou_score.append(iou(gt[b],predicted))
+            id = np.argmax(iou_score)
+            max_iou = iou_score[id]
+            mIOU += max_iou
 
-        id = np.argmax(iou_score)
-        max_iou = iou_score[id]
-        mIOU += max_iou
-
-        if max_iou >= 0.5:
-            if len(gt_detected[frame][id]) == 4:
-                gt_detected[frame][id].append(True)
-                tp[i] = 1
+            if max_iou >= iou_th:
+                if len(gt_detected[frame][id]) == 4:
+                    gt_detected[frame][id].append(True)
+                    tp[i] = 1
+                else:
+                    fp[i] = 1
             else:
                 fp[i] = 1
-        else:
-            fp[i] = 1
 
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
@@ -99,7 +99,7 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes):
     return mIOU/len(predicted_boxes), ap
 
 
-def compute_confidences_ap(gt_boxes,N_gt,predicted_boxes,N=10):
+def compute_confidences_ap(gt_boxes,N_gt,predicted_boxes,N=10,iou_th = 0.5):
     """ 
     Randomly generates the order of the bounding boxes to calculate the average precision (N times). 
     Average values will be returned.
@@ -107,7 +107,7 @@ def compute_confidences_ap(gt_boxes,N_gt,predicted_boxes,N=10):
     ap_scores = []
     for i in range(N):
         random.shuffle(predicted_boxes)
-        mIOU, ap = mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes)
+        mIOU, ap = mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th)
         ap_scores.append(ap)
         
 
