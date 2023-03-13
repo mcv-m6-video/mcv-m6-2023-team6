@@ -3,8 +3,8 @@ import os
 
 import yaml
 
-from week1.utils.rendering import rendering_video
-from week1.utils.utils import load_from_xml
+from utils.rendering import rendering_video
+from utils.utils import load_from_xml
 
 
 def main(cfg):
