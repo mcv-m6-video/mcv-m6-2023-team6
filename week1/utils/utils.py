@@ -1,7 +1,18 @@
 from collections import defaultdict
 import xml.etree.ElementTree as ET
 import os
+import xmltodict
 
+""" def load_from_xml(path):
+
+    frame_dict = defaultdict(list)
+    for event, elem in ET.iterparse(path, events=('start',)):
+        if elem.tag == 'track' and elem.attrib.get('label') == 'car':
+            for x in (child.attrib for child in elem):
+                frame = f"f_{x['frame']}"
+                frame_dict[frame].append([float(x['xtl']), float(x['ytl']),
+                                          float(x['xbr']), float(x['ybr'])])
+    return frame_dict """
 
 def load_from_xml(path):
     """
@@ -10,14 +21,49 @@ def load_from_xml(path):
 
     :return: dict[frame_num] = [[x1, y1, x2, y2]]
     """
-    frame_dict = defaultdict(list)
-    for event, elem in ET.iterparse(path, events=('start',)):
-        if elem.tag == 'track' and elem.attrib.get('label') == 'car':
-            for x in (child.attrib for child in elem):
-                frame = f"f_{x['frame']}"
-                frame_dict[frame].append([float(x['xtl']), float(x['ytl']),
-                                          float(x['xbr']), float(x['ybr'])])
-    return frame_dict
+    
+    with open(path) as f:
+        tracks = xmltodict.parse(f.read())['annotations']['track']
+
+    gt = defaultdict(list)
+    num_iter = 0
+    for track in tracks:
+        label = track['@label']
+        boxes = track['box']
+        for box in boxes:
+            if label == 'car':
+                frame=int(box['@frame'])
+                frame = f'f_{frame}'
+                gt[frame].append(
+                    [float(box['@xtl']),
+                    float(box['@ytl']),
+                    float(box['@xbr']),
+                    float(box['@ybr'])]
+                )
+                num_iter += 1
+
+            else:
+                continue
+
+    return gt, num_iter
+
+def load_from_txt(path):
+    """
+    :param path: path file
+
+    :return: list = [[frame,x1, y1, x2, y2, conf]]
+    """
+    frame_list = []
+    with open(path) as f:
+        lines = f.readlines()
+
+    for l in lines:
+        ll = l.split(',')
+        frame = f'f_{int(ll[0]) - 1}'
+        frame_list.append([frame,float(ll[2]), float(ll[3]),
+                                            float(ll[2]) + float(ll[4]), float(ll[3])+float(ll[5]),ll[6]])
+
+        return frame_list
 
 if __name__ == '__main__':
     # Set the parent directory of your current directory

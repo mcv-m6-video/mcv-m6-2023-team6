@@ -25,7 +25,7 @@ def generate_noisy_boxes(gt_boxes, del_prob,gen_prob, mean, std,frame_shape=[108
     :gt_boxes: ground truth bounding boxes dict
     :del_prob: probability to delete bounding boxes
     :gen_prob: probability to generate bounding boxes
-    :return: dictionary with the noisy bounding boxes
+    :return: list with the noisy bounding boxes list = [[frame,x1, y1, x2, y2]]
     """
     noisy_bboxes = []
     gt_total = 0
@@ -48,6 +48,7 @@ def generate_noisy_boxes(gt_boxes, del_prob,gen_prob, mean, std,frame_shape=[108
     return noisy_bboxes, gt_total
 
 # Average Precision (AP) for Object Detection
+# https://github.com/facebookresearch/detectron2/blob/main/detectron2/evaluation/pascal_voc_evaluation.py
 def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes):
     """
     :gt_boxes: ground truth bounding boxes dict
