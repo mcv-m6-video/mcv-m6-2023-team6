@@ -17,7 +17,7 @@ def group_by_frame(predicted_boxes):
     return predicted_boxes
 
 
-def rendering_video(path, annotations, predicted_boxes, video_capture):
+def rendering_video(path, annotations, predicted_boxes, video_capture, save=True, display=False):
     """Create a video with the IoU score for each frame"""
     # Group the detected boxes by frame_id as a dictionary
     gt_boxes, total = load_from_xml(annotations)
@@ -70,6 +70,15 @@ def rendering_video(path, annotations, predicted_boxes, video_capture):
             cv2.putText(frame, f"FPS: {fps}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             # Write the frame to the video
             out.write(frame)
-
-    # Release the VideoWriter object
-    out.release()
+            if display:
+                cv2.imshow('frame', frame)
+                k = cv2.waitKey(wait_time)
+                if k == ord('q'):
+                    break
+                elif k == ord('s'):
+                    cv2.imwrite(f'save_{frames_num[i]}.png', frame)
+                elif k == ord('p'):
+                    wait_time = int(not (bool(wait_time)))
+    if save:
+        # Release the VideoWriter object
+        out.release()

@@ -17,6 +17,8 @@ def main(cfg):
 
 
 if __name__ == '__main__':
+    # check ffmepg in your system
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--run_mode', required=True, type=str, help='Yolo, RCNN or SSD')
     parser.add_argument('-n', '--run_name', required=True, type=str, help='Run Folder Name')
