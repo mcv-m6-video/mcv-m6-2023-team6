@@ -65,7 +65,8 @@ def compute_errors(pred_flow, gt_flow, threshold, plots=False):
         
         cm = plt.cm.get_cmap('viridis')
 
-        Y,X = np.histogram(sq_diff_valid, bins=100, density=True)
+        bins = np.arange(np.floor(sq_diff_valid.min()),np.ceil(sq_diff_valid.max()))
+        Y,X = np.histogram(sq_diff_valid, bins=bins, density=1)
         x_span = X.max()-X.min()
         C = [cm(((x-X.min())/x_span)) for x in X]
         plt.bar(X[:-1], Y,width = X[1]-X[0], color=C,edgecolor='white', linewidth=0.2)
