@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--run_name", required=True, type=str, help="Run Folder Name")
     parser.add_argument("-c", "--config", default="configs/config.yml")
     parser.add_argument("-s", "--save", default=True, type=bool, help="Save the video or not")
-    parser.add_argument("-d", "--display", default=True, type=bool, help="Show the video or not")
+    parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-n", "--noisy", default=False, type=bool, help="Noisy or not")
     args = parser.parse_args()
 
