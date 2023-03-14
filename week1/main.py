@@ -33,6 +33,10 @@ def main(cfg):
         display=cfg["display"],
     )
 
+    print("Done!")
+    print("----------------------------------------")
+
+
 
 if __name__ == "__main__":
     # check ffmepg in your system
