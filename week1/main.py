@@ -4,7 +4,6 @@ import os
 import yaml
 
 from utils.rendering import rendering_video
-from utils.utils import load_from_xml
 
 
 def main(cfg):
@@ -13,7 +12,7 @@ def main(cfg):
     print(f"Run Mode: {cfg['run_mode']}")
 
     rendering_video(f"runs/{cfg['run_name']}/video.mp4", cfg['paths']['annotations_path'], cfg['detections'][args.run_mode],
-                    cfg['paths']['video_path'])
+                    cfg['paths']['video_path'], save=cfg['save'], display=cfg['display'])
 
 
 if __name__ == '__main__':
@@ -23,6 +22,8 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--run_mode', required=True, type=str, help='Yolo, RCNN or SSD')
     parser.add_argument('-n', '--run_name', required=True, type=str, help='Run Folder Name')
     parser.add_argument("-c", '--config', default="configs/config.yml")
+    parser.add_argument("-s", '--save', default=True, type=bool, help='Save the video or not')
+    parser.add_argument("-d", '--display', default=True, type=bool, help='Show the video or not')
     args = parser.parse_args()
 
     # get the path of this file
@@ -34,5 +35,7 @@ if __name__ == '__main__':
 
     config['run_mode'] = args.run_mode
     config['run_name'] = args.run_name
+    config['save'] = args.save
+    config['display'] = args.display
 
     main(config)

@@ -13,6 +13,7 @@ import xmltodict
                                           float(x['xbr']), float(x['ybr'])])
     return frame_dict """
 
+
 def load_from_xml(path):
     """
 
@@ -20,7 +21,7 @@ def load_from_xml(path):
 
     :return: dict[frame_num] = [[x1, y1, x2, y2]]
     """
-    
+
     with open(path) as f:
         tracks = xmltodict.parse(f.read())['annotations']['track']
 
@@ -31,13 +32,13 @@ def load_from_xml(path):
         boxes = track['box']
         for box in boxes:
             if label == 'car':
-                frame=int(box['@frame'])
+                frame = int(box['@frame'])
                 frame = f'f_{frame}'
                 gt[frame].append(
                     [float(box['@xtl']),
-                    float(box['@ytl']),
-                    float(box['@xbr']),
-                    float(box['@ybr'])]
+                     float(box['@ytl']),
+                     float(box['@xbr']),
+                     float(box['@ybr'])]
                 )
                 num_iter += 1
 
@@ -45,6 +46,7 @@ def load_from_xml(path):
                 continue
 
     return gt, num_iter
+
 
 def load_from_txt(path):
     """
@@ -59,11 +61,10 @@ def load_from_txt(path):
     for l in lines:
         ll = l.split(',')
         frame = f'f_{int(ll[0]) - 1}'
-        frame_list.append([frame,float(ll[2]), float(ll[3]),
-                                            float(ll[2]) + float(ll[4]), float(ll[3])+float(ll[5]),ll[6]])
+        frame_list.append([frame, float(ll[2]), float(ll[3]),
+                           float(ll[2]) + float(ll[4]), float(ll[3]) + float(ll[5]), ll[6]])
 
-        return frame_list
-    
+    return frame_list
 
 
 if __name__ == '__main__':
