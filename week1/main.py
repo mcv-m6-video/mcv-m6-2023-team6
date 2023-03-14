@@ -11,7 +11,8 @@ def main(cfg):
     print(f"Run Name: {cfg['run_name']}")
     print(f"Run Mode: {cfg['run_mode']}")
 
-    rendering_video(f"runs/{cfg['run_name']}/video.mp4", cfg['paths']['annotations_path'], cfg['detections'][args.run_mode],
+    rendering_video(f"runs/{cfg['run_name']}/", cfg['paths']['annotations_path'],
+                    cfg['detections'][args.run_mode],
                     cfg['paths']['video_path'], save=cfg['save'], display=cfg['display'])
 
 

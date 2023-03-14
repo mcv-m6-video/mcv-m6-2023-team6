@@ -1,10 +1,11 @@
 import itertools
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
-
-from week1.utils.metrics import mean_AP_Pascal_VOC
-from week1.utils.utils import load_from_xml, load_from_txt
+import imageio
+from utils.metrics import mean_AP_Pascal_VOC
+from utils.util import load_from_xml, load_from_txt
 
 
 # Rendering Video AICity Challenge 2023
@@ -47,7 +48,27 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
 
     # Create a VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(path, fourcc, fps, (width, height))
+    out = cv2.VideoWriter(path+"video.mp4", fourcc, fps, (width, height))
+
+    images_plot = []
+    fig = plt.figure(figsize=(5, 5))
+    # Set the title
+    fig.suptitle('IoU score for each frame')
+    ax = plt.axes()
+    # Set the x label
+    ax.set_xlabel('Frame')
+    # Set the y label
+    ax.set_ylabel('IoU score')
+    # Set the x axis range
+    ax.set_xlim(0, frames_num[-1])
+    # Set the y axis range
+    ax.set_ylim(0, 1)
+    # Create a line
+    line, = ax.plot([], [], lw=2)
+    line.set_data([], [])
+    if display:
+        fig.show()
+    fig.canvas.draw()
 
     # Loop through each frame
     for i, frame_id in enumerate(frames_id):
@@ -73,8 +94,13 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
             cv2.putText(frame, f"FPS: {fps}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             # Write the frame to the video
             out.write(frame)
+            line.set_data(frames_num[:i], iou_scores[:i])
+            fig.canvas.draw()
             if display:
                 cv2.imshow('frame', frame)
+                image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
+                image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+                images_plot.append(image)
                 k = cv2.waitKey(wait_time)
                 if k == ord('q'):
                     break
@@ -85,3 +111,9 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     if save:
         # Release the VideoWriter object
         out.release()
+        # create gif matplotlib figure
+        # !convert -delay 10 -loop 0 *.png animation.gif
+        imageio.mimsave(path+'iou.gif', images_plot)
+
+
+
