@@ -4,11 +4,11 @@
 This project aims to learn the basic concepts and techniques related to video sequence processing, primarily for surveillance applications. For traffic monitoring, we will focus on video sequences from outdoor scenarios. In video surveillance, the following video processing techniques will be applied: background modelling, moving object segmentation, motion estimation and compensation, and video object tracking.
 
 
-# Team 6 
+# Team 6
 
 | Members | GitHub | Contact |
-| :---         |   :---    |   :---    | 
-| Guillem Capellera  | guillem-cf | guillemcafo@gmail.com | 
+| :---         |   :---    |   :---    |
+| Guillem Capellera  | guillem-cf | guillemcafo@gmail.com |
 | Anna Oliveras | aolivtous | aoliverastous@gmail.com  |
 | Ana Harris    | anaharrismatnez | anaharrismar@gmail.com  |
 | Johnny Núñez | johnnynunez | johnnynuca14@gmail.com |

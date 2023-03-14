@@ -1,1 +1,1 @@
-from .utils import rendering_video, util, metrics
+from .utils import metrics, rendering_video, util
