@@ -5,7 +5,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
+import matplotlib.colors as mcolors
 
 def flow_read(filename):
     """Read optical flow from png file (adapted version from KITTI development tools kit).
@@ -54,28 +54,144 @@ def compute_errors(pred_flow, gt_flow, threshold, plots=False):
 
     if plots:
 
-        #Plot valid pixels
-        plt.imshow(gt_flow[:,:,2])
-        plt.title('Valid Pixels')
-        plt.axis('off')
-        plt.show()
-
         #plot the error flow
         plt.imshow(sq_diff)
         plt.title('Optical Flow error')
         plt.axis('off')
-        plt.colorbar()
+        plt.colorbar(fraction = 0.046, pad = 0.04)
         plt.show()
 
         #plot the error histogram        
-        plt.hist(sq_diff_valid, bins=100, density=True)
-        plt.title('Error Histogram')
+        
+        cm = plt.cm.get_cmap('viridis')
+
+        Y,X = np.histogram(sq_diff_valid, bins=100, density=True)
+        x_span = X.max()-X.min()
+        C = [cm(((x-X.min())/x_span)) for x in X]
+        plt.bar(X[:-1], Y,width = X[1]-X[0], color=C,edgecolor='white', linewidth=0.2)
+        plt.title('Error probability distribution')
         plt.xlabel('Error')
         plt.ylabel('Pixels probablity')
-        plt.axvline(msen, color='g', linestyle='dashed', label= "MSEN", linewidth=1)
+        plt.axvline(msen, color='orange', linestyle='dashed', label= "MSEN", linewidth=1)
         plt.legend(loc='upper right')
         plt.show()
     
 
     return msen, pepn
+
+
+def opticalFlow_arrows (frame, flow_gt, flow):
+    """Compute the optical flow arrows diagram.
+    Args:
+        frame: image.
+        flow: optical flow.
+    """
+    step = 15
+    height_gt, width_gt, _ = flow_gt.shape
+    X_gt, Y_gt = np.meshgrid(np.arange(0, width_gt), np.arange(0, height_gt))
+
+    #X, Y define the arrow locations, U, V define the arrow directions, and C optionally sets the color.
+    U_gt = flow_gt[:,:,0]
+    V_gt = flow_gt[:,:,1]
+    M_gt = np.hypot(U_gt, V_gt) #magnitude
+    X_gt = X_gt[::step, ::step]
+    Y_gt = Y_gt[::step, ::step]
+    U_gt = U_gt[::step, ::step]
+    V_gt = V_gt[::step, ::step]
+    M_gt = M_gt[::step, ::step]
+
+    height, width, _ = flow.shape
+    step = 20
+    X, Y = np.meshgrid(np.arange(0, width), np.arange(0, height))
+
+    #X, Y define the arrow locations, U, V define the arrow directions, and C optionally sets the color.
+    U = flow[:,:,0]
+    V = flow[:,:,1]
+    M = np.hypot(U, V) #magnitude
+    X = X[::step, ::step]
+    Y = Y[::step, ::step]
+    U = U[::step, ::step]
+    V = V[::step, ::step]
+    M = M[::step, ::step]
+
+    max_value = max(M_gt.max(), M.max())
+    norm = mcolors.Normalize(vmin = 0, vmax = max_value)
+
+    fig, ax = plt.subplots(2, 1)
+    fig.set_size_inches(20, 10)
+    im0 = ax[0].imshow(frame,cmap='gray')
+    im0 = ax[0].quiver(X_gt, Y_gt, U_gt, V_gt, M_gt,  scale_units='xy', angles='xy', pivot='mid', scale =0.1, norm=norm, cmap='rainbow')
+    im1 = ax[1].imshow(frame,cmap='gray')
+    im1 = ax[1].quiver(X, Y, U, V, M,  scale_units='xy', angles='xy', pivot='mid',scale=0.1, norm=norm, cmap='rainbow')
+
+    ax[0].set_title('GT')
+    ax[1].set_title('Predicted')
+    ax[0].set_axis_off()
+    ax[1].set_axis_off()
+    fig.suptitle('GT vs Predicted Optical Flow')
+    fig.colorbar(im0, ax=ax.ravel().tolist())
+    plt.show()
+
+def HSVOpticalFlow(flow, title):
+    "version of opticalflow cv2 optical flow example "
+    magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+
+    hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
+
+    mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+        
+    hsv[..., 0] = ang * 180 / np.pi / 2
+    hsv[..., 1] = 255
+    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+
+    #magnitude and angle
+    rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+
+    # only the angle
+    hsv[..., 2] = 255
+    rgb2 = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+        
+    fig, ax = plt.subplots(3, 1)
+    fig.set_size_inches(50, 10)
+    im0 = ax[0].imshow(rgb)
+    im2 = ax[1].imshow(mag, cmap='gray') 
+    im3 = ax[2].imshow(rgb2) 
+    ax[0].set_title('Magnitude and Angle')
+    ax[1].set_title('Magnitude')
+    ax[2].set_title('Angle')
+    ax[0].set_axis_off()
+    ax[1].set_axis_off()
+    ax[2].set_axis_off()
+    fig.suptitle(title)
+    plt.show()
+
+
+
+
+def HSVOpticalFlow2(flow,tittle):
+    "version of opticalflow cv2 optical flow example changing S and V for better visualization"
+    magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+
+    hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
+
+    mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+        
+    hsv[..., 0] = ang * 180 / np.pi / 2
+    hsv[..., 2] = 255
+    hsv[..., 1] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+
+    rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    fig = plt.figure(figsize=(20,10))
+    plt.imshow(rgb)
+    plt.title(tittle)
+    plt.axis('off')
+    #change size
+    
+    plt.show()
+    
+
+
+
+
+
 
