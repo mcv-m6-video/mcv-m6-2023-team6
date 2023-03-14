@@ -2,6 +2,8 @@ import numpy as np
 import random
 import copy
 
+from tqdm import tqdm
+
 
 # Intersection over Union (IoU)
 def iou(box1, box2):
@@ -50,7 +52,7 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
 
 # Average Precision (AP) for Object Detection
 # https://github.com/facebookresearch/detectron2/blob/main/detectron2/evaluation/pascal_voc_evaluation.py
-def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
+def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     """
     :gt_boxes: ground truth bounding boxes dict
     :N_gt: Total of ground truth bounding boxes
@@ -70,7 +72,7 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
         iou_score = []
         if len(gt) != 0:
             for b in range(len(gt)):
-                iou_score.append(iou(gt[b],predicted))
+                iou_score.append(iou(gt[b], predicted))
             id = np.argmax(iou_score)
             max_iou = iou_score[id]
             mIOU += max_iou
@@ -91,8 +93,8 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
 
-    recall = tp/ np.float64(N_gt)
-    precision = tp/np.maximum(tp + fp, np.finfo(np.float64).eps)
+    recall = tp / np.float64(N_gt)
+    precision = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
 
     ap = 0.0
     for t in np.arange(0.0, 1.1, 0.1):
@@ -102,18 +104,19 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
 
-    return mIOU/len(predicted_boxes), mIOU_frame, ap
+    return mIOU / len(predicted_boxes), mIOU_frame, ap
 
 
 def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
-    """ 
-    Randomly generates the order of the bounding boxes to calculate the average precision (N times). 
+    """
+    Randomly generates the order of the bounding boxes to calculate the average precision (N times).
     Average values will be returned.
     """
     ap_scores = []
-    for i in range(N):
+
+    for i in tqdm(range(N)):
         random.shuffle(predicted_boxes)
-        mIOU, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
+        mIOU, _, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
         ap_scores.append(ap)
 
     return sum(ap_scores) / len(ap_scores), mIOU

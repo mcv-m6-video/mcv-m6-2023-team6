@@ -22,7 +22,9 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     # Group the detected boxes by frame_id as a dictionary
     gt_boxes, total = load_from_xml(annotations)
     predicted_boxes = load_from_txt(predicted_boxes)
+    predicted_boxes.sort(key=lambda x: x[-1], reverse=True)
     predicted_boxes_group = group_by_frame(predicted_boxes)
+
     # Get the IoU score for each frame in format dict {frame_id: [iou_score1, iou_score2, ...]}
     mIOU, mIOU_frame, AP = mean_AP_Pascal_VOC(gt_boxes, total, predicted_boxes, iou_th=0.5)
     # Get the frame_id list
