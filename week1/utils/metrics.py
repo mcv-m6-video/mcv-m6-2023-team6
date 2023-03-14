@@ -1,7 +1,7 @@
-import numpy as np
-import random
 import copy
+import random
 
+import numpy as np
 from tqdm import tqdm
 
 
@@ -23,7 +23,9 @@ def iou(box1, box2):
 
 
 # Generate noisy boxes for testing
-def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1080, 1920]):
+def generate_noisy_boxes(
+    gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1080, 1920]
+):
     """
     :gt_boxes: ground truth bounding boxes dict
     :del_prob: probability to delete bounding boxes
@@ -38,7 +40,15 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
             if np.random.random() > del_prob:
                 xtl, ytl, xbr, ybr = bbox
                 noise = np.random.normal(mean, std, 4)
-                noisy_bboxes.append([frame, xtl + noise[0], ytl + noise[1], xbr + noise[2], ybr + noise[3]])
+                noisy_bboxes.append(
+                    [
+                        frame,
+                        xtl + noise[0],
+                        ytl + noise[1],
+                        xbr + noise[2],
+                        ybr + noise[3],
+                    ]
+                )
                 w = xbr - xtl
                 h = ybr - ytl
 
