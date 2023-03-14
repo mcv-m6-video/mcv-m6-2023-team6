@@ -3,10 +3,11 @@ from collections import defaultdict
 import random
 import copy
 
+
 # Intersection over Union (IoU)
 def iou(box1, box2):
     if len(box1) > 4:
-        box1=box1[:4]
+        box1 = box1[:4]
     x11, y11, x12, y12 = box1
     x21, y21, x22, y22 = box2
     xA = np.maximum(x11, x21)
@@ -19,8 +20,9 @@ def iou(box1, box2):
     iou = interArea / np.float64(boxAArea + boxBArea - interArea)
     return iou
 
+
 # Generate noisy boxes for testing
-def generate_noisy_boxes(gt_boxes, del_prob,gen_prob, mean, std,frame_shape=[1080, 1920]):
+def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1080, 1920]):
     """
     :gt_boxes: ground truth bounding boxes dict
     :del_prob: probability to delete bounding boxes
@@ -29,27 +31,27 @@ def generate_noisy_boxes(gt_boxes, del_prob,gen_prob, mean, std,frame_shape=[108
     """
     noisy_bboxes = []
     gt_total = 0
-    for frame,bboxes in gt_boxes.items():
+    for frame, bboxes in gt_boxes.items():
         for bbox in bboxes:
             gt_total += 1
             if np.random.random() > del_prob:
                 xtl, ytl, xbr, ybr = bbox
-                noise = np.random.normal(mean,std,4)
-                noisy_bboxes.append([frame,xtl+noise[0], ytl+noise[1], xbr+noise[2], ybr+noise[3]])
+                noise = np.random.normal(mean, std, 4)
+                noisy_bboxes.append([frame, xtl + noise[0], ytl + noise[1], xbr + noise[2], ybr + noise[3]])
                 w = xbr - xtl
                 h = ybr - ytl
 
         if np.random.random() <= gen_prob:
-            x = np.random.randint(w, frame_shape[1]-w)
-            y = np.random.randint(h, frame_shape[0]-h)
-            noisy_bboxes.append([frame,x-w/2, y-w/2, x+w/2, y+w/2])
-
+            x = np.random.randint(w, frame_shape[1] - w)
+            y = np.random.randint(h, frame_shape[0] - h)
+            noisy_bboxes.append([frame, x - w / 2, y - w / 2, x + w / 2, y + w / 2])
 
     return noisy_bboxes, gt_total
 
+
 # Average Precision (AP) for Object Detection
 # https://github.com/facebookresearch/detectron2/blob/main/detectron2/evaluation/pascal_voc_evaluation.py
-def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
+def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     """
     :gt_boxes: ground truth bounding boxes dict
     :N_gt: Total of ground truth bounding boxes
@@ -68,7 +70,7 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
         iou_score = []
         if len(gt) != 0:
             for b in range(len(gt)):
-                iou_score.append(iou(gt[b],predicted))
+                iou_score.append(iou(gt[b], predicted))
             id = np.argmax(iou_score)
             max_iou = iou_score[id]
             mIOU += max_iou
@@ -85,8 +87,8 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
 
-    recall = tp/ float(N_gt)
-    precision = tp/np.maximum(tp + fp, np.finfo(np.float64).eps)
+    recall = tp / float(N_gt)
+    precision = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
 
     ap = 0.0
     for t in np.arange(0.0, 1.1, 0.1):
@@ -96,10 +98,10 @@ def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
 
-    return mIOU/len(predicted_boxes), ap
+    return mIOU / len(predicted_boxes), ap
 
 
-def compute_confidences_ap(gt_boxes,N_gt,predicted_boxes,N=10,iou_th = 0.5):
+def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
     """ 
     Randomly generates the order of the bounding boxes to calculate the average precision (N times). 
     Average values will be returned.
@@ -107,8 +109,7 @@ def compute_confidences_ap(gt_boxes,N_gt,predicted_boxes,N=10,iou_th = 0.5):
     ap_scores = []
     for i in range(N):
         random.shuffle(predicted_boxes)
-        mIOU, ap = mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th)
+        mIOU, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
         ap_scores.append(ap)
-        
 
-    return sum(ap_scores)/len(ap_scores),mIOU
+    return sum(ap_scores) / len(ap_scores), mIOU
