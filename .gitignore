@@ -3,6 +3,7 @@ dataset/
 *.h5
 *.err
 *.out
+*.mp4
 
 
 *.err
