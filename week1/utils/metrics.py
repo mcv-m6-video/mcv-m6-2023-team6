@@ -1,6 +1,8 @@
-import numpy as np
-import random
 import copy
+import random
+
+import numpy as np
+from tqdm import tqdm
 
 
 # Intersection over Union (IoU)
@@ -36,7 +38,15 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
             if np.random.random() > del_prob:
                 xtl, ytl, xbr, ybr = bbox
                 noise = np.random.normal(mean, std, 4)
-                noisy_bboxes.append([frame, xtl + noise[0], ytl + noise[1], xbr + noise[2], ybr + noise[3]])
+                noisy_bboxes.append(
+                    [
+                        frame,
+                        xtl + noise[0],
+                        ytl + noise[1],
+                        xbr + noise[2],
+                        ybr + noise[3],
+                    ]
+                )
                 w = xbr - xtl
                 h = ybr - ytl
 
@@ -45,7 +55,7 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
             y = np.random.randint(h, frame_shape[0] - h)
             noisy_bboxes.append([frame, x - w / 2, y - w / 2, x + w / 2, y + w / 2])
 
-    return noisy_bboxes, gt_total
+    return noisy_bboxes
 
 
 # Average Precision (AP) for Object Detection
@@ -62,6 +72,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     fp = np.zeros(len(predicted_boxes))
     gt_detected = copy.deepcopy(gt_boxes)
 
+    mIOU_frame = {}
     for i in range(len(predicted_boxes)):
         frame = predicted_boxes[i][0]
         predicted = predicted_boxes[i][1:5]
@@ -73,6 +84,10 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
             id = np.argmax(iou_score)
             max_iou = iou_score[id]
             mIOU += max_iou
+            # Save max iou for each frame
+            if frame not in mIOU_frame:
+                mIOU_frame[frame] = []
+            mIOU_frame[frame].append(max_iou)
 
             if max_iou >= iou_th:
                 if len(gt_detected[frame][id]) == 4:
@@ -86,7 +101,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
 
-    recall = tp / float(N_gt)
+    recall = tp / np.float64(N_gt)
     precision = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
 
     ap = 0.0
@@ -97,18 +112,19 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
 
-    return mIOU / len(predicted_boxes), ap
+    return mIOU / len(predicted_boxes), mIOU_frame, ap
 
 
 def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
-    """ 
-    Randomly generates the order of the bounding boxes to calculate the average precision (N times). 
+    """
+    Randomly generates the order of the bounding boxes to calculate the average precision (N times).
     Average values will be returned.
     """
     ap_scores = []
-    for i in range(N):
+
+    for i in tqdm(range(N)):
         random.shuffle(predicted_boxes)
-        mIOU, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
+        mIOU, _, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
         ap_scores.append(ap)
 
     return sum(ap_scores) / len(ap_scores), mIOU
