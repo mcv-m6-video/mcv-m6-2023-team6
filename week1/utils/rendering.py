@@ -18,6 +18,7 @@ def group_by_frame(predicted_boxes):
 
 
 def rendering_video(path, annotations, predicted_boxes, video_capture, save=True, display=False):
+    wait_time = 1
     """Create a video with the IoU score for each frame"""
     # Group the detected boxes by frame_id as a dictionary
     gt_boxes, total = load_from_xml(annotations)
