@@ -11,6 +11,6 @@ detections:
 noisy_values:
   del_prob: 0.2
   gen_prob: 0.2
-  mean: 0
+  mean: 1
   std: 0.1
   frame_shape: [1080, 1920]

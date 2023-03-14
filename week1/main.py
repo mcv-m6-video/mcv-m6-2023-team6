@@ -10,18 +10,18 @@ from utils.metrics import generate_noisy_boxes
 def main(cfg):
     os.makedirs(f"runs/{cfg['run_name']}/", exist_ok=True)
     print(f"Run Name: {cfg['run_name']}")
-    print(f"Run Mode: {cfg['run_mode']}")
 
     gt_boxes, total = load_from_xml(cfg["paths"]["annotations_path"])
     gt = [gt_boxes, total]
 
     if cfg["noisy"]:
-        print("Noisy Mode")
+        print(f"Run Mode: {'Noisy'}")
         predicted_boxes = generate_noisy_boxes(gt_boxes,
         del_prob=cfg['noisy_values']['del_prob'], gen_prob=cfg['noisy_values']['gen_prob'],
         mean=cfg['noisy_values']['mean'], std=cfg['noisy_values']['std'])
 
     else:
+        print(f"Run Mode: {cfg['run_mode']}")
         predicted_boxes = load_from_txt(cfg["detections"][args.run_mode])
 
     rendering_video(

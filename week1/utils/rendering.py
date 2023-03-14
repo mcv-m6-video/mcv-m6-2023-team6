@@ -98,12 +98,12 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
             out.write(frame)
             line.set_data(frames_num[:i], iou_scores[:i])
             fig.canvas.draw()
+            image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
+            image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
+
+            images_plot.append(image)
             if display:
                 cv2.imshow('frame', frame)
-                image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
-                image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
-
-                images_plot.append(image)
                 k = cv2.waitKey(wait_time)
                 if k == ord('q'):
                     break
