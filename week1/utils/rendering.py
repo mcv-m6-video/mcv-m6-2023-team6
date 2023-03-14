@@ -111,6 +111,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
                     cv2.imwrite(f'save_{frames_num[i]}.png', frame)
                 elif k == ord('p'):
                     wait_time = int(not (bool(wait_time)))
+    print("mAP: ", AP)
     if save:
         # Release the VideoWriter object
         out.release()

@@ -9,8 +9,8 @@ detections:
   yolo: '../dataset/AICity_data/train/S03/c010/det/det_yolo3.txt'
 
 noisy_values:
-  del_prob: 0.2
-  gen_prob: 0.2
-  mean: 1
-  std: 0.1
+  del_prob: 0.1
+  gen_prob: 0.1
+  mean: 0
+  std: 10
   frame_shape: [1080, 1920]
