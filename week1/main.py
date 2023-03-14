@@ -3,6 +3,8 @@ import os
 
 import yaml
 from utils.rendering import rendering_video
+from utils.util import load_from_txt, load_from_xml
+from utils.metrics import generate_noisy_boxes
 
 
 def main(cfg):
@@ -10,10 +12,22 @@ def main(cfg):
     print(f"Run Name: {cfg['run_name']}")
     print(f"Run Mode: {cfg['run_mode']}")
 
+    gt_boxes, total = load_from_xml(cfg["paths"]["annotations_path"])
+    gt = [gt_boxes, total]
+
+    if cfg["noisy"]:
+        print("Noisy Mode")
+        predicted_boxes = generate_noisy_boxes(gt_boxes,
+        del_prob=cfg['noisy_values']['del_prob'], gen_prob=cfg['noisy_values']['gen_prob'],
+        mean=cfg['noisy_values']['mean'], std=cfg['noisy_values']['std'])
+
+    else:
+        predicted_boxes = load_from_txt(cfg["detections"][args.run_mode])
+
     rendering_video(
         f"runs/{cfg['run_name']}/",
-        cfg["paths"]["annotations_path"],
-        cfg["detections"][args.run_mode],
+        gt,
+        predicted_boxes,
         cfg["paths"]["video_path"],
         save=cfg["save"],
         display=cfg["display"],
@@ -24,19 +38,12 @@ if __name__ == "__main__":
     # check ffmepg in your system
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-m", "--run_mode", required=True, type=str, help="Yolo, RCNN or SSD"
-    )
-    parser.add_argument(
-        "-n", "--run_name", required=True, type=str, help="Run Folder Name"
-    )
+    parser.add_argument("-m", "--run_mode", required=True, type=str, help="Yolo, RCNN or SSD")
+    parser.add_argument("-r", "--run_name", required=True, type=str, help="Run Folder Name")
     parser.add_argument("-c", "--config", default="configs/config.yml")
-    parser.add_argument(
-        "-s", "--save", default=True, type=bool, help="Save the video or not"
-    )
-    parser.add_argument(
-        "-d", "--display", default=True, type=bool, help="Show the video or not"
-    )
+    parser.add_argument("-s", "--save", default=True, type=bool, help="Save the video or not")
+    parser.add_argument("-d", "--display", default=True, type=bool, help="Show the video or not")
+    parser.add_argument("-n", "--noisy", default=False, type=bool, help="Noisy or not")
     args = parser.parse_args()
 
     # get the path of this file
@@ -50,5 +57,6 @@ if __name__ == "__main__":
     config["run_name"] = args.run_name
     config["save"] = args.save
     config["display"] = args.display
+    config["noisy"] = args.noisy
 
     main(config)

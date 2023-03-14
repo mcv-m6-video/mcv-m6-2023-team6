@@ -1,14 +1,14 @@
 import itertools
 
 import cv2
+import imageio
 import matplotlib.pyplot as plt
 import numpy as np
-import imageio
 from utils.metrics import mean_AP_Pascal_VOC
-from utils.util import load_from_xml, load_from_txt
-
+from utils.util import load_from_txt, load_from_xml
 
 # Rendering Video AICity Challenge 2023
+
 
 def group_by_frame(predicted_boxes):
     """Group the detected boxes by frame_id as a dictionary"""
@@ -22,8 +22,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     wait_time = 1
     """Create a video with the IoU score for each frame"""
     # Group the detected boxes by frame_id as a dictionary
-    gt_boxes, total = load_from_xml(annotations)
-    predicted_boxes = load_from_txt(predicted_boxes)
+    gt_boxes, total = annotations[0], annotations[1]
     predicted_boxes.sort(key=lambda x: x[-1], reverse=True)
     predicted_boxes_group = group_by_frame(predicted_boxes)
 
@@ -65,7 +64,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     # Set the y axis range
     ax.set_ylim(0, 1)
     # Create a line
-    line, = ax.plot([], [], lw=2)
+    (line,) = ax.plot([], [], lw=2)
     line.set_data([], [])
     if display:
         fig.show()
@@ -86,11 +85,13 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
                 cv2.rectangle(frame, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])), (0, 0, 255), 2)
             # Draw the IoU score
             iou_score = round(iou_scores[i], 2)
-            cv2.putText(frame, f"IoU score: {iou_score}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
-                        cv2.LINE_AA)
+            cv2.putText(
+                frame, f"IoU score: {iou_score}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA
+            )
             # put text number of frame
-            cv2.putText(frame, f"Frame: {frames_num[i]}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
-                        cv2.LINE_AA)
+            cv2.putText(
+                frame, f"Frame: {frames_num[i]}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA
+            )
             # put fps
             cv2.putText(frame, f"FPS: {fps}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             # Write the frame to the video
@@ -100,7 +101,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
             if display:
                 cv2.imshow('frame', frame)
                 image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
-                image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,)) # in cosole get 3000000, error reshape
+                image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
 
                 images_plot.append(image)
                 k = cv2.waitKey(wait_time)

@@ -7,3 +7,10 @@ detections:
   rcnn: '../dataset/AICity_data/train/S03/c010/det/det_mask_rcnn.txt'
   ssd: '../dataset/AICity_data/train/S03/c010/det/det_ssd512.txt'
   yolo: '../dataset/AICity_data/train/S03/c010/det/det_yolo3.txt'
+
+noisy_values:
+  del_prob: 0.2
+  gen_prob: 0.2
+  mean: 0
+  std: 0.1
+  frame_shape: [1080, 1920]

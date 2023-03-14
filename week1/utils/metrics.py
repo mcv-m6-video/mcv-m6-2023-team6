@@ -23,9 +23,7 @@ def iou(box1, box2):
 
 
 # Generate noisy boxes for testing
-def generate_noisy_boxes(
-    gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1080, 1920]
-):
+def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1080, 1920]):
     """
     :gt_boxes: ground truth bounding boxes dict
     :del_prob: probability to delete bounding boxes
@@ -57,7 +55,7 @@ def generate_noisy_boxes(
             y = np.random.randint(h, frame_shape[0] - h)
             noisy_bboxes.append([frame, x - w / 2, y - w / 2, x + w / 2, y + w / 2])
 
-    return noisy_bboxes, gt_total
+    return noisy_bboxes
 
 
 # Average Precision (AP) for Object Detection
