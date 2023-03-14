@@ -2,10 +2,9 @@ import itertools
 
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
 from week1.utils.metrics import mean_AP_Pascal_VOC
-from week1.utils.utils import load_from_xml
+from week1.utils.utils import load_from_xml, load_from_txt
 
 
 # Rendering Video AICity Challenge 2023
@@ -18,9 +17,11 @@ def group_by_frame(predicted_boxes):
     return predicted_boxes
 
 
-def rendering_video(path, gt_boxes, total, predicted_boxes, video_capture):
+def rendering_video(path, annotations, predicted_boxes, video_capture):
     """Create a video with the IoU score for each frame"""
     # Group the detected boxes by frame_id as a dictionary
+    gt_boxes, total = load_from_xml(annotations)
+    predicted_boxes = load_from_txt(predicted_boxes)
     predicted_boxes_group = group_by_frame(predicted_boxes)
     # Get the IoU score for each frame in format dict {frame_id: [iou_score1, iou_score2, ...]}
     mIOU, mIOU_frame, AP = mean_AP_Pascal_VOC(gt_boxes, total, predicted_boxes, iou_th=0.5)
@@ -31,6 +32,9 @@ def rendering_video(path, gt_boxes, total, predicted_boxes, video_capture):
     frames_num = [int(frame.split('_')[1]) for frame in frames_id]
     # Get the IoU score list
     iou_scores = [np.mean(mIOU_frame[frame]) for frame in frames_id]
+
+    # Open the video
+    video_capture = cv2.VideoCapture(video_capture)
     # Get the video fps
     fps = video_capture.get(cv2.CAP_PROP_FPS)
     # Get the video width

@@ -12,8 +12,7 @@ def main(cfg):
     print(f"Run Name: {cfg['run_name']}")
     print(f"Run Mode: {cfg['run_mode']}")
 
-    gt_boxes, total = load_from_xml(cfg['paths']['annotations_path'])
-    rendering_video(f"runs/{cfg['run_name']}/video.mp4", gt_boxes, total, cfg['detection'][args.run_mode],
+    rendering_video(f"runs/{cfg['run_name']}/video.mp4", cfg['paths']['annotations_path'], cfg['detections'][args.run_mode],
                     cfg['paths']['video_path'])
 
 

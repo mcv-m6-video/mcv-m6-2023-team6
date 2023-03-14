@@ -50,7 +50,7 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
 
 # Average Precision (AP) for Object Detection
 # https://github.com/facebookresearch/detectron2/blob/main/detectron2/evaluation/pascal_voc_evaluation.py
-def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
+def mean_AP_Pascal_VOC(gt_boxes,N_gt,predicted_boxes,iou_th):
     """
     :gt_boxes: ground truth bounding boxes dict
     :N_gt: Total of ground truth bounding boxes
@@ -62,6 +62,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     fp = np.zeros(len(predicted_boxes))
     gt_detected = copy.deepcopy(gt_boxes)
 
+    mIOU_frame = {}
     for i in range(len(predicted_boxes)):
         frame = predicted_boxes[i][0]
         predicted = predicted_boxes[i][1:5]
@@ -69,10 +70,14 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
         iou_score = []
         if len(gt) != 0:
             for b in range(len(gt)):
-                iou_score.append(iou(gt[b], predicted))
+                iou_score.append(iou(gt[b],predicted))
             id = np.argmax(iou_score)
             max_iou = iou_score[id]
             mIOU += max_iou
+            # Save max iou for each frame
+            if frame not in mIOU_frame:
+                mIOU_frame[frame] = []
+            mIOU_frame[frame].append(max_iou)
 
             if max_iou >= iou_th:
                 if len(gt_detected[frame][id]) == 4:
@@ -86,8 +91,8 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
 
-    recall = tp / float(N_gt)
-    precision = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
+    recall = tp/ np.float64(N_gt)
+    precision = tp/np.maximum(tp + fp, np.finfo(np.float64).eps)
 
     ap = 0.0
     for t in np.arange(0.0, 1.1, 0.1):
@@ -97,7 +102,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
 
-    return mIOU / len(predicted_boxes), ap
+    return mIOU/len(predicted_boxes), mIOU_frame, ap
 
 
 def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
