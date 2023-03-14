@@ -64,6 +64,8 @@ def load_from_txt(path):
                                             float(ll[2]) + float(ll[4]), float(ll[3])+float(ll[5]),ll[6]])
 
         return frame_list
+    
+
 
 if __name__ == '__main__':
     # Set the parent directory of your current directory
