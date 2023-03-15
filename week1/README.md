@@ -6,7 +6,7 @@ Arguments:\
 -c --config   : Config.yml path\
 -s --save     : Save the video or not\
 -d --display  : Show the video or not\
--n --noisy    : Noisy or not\
+-n --noisy    : Noisy or not
 
 Examples
 ```
