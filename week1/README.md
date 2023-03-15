@@ -24,8 +24,8 @@ python3 main.py -m yolo -r yolo
 
 ## Task 1 and 2
 
-Task1_Task2.ipynb
+See Task1_Task2.ipynb
 
 ## Task 3 and 4
 
-Task3_Task4.ipynb
+See Task3_Task4.ipynb
