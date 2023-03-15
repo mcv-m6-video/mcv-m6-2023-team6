@@ -46,8 +46,8 @@ def resize_gif(gif_path, new_gif_path, start_time, duration, fps):
         gif = gif.subclip(start_time)
     gif.write_gif(new_gif_path, fps=fps)
 
-resize_gif('./runs/noisy/iou.gif', './runs/noisy/iou_resize.gif', 0, None, 20)
-resize_gif('./runs/rcnn/iou.gif', './runs/rcnn/iou_resize.gif', 0, None, 20)
-resize_gif('./runs/ssd/iou.gif', './runs/ssd/iou_resize.gif', 0, None, 20)
-resize_gif('./runs/yolo/iou.gif', './runs/yolo/iou_resize.gif', 0, None, 20)
+resize_gif('./runs/noisy/iou.gif', './runs/noisy/iou_resize.gif', 0, 100, 5)
+resize_gif('./runs/rcnn/iou.gif', './runs/rcnn/iou_resize.gif', 0, 100, 5)
+resize_gif('./runs/ssd/iou.gif', './runs/ssd/iou_resize.gif', 0, 100, 5)
+resize_gif('./runs/yolo/iou.gif', './runs/yolo/iou_resize.gif', 0, 100, 5)
 
