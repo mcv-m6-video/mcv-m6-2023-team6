@@ -235,7 +235,9 @@ def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
 
     for i in tqdm(range(N)):
         random.shuffle(predicted_boxes)
-        mIOU, _, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
+        _, _, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
+        mIOU, _ = mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes)
+
         ap_scores.append(ap)
 
     return sum(ap_scores) / len(ap_scores), mIOU
