@@ -20,7 +20,7 @@ def video2gif(video_path, gif_path, start_time, duration, fps):
     gif.write_gif(gif_path, fps=fps)
 
 
-video2gif('./runs/noisy/video.mp4', './runs/noisy/video.gif', 0, 5, 10)
+video2gif('./runs/noisy/video.mp4', './runs/noisy/video.gif', 0, 20, 144)
 
 
 # resize gif
@@ -40,5 +40,5 @@ def resize_gif(gif_path, new_gif_path, start_time, duration, fps):
     gif = gif.subclip(start_time, start_time + duration)
     gif.write_gif(new_gif_path, fps=fps)
 
-resize_gif('./runs/noisy/iou.gif', './runs/noisy/iou_resize.gif', 0, 5, 10)
+resize_gif('./runs/noisy/iou.gif', './runs/noisy/iou_resize.gif', 0, None, 144)
 

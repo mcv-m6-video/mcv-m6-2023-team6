@@ -112,6 +112,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
                 elif k == ord('p'):
                     wait_time = int(not (bool(wait_time)))
     print("mAP: ", AP)
+    print("mIOU: ", mIOU)
     if save:
         # Release the VideoWriter object
         out.release()
