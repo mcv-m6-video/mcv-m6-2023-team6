@@ -58,6 +58,77 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
     return noisy_bboxes
 
 
+
+def mean_IoU_restricted(gt_boxes, predicted_boxes):
+    """
+    :gt_boxes: ground truth bounding boxes dict
+    :predicted_boxes: predicted bounding boxes
+    :return: mean IOU
+    """
+    mIOU = 0
+    count = 0
+    mIOU_frame = {}
+    used_pred_boxes = set()
+
+    for gt in gt_boxes:
+        for box in gt_boxes[gt]:
+            iou_score = []
+            for pred in predicted_boxes:
+                if pred[0] == gt and tuple(pred[1:5]) not in used_pred_boxes:
+                    iou_score.append(iou(box,pred[1:5]))
+                else:
+                    iou_score.append(0)
+            if iou_score:
+                id = np.argmax(iou_score)
+                max_iou = iou_score[id]
+                used_pred_boxes.add(tuple(predicted_boxes[id][1:5]))
+                mIOU += max_iou
+                count = count + 1
+
+                # Save max iou for each frame
+                if gt not in mIOU_frame:
+                    mIOU_frame[gt] = []
+                mIOU_frame[gt].append(max_iou)
+            
+
+    return mIOU/count, mIOU_frame
+
+def mean_IoU_nonrestricted(gt_boxes, predicted_boxes):
+    """
+    :gt_boxes: ground truth bounding boxes dict
+    :predicted_boxes: predicted bounding boxes
+    :return: mean IOU
+    """
+    mIOU = 0
+    count = 0
+    mIOU_frame = {}
+
+    for gt in gt_boxes:
+        for box in gt_boxes[gt]:
+            iou_score = []
+            for pred in predicted_boxes:
+                if pred[0] == gt:
+                    iou_score.append(iou(box,pred[1:5]))
+                else:
+                    iou_score.append(0)
+            if iou_score:
+                id = np.argmax(iou_score)
+                max_iou = iou_score[id]
+                mIOU += max_iou
+                count = count + 1
+
+                # Save max iou for each frame
+                if gt not in mIOU_frame:
+                    mIOU_frame[gt] = []
+                mIOU_frame[gt].append(max_iou)
+            
+
+    return mIOU/count, mIOU_frame
+
+
+
+
+
 # Average Precision (AP) for Object Detection
 # https://github.com/facebookresearch/detectron2/blob/main/detectron2/evaluation/pascal_voc_evaluation.py
 def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
@@ -111,7 +182,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
         else:
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
-
+    return ap # Ull la mIoU s'ha d'agafar de la funció mean_IoU_restricted o mean_IoU_nonrestricted
     return mIOU / len(predicted_boxes), mIOU_frame, ap
 
 
