@@ -8,7 +8,6 @@ Arguments:\
 -d --display  : Show the video or not\
 -n --noisy    : Noisy or not
 
-Examples:
 ### Video with BoundinBox generated from GroundTruth using noise
 ```
 python3 main.py -m rcnn -n True -r noisy
