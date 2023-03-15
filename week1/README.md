@@ -1,4 +1,4 @@
-## Generate the videos
+### Generate videos
 
 Arguments:\
 -m --run_mode : Yolo, RCNN or SSD\
