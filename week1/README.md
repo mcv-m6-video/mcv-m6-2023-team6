@@ -1,4 +1,4 @@
-## Task 1 and 2
+## Generate the video
 
 Arguments:\
 -m --run_mode : Yolo, RCNN or SSD\
@@ -21,6 +21,10 @@ python3 main.py -m ssd -r ssd
 ```
 python3 main.py -m yolo -r yolo
 ```
+
+## Task 1 and 2
+
+Task1_Task2.ipynb
 
 ## Task 3 and 4
 
