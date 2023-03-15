@@ -1,4 +1,4 @@
-### Generate videos
+## Generate videos
 
 Arguments:\
 -m --run_mode : Yolo, RCNN or SSD\
@@ -8,16 +8,20 @@ Arguments:\
 -d --display  : Show the video or not\
 -n --noisy    : Noisy or not
 
-Examples
+Examples:
+### Video with BoundinBox generated from GroundTruth using noise
 ```
 python3 main.py -m rcnn -n True -r noisy
 ```
+### Video with Mask R-CNN detections
 ```
 python3 main.py -m rcnn -r rcnn
 ```
+### Video with SSD512 detections
 ```
 python3 main.py -m ssd -r ssd
 ```
+### Video with YoloV3 detections
 ```
 python3 main.py -m yolo -r yolo
 ```
