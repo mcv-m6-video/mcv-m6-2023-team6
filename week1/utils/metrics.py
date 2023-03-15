@@ -9,17 +9,24 @@ from tqdm import tqdm
 def iou(box1, box2):
     if len(box1) > 4:
         box1 = box1[:4]
+    """Return iou for a single a pair of boxes"""
     x11, y11, x12, y12 = box1
     x21, y21, x22, y22 = box2
-    xA = np.maximum(x11, x21)
-    yA = np.maximum(y11, y21)
-    xB = np.minimum(x12, x22)
-    yB = np.minimum(y12, y22)
-    interArea = np.maximum(xB - xA, 0) * np.maximum(yB - yA, 0)
-    boxAArea = (x12 - x11 + 1) * (y12 - y11 + 1)
-    boxBArea = (x22 - x21 + 1) * (y22 - y21 + 1)
-    iou = interArea / np.float64(boxAArea + boxBArea - interArea)
-    return iou
+
+    xA = max(x11, x21)
+    yA = max(y11, y21)
+    xB = min(x12, x22)
+    yB = min(y12, y22)
+
+    # respective area of ​​the two boxes
+    boxAArea = (x12 - x11) * (y12 - y11)
+    boxBArea = (x22 - x21) * (y22 - y21)
+
+    # overlap area
+    interArea = max(xB - xA, 0) * max(yB - yA, 0)
+
+    # IOU
+    return interArea / (boxAArea + boxBArea - interArea)
 
 
 # Generate noisy boxes for testing
@@ -58,7 +65,6 @@ def generate_noisy_boxes(gt_boxes, del_prob, gen_prob, mean, std, frame_shape=[1
     return noisy_bboxes
 
 
-
 def mean_IoU_restricted(gt_boxes, predicted_boxes):
     """
     :gt_boxes: ground truth bounding boxes dict
@@ -75,7 +81,7 @@ def mean_IoU_restricted(gt_boxes, predicted_boxes):
             iou_score = []
             for pred in predicted_boxes:
                 if pred[0] == gt and tuple(pred[1:5]) not in used_pred_boxes:
-                    iou_score.append(iou(box,pred[1:5]))
+                    iou_score.append(iou(box, pred[1:5]))
                 else:
                     iou_score.append(0)
             if iou_score:
@@ -89,9 +95,9 @@ def mean_IoU_restricted(gt_boxes, predicted_boxes):
                 if gt not in mIOU_frame:
                     mIOU_frame[gt] = []
                 mIOU_frame[gt].append(max_iou)
-            
 
-    return mIOU/count, mIOU_frame
+    return mIOU / count, mIOU_frame
+
 
 def mean_IoU_nonrestricted(gt_boxes, predicted_boxes):
     """
@@ -108,7 +114,7 @@ def mean_IoU_nonrestricted(gt_boxes, predicted_boxes):
             iou_score = []
             for pred in predicted_boxes:
                 if pred[0] == gt:
-                    iou_score.append(iou(box,pred[1:5]))
+                    iou_score.append(iou(box, pred[1:5]))
                 else:
                     iou_score.append(0)
             if iou_score:
@@ -121,12 +127,46 @@ def mean_IoU_nonrestricted(gt_boxes, predicted_boxes):
                 if gt not in mIOU_frame:
                     mIOU_frame[gt] = []
                 mIOU_frame[gt].append(max_iou)
-            
 
-    return mIOU/count, mIOU_frame
-
+    return mIOU / count, mIOU_frame
 
 
+def mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes):
+    """
+    :gt_boxes: ground truth bounding boxes dict
+    :predicted_boxes: predicted bounding boxes
+    :return: mean IOU
+    """
+    mIOU = 0
+    count = 0
+    mIOU_frame = {}
+    # convert predicted boxes in dictionary
+    predicted_boxes_dict = {}
+    for pred in predicted_boxes:
+        if pred[0] not in predicted_boxes_dict:
+            predicted_boxes_dict[pred[0]] = []
+        predicted_boxes_dict[pred[0]].append(pred[1:5])
+    for gt in gt_boxes:
+        for box in gt_boxes[gt]:
+            iou_score = []
+            predicted_box_frame = predicted_boxes_dict[gt]
+            if predicted_box_frame:
+                for pred in predicted_box_frame:
+                    iou_score.append(iou(box, pred))
+            else:
+                iou_score.append(0)
+            if iou_score:
+                id = np.argmax(iou_score)
+                max_iou = iou_score[id]
+                mIOU += max_iou
+                count = count + 1
+
+                # Save max iou for each frame
+                if gt not in mIOU_frame:
+                    mIOU_frame[gt] = []
+                mIOU_frame[gt].append(max_iou)
+
+    return mIOU / count, mIOU_frame
 
 
 # Average Precision (AP) for Object Detection
@@ -182,8 +222,8 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
         else:
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
-    return ap # Ull la mIoU s'ha d'agafar de la funció mean_IoU_restricted o mean_IoU_nonrestricted
-    return mIOU / len(predicted_boxes), mIOU_frame, ap
+    return ap  # Ull la mIoU s'ha d'agafar de la funció mean_IoU_restricted o mean_IoU_nonrestricted
+    # return mIOU / len(predicted_boxes), mIOU_frame, ap
 
 
 def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
