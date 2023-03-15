@@ -27,12 +27,14 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     # Group the detected boxes by frame_id as a dictionary
     gt_boxes, total = annotations[0], annotations[1]
     predicted_boxes.sort(key=lambda x: x[-1], reverse=True)
+    # sort by key dictionary
+    gt_boxes = {k: gt_boxes[k] for k in sorted(gt_boxes)}
     predicted_boxes_group = group_by_frame(predicted_boxes)
 
     # Get the IoU score for each frame in format dict {frame_id: [iou_score1, iou_score2, ...]}
     AP = mean_AP_Pascal_VOC(gt_boxes, total, predicted_boxes, iou_th=0.5)
-    mIOU, mIOU_frame = mean_IoU_restricted(gt_boxes, predicted_boxes)
-    # mIOU, mIOU_frame = mean_IoU_nonrestricted(gt_boxes, predicted_boxes)
+    # mIOU, mIOU_frame = mean_IoU_restricted(gt_boxes, predicted_boxes)
+    mIOU, mIOU_frame = mean_IoU_nonrestricted(gt_boxes, predicted_boxes)
     # Get the frame_id list
     frames_id = list(mIOU_frame.keys())
     # Sort the frames list

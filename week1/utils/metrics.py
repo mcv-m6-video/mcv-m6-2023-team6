@@ -126,6 +126,43 @@ def mean_IoU_nonrestricted(gt_boxes, predicted_boxes):
     return mIOU/count, mIOU_frame
 
 
+def mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes):
+    """
+    :gt_boxes: ground truth bounding boxes dict
+    :predicted_boxes: predicted bounding boxes
+    :return: mean IOU
+    """
+    mIOU = 0
+    count = 0
+    mIOU_frame = {}
+    # convert predicted boxes in dictionary
+    predicted_boxes_dict = {}
+    for pred in predicted_boxes:
+        if pred[0] not in predicted_boxes_dict:
+            predicted_boxes_dict[pred[0]] = []
+        predicted_boxes_dict[pred[0]].append(pred[1:5])
+    for gt in gt_boxes:
+        for box in gt_boxes[gt]:
+            iou_score = []
+            predicted_box_frame = predicted_boxes_dict[gt]
+            if predicted_box_frame:
+                for pred in predicted_box_frame:
+                    iou_score.append(iou(box, pred))
+            else:
+                iou_score.append(0)
+            if iou_score:
+                id = np.argmax(iou_score)
+                max_iou = iou_score[id]
+                mIOU += max_iou
+                count = count + 1
+
+                # Save max iou for each frame
+                if gt not in mIOU_frame:
+                    mIOU_frame[gt] = []
+                mIOU_frame[gt].append(max_iou)
+
+    return mIOU / count, mIOU_frame
+
 
 
 
@@ -183,7 +220,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
             p = np.max(precision[recall >= t])
         ap = ap + p / 11.0
     return ap # Ull la mIoU s'ha d'agafar de la funció mean_IoU_restricted o mean_IoU_nonrestricted
-    return mIOU / len(predicted_boxes), mIOU_frame, ap
+    # return mIOU / len(predicted_boxes), mIOU_frame, ap
 
 
 def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
