@@ -23,10 +23,10 @@ def video2gif(video_path, gif_path, start_time, duration, fps):
     gif.speedx(10).to_gif(gif_path, fps=fps)
 
 
-# video2gif('./runs/noisy/video.mp4', './runs/noisy/video.gif', 0, None, 5)
-# video2gif('./runs/rcnn/video.mp4', './runs/rcnn/video.gif', 0, None, 5)
-# video2gif('./runs/ssd/video.mp4', './runs/ssd/video.gif', 0, None, 5)
-# video2gif('./runs/yolo/video.mp4', './runs/yolo/video.gif', 0, None, 5)
+video2gif('./runs/noisy/video.mp4', './runs/noisy/video.gif', 0, None, 5)
+video2gif('./runs/rcnn/video.mp4', './runs/rcnn/video.gif', 0, None, 5)
+video2gif('./runs/ssd/video.mp4', './runs/ssd/video.gif', 0, None, 5)
+video2gif('./runs/yolo/video.mp4', './runs/yolo/video.gif', 0, None, 5)
 
 
 # resize gif
