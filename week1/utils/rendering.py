@@ -7,6 +7,9 @@ import numpy as np
 from utils.metrics import mean_AP_Pascal_VOC
 from utils.util import load_from_txt, load_from_xml
 
+from utils.metrics import mean_IoU_restricted
+
+
 # Rendering Video AICity Challenge 2023
 
 
@@ -27,7 +30,8 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     predicted_boxes_group = group_by_frame(predicted_boxes)
 
     # Get the IoU score for each frame in format dict {frame_id: [iou_score1, iou_score2, ...]}
-    mIOU, mIOU_frame, AP = mean_AP_Pascal_VOC(gt_boxes, total, predicted_boxes, iou_th=0.5)
+    AP = mean_AP_Pascal_VOC(gt_boxes, total, predicted_boxes, iou_th=0.5)
+    mIOU, mIOU_frame = mean_IoU_restricted(gt_boxes, predicted_boxes)
     # Get the frame_id list
     frames_id = list(mIOU_frame.keys())
     # Sort the frames list
