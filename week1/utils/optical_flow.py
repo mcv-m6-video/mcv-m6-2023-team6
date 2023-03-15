@@ -166,25 +166,30 @@ def HSVOpticalFlow(flow, title):
 
     mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
+    # clip the magnitude to 0.95 quantile to remove outliers / better visualization not affected by extreme values when noemalizing
+    clip = np.quantile(magnitude, 0.95)
+    mag = np.clip(mag, 0, clip)
+
     hsv[..., 0] = ang * 180 / np.pi / 2
     hsv[..., 1] = 255
-    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX,dtype=cv2.CV_8U)
 
     # magnitude and angle
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
     # only the angle
-    hsv[..., 2] = 255
-    rgb2 = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    hsv2 = hsv
+    hsv2[..., 2] = 255
+    rgb2 = cv2.cvtColor(hsv2, cv2.COLOR_HSV2RGB)
 
     fig, ax = plt.subplots(3, 1)
     fig.set_size_inches(50, 10)
-    im0 = ax[0].imshow(rgb)
-    im2 = ax[1].imshow(mag, cmap="gray")
-    im3 = ax[2].imshow(rgb2)
-    ax[0].set_title("Magnitude and Angle")
-    ax[1].set_title("Magnitude")
-    ax[2].set_title("Angle")
+    ax[2].imshow(rgb)
+    ax[0].imshow(mag, cmap="gray")
+    ax[1].imshow(rgb2)
+    ax[2].set_title("Magnitude and Angle")
+    ax[0].set_title("Magnitude")
+    ax[1].set_title("Angle")
     ax[0].set_axis_off()
     ax[1].set_axis_off()
     ax[2].set_axis_off()
@@ -199,6 +204,9 @@ def HSVOpticalFlow2(flow, tittle):
     hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
 
     mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+    # clip the magnitude to 0.95 quantile to remove outliers / better visualization not affected by extreme values when noemalizing
+    clip = np.quantile(magnitude, 0.95)
+    mag = np.clip(mag, 0, clip)
 
     hsv[..., 0] = ang * 180 / np.pi / 2
     hsv[..., 2] = 255
