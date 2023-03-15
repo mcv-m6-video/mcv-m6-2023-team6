@@ -1,6 +1,6 @@
 ## Task 1 and 2
 
-Run the main for :
+Arguments:\
 -m --run_mode : Yolo, RCNN or SSD
 -r --run_name : Run Folder Name
 -c --config   : Config.yml path
