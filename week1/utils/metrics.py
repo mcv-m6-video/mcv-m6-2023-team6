@@ -149,7 +149,7 @@ def mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes):
     for gt in gt_boxes:
         for box in gt_boxes[gt]:
             iou_score = []
-            predicted_box_frame = predicted_boxes_dict[gt]
+            predicted_box_frame = predicted_boxes_dict.get(gt, [])
             if predicted_box_frame:
                 for pred in predicted_box_frame:
                     iou_score.append(iou(box, pred))
@@ -235,7 +235,7 @@ def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
 
     for i in tqdm(range(N)):
         random.shuffle(predicted_boxes)
-        _, _, ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
+        ap = mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th)
         mIOU, _ = mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes)
 
         ap_scores.append(ap)

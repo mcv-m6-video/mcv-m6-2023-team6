@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+import cv2
 
 import xmltodict
 
@@ -76,6 +77,27 @@ def load_from_txt(path):
         )
 
     return frame_list
+
+
+def bounding_box_visualization(path,gt_boxes,predicted_boxes,video_capture,frame_id,iou_scores):
+    n_frame = int(frame_id.split('_')[-1])
+    video_capture.set(cv2.CAP_PROP_POS_FRAMES, n_frame-1)
+    res, frame = video_capture.read()
+    # Draw the ground truth boxes
+    for box in gt_boxes[frame_id]:
+        cv2.rectangle(frame, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
+    # Draw the predicted boxes
+    for box in predicted_boxes[frame_id]:
+        cv2.rectangle(frame, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])), (0, 0, 255), 2)
+    # put text mIOU of frame
+    cv2.putText(frame, f"IoU score: {iou_scores[n_frame]}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    # put text number of frame
+    cv2.putText(frame, f"Frame: {n_frame}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            
+
+    cv2.imwrite(f'{path}/{frame_id}.png', frame)
+
+    ret, frame = video_capture.read()
 
 
 if __name__ == "__main__":
