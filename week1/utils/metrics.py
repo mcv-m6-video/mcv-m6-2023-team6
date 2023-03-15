@@ -15,7 +15,7 @@ def iou(box1, box2):
     yA = np.maximum(y11, y21)
     xB = np.minimum(x12, x22)
     yB = np.minimum(y12, y22)
-    interArea = np.maximum(0, xB - xA + 1) * np.maximum(0, yB - yA + 1)
+    interArea = np.maximum(xB - xA, 0) * np.maximum(yB - yA, 0)
     boxAArea = (x12 - x11 + 1) * (y12 - y11 + 1)
     boxBArea = (x22 - x21 + 1) * (y22 - y21 + 1)
     iou = interArea / np.float64(boxAArea + boxBArea - interArea)
@@ -89,7 +89,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
                 mIOU_frame[frame] = []
             mIOU_frame[frame].append(max_iou)
 
-            if max_iou >= iou_th:
+            if max_iou > iou_th:
                 if len(gt_detected[frame][id]) == 4:
                     gt_detected[frame][id].append(True)
                     tp[i] = 1
