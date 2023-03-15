@@ -10,7 +10,7 @@ Arguments:\
 
 ### Video with BoundinBox generated from GroundTruth using noise
 ```
-python3 main.py -m rcnn -n True -r noisy
+python3 main.py -m noisy -n True -r noisy
 ```
 ### Video with Mask R-CNN detections
 ```
