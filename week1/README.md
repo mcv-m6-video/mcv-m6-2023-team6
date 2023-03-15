@@ -1,12 +1,12 @@
 ## Task 1 and 2
 
 Arguments:\
--m --run_mode : Yolo, RCNN or SSD
--r --run_name : Run Folder Name
--c --config   : Config.yml path
--s --save     : Save the video or not
--d --display  : Show the video or not
--n --noisy    : Noisy or not
+-m --run_mode : Yolo, RCNN or SSD\
+-r --run_name : Run Folder Name\
+-c --config   : Config.yml path\
+-s --save     : Save the video or not\
+-d --display  : Show the video or not\
+-n --noisy    : Noisy or not\
 
 Examples
 ```
