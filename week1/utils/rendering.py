@@ -1,4 +1,5 @@
 import itertools
+import time
 
 import cv2
 import imageio
@@ -7,7 +8,7 @@ import numpy as np
 from utils.metrics import mean_AP_Pascal_VOC
 from utils.util import load_from_txt, load_from_xml
 
-from utils.metrics import mean_IoU_restricted, mean_IoU_nonrestricted
+from utils.metrics import mean_IoU_restricted, mean_IoU_nonrestricted,mean_IoU_nonrestricted_2
 
 
 # Rendering Video AICity Challenge 2023
@@ -22,6 +23,7 @@ def group_by_frame(predicted_boxes):
 
 
 def rendering_video(path, annotations, predicted_boxes, video_capture, save=True, display=False):
+    time_start = time.time()
     wait_time = 1
     """Create a video with the IoU score for each frame"""
     # Group the detected boxes by frame_id as a dictionary
@@ -34,7 +36,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     # Get the IoU score for each frame in format dict {frame_id: [iou_score1, iou_score2, ...]}
     AP = mean_AP_Pascal_VOC(gt_boxes, total, predicted_boxes, iou_th=0.5)
     # mIOU, mIOU_frame = mean_IoU_restricted(gt_boxes, predicted_boxes)
-    mIOU, mIOU_frame = mean_IoU_nonrestricted(gt_boxes, predicted_boxes)
+    mIOU, mIOU_frame = mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes)
     # Get the frame_id list
     frames_id = list(mIOU_frame.keys())
     # Sort the frames list
@@ -126,3 +128,5 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
         # create gif matplotlib figure
         # !convert -delay 10 -loop 0 *.png animation.gif
         imageio.mimsave(path + 'iou.gif', images_plot)
+    time_end = time.time()
+    print("Time: ", time_end - time_start)
