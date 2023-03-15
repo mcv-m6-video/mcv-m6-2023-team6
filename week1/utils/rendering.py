@@ -122,6 +122,8 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
                     wait_time = int(not (bool(wait_time)))
     print("mAP: ", AP)
     print("mIOU: ", mIOU)
+    time_end = time.time()
+    print("Time: ", time_end - time_start)
     if save:
         # Release the VideoWriter object
         out.release()
@@ -129,4 +131,4 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
         # !convert -delay 10 -loop 0 *.png animation.gif
         imageio.mimsave(path + 'iou.gif', images_plot)
     time_end = time.time()
-    print("Time: ", time_end - time_start)
+    print("Time_Finished: ", time_end - time_start)
