@@ -5,17 +5,20 @@
 - Implement evaluation metrics: Intersection over Union (IoU), Average Precision (AP), Mean Square Error in Non-Occluded areas, Percentage of Erroneous pixels in Non-occluded areas
 - Analyze: Effect of noise additions, IoU vs Time, Optical Flow
 
+&nbsp;
 
 ### Task 1 and 2
 
 See Task1_Task2.ipynb
 
+&nbsp;
 
 
 ### Task 3 and 4
 
 See Task3_Task4.ipynb
 
+&nbsp;
 
 
 ### Video Generation
