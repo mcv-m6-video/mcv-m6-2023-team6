@@ -13,7 +13,7 @@ notebook
 jupyterlab
 matplotlib
 opencv-contrib-python>=4.7.0.72
-
+numexpr
 # --------- loggers --------- #
 wandb
 graphviz
