@@ -4,14 +4,27 @@ from tqdm import tqdm
 
 
 class BaseModel:
-    def __init__(self, video_path, num_frames, checkpoint=None):
+    def __init__(self, video_path, num_frames, colorspace ='gray',checkpoint=None):
         self.cap = cv2.VideoCapture(video_path)
         self.num_frames = num_frames
-        self.images = np.zeros((self.num_frames, self.channels))
         self.modeled = False
         self.checkpoint = checkpoint
         self.channels = 3
+        
+        if colorspace == 'gray':
+            self.colorspace_conversion = cv2.COLOR_BGR2GRAY
+            self.channels = 1
 
+        elif colorspace == 'ycrcb':
+            self.colorspace_conversion = cv2.COLOR_BGR2YCrCb
+
+        elif colorspace == 'RGB':
+            self.colorspace_conversion = cv2.COLOR_BGR2RGB
+        else:
+            raise Exception('Invalid Colorspace')
+            
+        self.images = np.zeros((self.num_frames, self.channels))
+        
     def __add_image(self, frame, pos):
         if len(frame.shape) == 2:
             self.images[pos, :] = frame.flatten()
@@ -26,10 +39,13 @@ class BaseModel:
         with tqdm(total=self.num_frames) as pbar:
             for i in range(self.num_frames):
                 success, frame = self.cap.read()
+                frame = cv2.cvtColor(frame, self.colorspace_conversion)
                 if not success:
                     break
                 self.__add_image(frame, i)
                 pbar.update(1)
+                
+
 
         self.modeled = True
         print("Background modeled!")

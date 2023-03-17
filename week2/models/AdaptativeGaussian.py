@@ -8,12 +8,13 @@ from week2.models.BaseModel import BaseModel
 
 
 class AdaptiveGaussianModel(BaseModel):
-    def __init__(self, video_path, num_frames, p, checkpoint=None, n_jobs=-1):
+    def __init__(self, video_path, num_frames, p,alpha,colorspace='gray', checkpoint=None, n_jobs=-1):
         super().__init__(video_path, num_frames, checkpoint)
         # 2 modes
         self.p = p
         self.mean = None
         self.std = None
+        self.alpha = alpha
 
         self.channels = 3
         self.base = os.path.join(os.getcwd(), "checkpoints", "AdaptativeGaussianModel")
@@ -33,10 +34,10 @@ class AdaptiveGaussianModel(BaseModel):
         success, I = self.cap.read()
         if not success:
             return None
-        I = cv2.cvtColor(I, self.color_transform)
+        I = cv2.cvtColor(I, self.colorspace_conversion)
 
         # ADAPTIVE STEP HERE
-        bm = abs(I - self.mean) * (self.std + 2)  # background mask
+        bm = abs(I - self.mean) < self.alpha * (self.std + 2)  # background mask
 
         self.mean[bm] = joblib.Parallel(n_jobs=self.n_jobs)(
             joblib.delayed(lambda x: self.p * x[0] + (1 - self.p) * x[1])(I[bm][i], self.mean[bm][i])

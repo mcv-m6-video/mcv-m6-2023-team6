@@ -1,41 +1,27 @@
-import concurrent.futures
-import os
-
 import cv2
-import numexpr as ne
 import numpy as np
+import os
+import joblib
 
 from week2.models.BaseModel import BaseModel
 
-
-class GaussianModel(BaseModel):
-    def __init__(self, video_path, num_frames,alpha,colorspace='gray', checkpoint=None):
+class GaussianMixtureModel(BaseModel):
+    def __init__(self, video_path, num_frames, p, checkpoint=None, n_jobs=-1):
         super().__init__(video_path, num_frames, checkpoint)
         # 2 modes
+        self.p = p
         self.mean = None
         self.std = None
-        self.alpha = alpha
 
-        self.base = os.path.join(os.getcwd(), "checkpoints", "GaussianModel")
+        self.channels = 3
+        self.base = os.path.join(os.getcwd(), "checkpoints", "AdaptativeGaussianModel")
+        self.n_jobs = n_jobs
 
     def compute_parameters(self):
-        self.mean = np.mean(self.images, axis=-1, dtype=np.float32)
+        self.mean = self.images.mean(axis=-1)  # , dtype=np.float64)
         print("Mean computed successfully.")
-        self.std = np.std(self.images, axis=-1, dtype=np.float32)
+        self.std = self.images.std(axis=-1)  # , dtype=np.float64)
         print("Standard deviation computed successfully.")
-
-    """ NOT TESTED YET
-    @staticmethod
-    @njit
-    def compute_mean_std(images):
-        mean = np.mean(images, axis=-1)
-        std = np.std(images, axis=-1)
-        return mean, std
-
-    def compute_parameters(self):
-        self.mean, self.std = self.compute_mean_std(self.images)
-        print("Mean and standard deviation computed successfully.")
-    """
 
     def compute_next_foreground(self):
         if not self.modeled:
@@ -45,11 +31,26 @@ class GaussianModel(BaseModel):
         success, I = self.cap.read()
         if not success:
             return None
+        I = cv2.cvtColor(I, self.color_transform)
 
-        I = cv2.cvtColor(I,self.colorspace_conversion)
-        abs_diff = np.abs(I - self.mean) 
-        foreground = ne.evaluate("abs_diff >= alpha * (std + 2)", local_dict={"abs_diff": abs_diff, "std": self.std, "alpha":self.alpha})
-        return foreground.astype(np.uint8) * 255, I
+        # ADAPTIVE STEP HERE
+        bm = abs(I - self.mean) * (self.std + 2)  # background mask
+
+        self.mean[bm] = joblib.Parallel(n_jobs=self.n_jobs)(
+            joblib.delayed(lambda x: self.p * x[0] + (1 - self.p) * x[1])(I[bm][i], self.mean[bm][i])
+            for i in range(bm.sum())
+        )
+        aux = I - self.mean  # no need of abs because it is squared
+        self.std[bm] = np.sqrt(
+            joblib.Parallel(n_jobs=self.n_jobs)(
+                joblib.delayed(lambda x: self.p * x[0] * x[0] + (1 - self.p) * x[1])(
+                    aux[bm][i], self.std[bm][i] * self.std[bm][i]
+                )
+                for i in range(bm.sum())
+            )
+        )
+
+        return (abs(I - self.mean) * (self.std + 2)).astype(np.uint8) * 255, I
 
     def save_checkpoint(self):
         if not os.path.exists(f"{self.base}/{self.checkpoint}"):
@@ -71,5 +72,3 @@ class GaussianModel(BaseModel):
         self.mean = np.load(mean_path)
         self.std = np.load(std_path)
         print("Checkpoint loaded.")
-
-

@@ -2,9 +2,10 @@ import argparse
 import os
 
 import yaml
-from utils.metrics import generate_noisy_boxes
-from utils.rendering import rendering_video
-from utils.util import load_from_txt, load_from_xml
+from week1.utils.metrics import generate_noisy_boxes
+from week1.utils.rendering import rendering_video
+from week1.utils.util import load_from_txt, load_from_xml
+from models import AdaptativeGaussianModel,GaussianModel
 
 TOTAL_FRAMES = 2141
 
@@ -19,13 +20,18 @@ def main(cfg):
     if cfg["run_mode"] == "GaussianModel":
         print("Gaussian Function")
         print("----------------------------------------")
-        model = GaussianModel(cfg)
+        model = GaussianModel(cfg,frames_modelling)
 
     elif cfg["run_mode"] == "AdaptativeGaussianModel":
-        model = AdaptativeGaussianModel(cfg)
+        model = AdaptativeGaussianModel(cfg,frames_modelling)
 
     else:
         raise ValueError("Invalid run mode")
+    
+    
+    model.model_background()
+    foreground, I = model.compute_next_foreground()
+    
 
     print("Done!")
     print("----------------------------------------")
@@ -54,6 +60,6 @@ if __name__ == "__main__":
     config["run_name"] = args.run_name
     config["save"] = args.save
     config["display"] = args.display
-    config["noisy"] = args.noisy
+    config["percentatge"] = args.percentatge
 
     main(config)
