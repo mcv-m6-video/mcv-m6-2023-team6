@@ -9,15 +9,13 @@ from week2.models.BaseModel import BaseModel
 
 class GaussianModel(BaseModel):
 
-    def __init__(self, video_path, num_frames, alpha, checkpoint=None):
+    def __init__(self, video_path, num_frames, checkpoint=None):
         super().__init__(video_path, num_frames, checkpoint)
         # 2 modes
-        print(f"[INIT] GaussianModel - alpha={alpha}")
-        self.alpha = np.array(alpha, dtype=np.float32)
         self.mean = None
         self.std = None
 
-        self.base = "./checkpoints/GaussianModel"
+        self.base = os.path.join(os.getcwd(), "checkpoints", "GaussianModel")
 
     def compute_parameters(self):
         """
@@ -54,10 +52,9 @@ class GaussianModel(BaseModel):
         if not success:
             return None
 
-        I = cv2.cvtColor(I, self.color_transform)
         abs_diff = np.abs(I - self.mean)
-        foreground = ne.evaluate("abs_diff >= alpha * (std + 2)",
-                                 local_dict={"abs_diff": abs_diff, "alpha": self.alpha, "std": self.std})
+        foreground = ne.evaluate("abs_diff * (std + 2)",
+                                 local_dict={"abs_diff": abs_diff, "std": self.std})
         return foreground.astype(np.uint8) * 255, I
 
     def save_checkpoint(self):
