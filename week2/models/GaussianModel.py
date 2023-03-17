@@ -18,10 +18,6 @@ class GaussianModel(BaseModel):
         self.base = os.path.join(os.getcwd(), "checkpoints", "GaussianModel")
 
     def compute_parameters(self):
-        """
-            Function called after first X% of images are saved in self.images
-            The values computed here will be used afterwards to compute the foreground
-        """
         self.mean = np.mean(self.images, axis=-1, dtype=np.float32)
         print("Mean computed successfully.")
         self.std = np.std(self.images, axis=-1, dtype=np.float32)
@@ -39,11 +35,8 @@ class GaussianModel(BaseModel):
         self.mean, self.std = self.compute_mean_std(self.images)
         print("Mean and standard deviation computed successfully.")
     """
+
     def compute_next_foreground(self):
-        """
-            Function to compute the foreground. Values computed in function 'compute_parameters'
-            are available to use.
-        """
         if not self.modeled:
             print("[ERROR] Background has not been modeled yet.")
             return None
@@ -58,9 +51,6 @@ class GaussianModel(BaseModel):
         return foreground.astype(np.uint8) * 255, I
 
     def save_checkpoint(self):
-        """
-            Save info of the modeled background
-        """
         if not os.path.exists(f"{self.base}/{self.checkpoint}"):
             os.makedirs(f"{self.base}/{self.checkpoint}")
 
@@ -73,9 +63,6 @@ class GaussianModel(BaseModel):
         assert (np.load(f"{self.base}/{self.checkpoint}/std.npy") == self.std).all()
 
     def load_checkpoint(self):
-        """
-            Load info of the modeled background
-        """
         mean_path = f"{self.base}/{self.checkpoint}/mean.npy"
         std_path = f"{self.base}/{self.checkpoint}/std.npy"
         if not os.path.exists(mean_path) or not os.path.exists(std_path):
