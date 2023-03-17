@@ -1,7 +1,6 @@
 import os
 
 import cv2
-
 import joblib
 import numpy as np
 
@@ -9,7 +8,6 @@ from week2.models.BaseModel import BaseModel
 
 
 class AdaptiveGaussianModel(BaseModel):
-
     def __init__(self, video_path, num_frames, p, checkpoint=None, n_jobs=-1):
         super().__init__(video_path, num_frames, checkpoint)
         # 2 modes
@@ -38,16 +36,21 @@ class AdaptiveGaussianModel(BaseModel):
         I = cv2.cvtColor(I, self.color_transform)
 
         # ADAPTIVE STEP HERE
-        bm = (abs(I - self.mean) * (self.std + 2))  # background mask
+        bm = abs(I - self.mean) * (self.std + 2)  # background mask
 
         self.mean[bm] = joblib.Parallel(n_jobs=self.n_jobs)(
-            joblib.delayed(lambda x: self.p * x[0] + (1 - self.p) * x[1])(I[bm][i], self.mean[bm][i]) for i in
-            range(bm.sum()))
-        aux = (I - self.mean)  # no need of abs because it is squared
-        self.std[bm] = np.sqrt(joblib.Parallel(n_jobs=self.n_jobs)(
-            joblib.delayed(lambda x: self.p * x[0] * x[0] + (1 - self.p) * x[1])(aux[bm][i],
-                                                                                 self.std[bm][i] * self.std[bm][i]) for
-            i in range(bm.sum())))
+            joblib.delayed(lambda x: self.p * x[0] + (1 - self.p) * x[1])(I[bm][i], self.mean[bm][i])
+            for i in range(bm.sum())
+        )
+        aux = I - self.mean  # no need of abs because it is squared
+        self.std[bm] = np.sqrt(
+            joblib.Parallel(n_jobs=self.n_jobs)(
+                joblib.delayed(lambda x: self.p * x[0] * x[0] + (1 - self.p) * x[1])(
+                    aux[bm][i], self.std[bm][i] * self.std[bm][i]
+                )
+                for i in range(bm.sum())
+            )
+        )
 
         return (abs(I - self.mean) * (self.std + 2)).astype(np.uint8) * 255, I
 

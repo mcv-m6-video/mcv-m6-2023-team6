@@ -2,9 +2,9 @@ import argparse
 import os
 
 import yaml
+from utils.metrics import generate_noisy_boxes
 from utils.rendering import rendering_video
 from utils.util import load_from_txt, load_from_xml
-from utils.metrics import generate_noisy_boxes
 
 TOTAL_FRAMES = 2141
 
@@ -29,7 +29,6 @@ def main(cfg):
 
     print("Done!")
     print("----------------------------------------")
-
 
 
 if __name__ == "__main__":

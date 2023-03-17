@@ -5,11 +5,13 @@ import cv2
 import imageio
 import matplotlib.pyplot as plt
 import numpy as np
-from utils.metrics import mean_AP_Pascal_VOC
+from utils.metrics import (
+    mean_AP_Pascal_VOC,
+    mean_IoU_nonrestricted,
+    mean_IoU_nonrestricted_2,
+    mean_IoU_restricted,
+)
 from utils.util import load_from_txt, load_from_xml
-
-from utils.metrics import mean_IoU_restricted, mean_IoU_nonrestricted,mean_IoU_nonrestricted_2
-
 
 # Rendering Video AICity Challenge 2023
 

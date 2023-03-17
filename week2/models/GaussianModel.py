@@ -1,14 +1,14 @@
-import os
-import cv2
-import numpy as np
 import concurrent.futures
+import os
+
+import cv2
 import numexpr as ne
+import numpy as np
 
 from week2.models.BaseModel import BaseModel
 
 
 class GaussianModel(BaseModel):
-
     def __init__(self, video_path, num_frames, checkpoint=None):
         super().__init__(video_path, num_frames, checkpoint)
         # 2 modes
@@ -46,8 +46,7 @@ class GaussianModel(BaseModel):
             return None
 
         abs_diff = np.abs(I - self.mean)
-        foreground = ne.evaluate("abs_diff * (std + 2)",
-                                 local_dict={"abs_diff": abs_diff, "std": self.std})
+        foreground = ne.evaluate("abs_diff * (std + 2)", local_dict={"abs_diff": abs_diff, "std": self.std})
         return foreground.astype(np.uint8) * 255, I
 
     def save_checkpoint(self):

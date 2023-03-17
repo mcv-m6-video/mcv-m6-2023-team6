@@ -2,9 +2,9 @@ import argparse
 import os
 
 import yaml
+from utils.metrics import generate_noisy_boxes
 from utils.rendering import rendering_video
 from utils.util import load_from_txt, load_from_xml
-from utils.metrics import generate_noisy_boxes
 
 
 def main(cfg):
@@ -16,9 +16,13 @@ def main(cfg):
 
     if cfg["noisy"]:
         print(f"Run Mode: {'Noisy'}")
-        predicted_boxes = generate_noisy_boxes(gt_boxes,
-        del_prob=cfg['noisy_values']['del_prob'], gen_prob=cfg['noisy_values']['gen_prob'],
-        mean=cfg['noisy_values']['mean'], std=cfg['noisy_values']['std'])
+        predicted_boxes = generate_noisy_boxes(
+            gt_boxes,
+            del_prob=cfg['noisy_values']['del_prob'],
+            gen_prob=cfg['noisy_values']['gen_prob'],
+            mean=cfg['noisy_values']['mean'],
+            std=cfg['noisy_values']['std'],
+        )
 
     else:
         print(f"Run Mode: {cfg['run_mode']}")
@@ -35,7 +39,6 @@ def main(cfg):
 
     print("Done!")
     print("----------------------------------------")
-
 
 
 if __name__ == "__main__":

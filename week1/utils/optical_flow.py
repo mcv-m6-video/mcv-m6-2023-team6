@@ -62,19 +62,19 @@ def compute_errors(pred_flow, gt_flow, threshold, plots=False):
         plt.colorbar(fraction=0.046, pad=0.04)
         plt.show()
 
-        #plot the error histogram        
-        
+        # plot the error histogram
+
         cm = plt.cm.get_cmap('viridis')
 
-        bins = np.arange(np.floor(sq_diff_valid.min()),np.ceil(sq_diff_valid.max()))
-        Y,X = np.histogram(sq_diff_valid, bins=bins, density=1)
-        x_span = X.max()-X.min()
-        C = [cm(((x-X.min())/x_span)) for x in X]
-        plt.bar(X[:-1], Y,width = X[1]-X[0], color=C,edgecolor='white', linewidth=0.2)
+        bins = np.arange(np.floor(sq_diff_valid.min()), np.ceil(sq_diff_valid.max()))
+        Y, X = np.histogram(sq_diff_valid, bins=bins, density=1)
+        x_span = X.max() - X.min()
+        C = [cm((x - X.min()) / x_span) for x in X]
+        plt.bar(X[:-1], Y, width=X[1] - X[0], color=C, edgecolor='white', linewidth=0.2)
         plt.title('Error probability distribution')
         plt.xlabel('Error')
         plt.ylabel('Pixels probablity')
-        plt.axvline(msen, color='orange', linestyle='dashed', label= "MSEN", linewidth=1)
+        plt.axvline(msen, color='orange', linestyle='dashed', label="MSEN", linewidth=1)
         plt.legend(loc='upper right')
         plt.show()
 
@@ -172,7 +172,7 @@ def HSVOpticalFlow(flow, title):
 
     hsv[..., 0] = ang * 180 / np.pi / 2
     hsv[..., 1] = 255
-    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX,dtype=cv2.CV_8U)
+    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
     # magnitude and angle
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
