@@ -10,7 +10,7 @@ from week2.models.BaseModel import BaseModel
 
 class GaussianModel(BaseModel):
     def __init__(self, video_path, num_frames,alpha,colorspace='gray', checkpoint=None):
-        super().__init__(video_path, num_frames, checkpoint)
+        super().__init__(video_path, num_frames,colorspace,checkpoint)
         # 2 modes
         self.mean = None
         self.std = None

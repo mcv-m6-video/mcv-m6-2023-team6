@@ -22,14 +22,26 @@ class BaseModel:
             self.colorspace_conversion = cv2.COLOR_BGR2RGB
         else:
             raise Exception('Invalid Colorspace')
-            
-        self.images = np.zeros((self.num_frames, self.channels))
         
     def __add_image(self, frame, pos):
-        if len(frame.shape) == 2:
-            self.images[pos, :] = frame.flatten()
+        if self.images is None:
+            self.images = np.zeros((self.num_frames, self.channels,frame.shape[0]*frame.shape[1]))
         else:
-            self.images[pos, :, :] = frame.transpose(2, 0, 1).reshape(self.channels, -1)
+            if len(frame.shape) == 2:
+                self.images[pos,:,:] = frame.flatten()
+            else:
+                self.images[pos, :, :] = frame.transpose(2, 0, 1).reshape(self.channels, -1)
+
+        """ if self.images is None:
+            if self.channels == 1:
+                self.images = np.zeros((self.num_frames,frame.shape[0],frame.shape[1]))
+            else:
+                self.images = np.zeros((self.num_frames,self.channels,frame.shape[0],frame.shape[1]))
+        else:
+            if len(frame.shape) == 2:
+                self.images[pos,:,:] = frame
+            else:
+                self.images[pos,:,:,:] = frame """
 
     def save_images(self):
         if self.modeled:
