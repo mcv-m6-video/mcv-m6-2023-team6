@@ -6,10 +6,15 @@ from tqdm import tqdm
 class BaseModel:
     def __init__(self, video_path, num_frames, colorspace='gray', checkpoint=None):
         self.cap = cv2.VideoCapture(video_path)
+        if self.cap.isOpened():
+            print("Video is open")
+        else:
+            assert "Video is not open"
         self.num_frames = num_frames
         self.modeled = False
         self.checkpoint = checkpoint
         self.channels = 3
+        self.images = None
 
         if colorspace == 'gray':
             self.colorspace_conversion = cv2.COLOR_BGR2GRAY
@@ -53,6 +58,7 @@ class BaseModel:
 
         with tqdm(total=self.num_frames) as pbar:
             for i in range(self.num_frames):
+                self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
                 success, frame = self.cap.read()
                 frame = cv2.cvtColor(frame, self.colorspace_conversion)
                 if not success:
