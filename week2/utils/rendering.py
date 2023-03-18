@@ -3,9 +3,9 @@ import cv2
 
 from week2.utils import util
 from .metrics import mean_AP_Pascal_VOC
+TOTAL_FRAMES_VIDEO = 2141
 
-
-def rendering_video(cfg, model, frames_modelling, path_results, TOTAL_FRAMES_VIDEO, ai_gt_path, save=True,
+def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save=True,
                     display=False):
     counter = model.model_background()
     foreground_gif = []
