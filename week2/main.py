@@ -4,8 +4,9 @@ import os
 import yaml
 
 from models import AdaptativeGaussian, Gaussian
+from utils import rendering
 
-TOTAL_FRAMES = 2141
+TOTAL_FRAMES_VIDEO = 2141
 
 
 def main(cfg):
@@ -13,7 +14,7 @@ def main(cfg):
     print(f"Run Name: {cfg['run_name']}")
     print("----------------------------------------")
 
-    frames_modelling = int(TOTAL_FRAMES * cfg["percentatge"])
+    frames_modelling = int(TOTAL_FRAMES_VIDEO * cfg["percentatge"])
 
     if cfg["run_mode"] == "Gaussian":
         print("Gaussian Function")
@@ -26,8 +27,7 @@ def main(cfg):
     else:
         raise ValueError("Invalid run mode")
 
-    model.model_background()
-    foreground, I = model.compute_next_foreground()
+    rendering(cfg, model, frames_modelling, TOTAL_FRAMES_VIDEO)
 
     print("Done!")
     print("----------------------------------------")
