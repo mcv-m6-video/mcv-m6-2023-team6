@@ -14,4 +14,4 @@ noisy_values:
   gen_prob: 0.1
   mean: 0
   std: 10
-  frame_shape: [1080, 1920]
+  frame_shape: [ 1080, 1920 ]

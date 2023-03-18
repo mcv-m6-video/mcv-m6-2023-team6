@@ -5,14 +5,14 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-yaml
       - id: end-of-file-fixer
-        types: [python]
+        types: [ python ]
       - id: trailing-whitespace
       - id: requirements-txt-fixer
 
   - repo: https://github.com/MarcoGorelli/auto-walrus
     rev: v0.2.2
     hooks:
-    -   id: auto-walrus
+      - id: auto-walrus
 
   - repo: https://github.com/psf/black
     rev: 23.1.0
@@ -81,7 +81,7 @@ repos:
           - --ignore-missing-imports
           - --install-types # See mirrors-mypy README.md
           - --non-interactive
-        additional_dependencies: [types-requests]
+        additional_dependencies: [ types-requests ]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.4

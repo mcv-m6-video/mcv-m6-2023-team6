@@ -17,8 +17,8 @@ def flow_read(filename):
     """
     I = cv2.imread(filename, cv2.IMREAD_UNCHANGED).astype(np.double)
 
-    F_u = (I[:, :, 2] - 2**15) / 64
-    F_v = (I[:, :, 1] - 2**15) / 64
+    F_u = (I[:, :, 2] - 2 ** 15) / 64
+    F_v = (I[:, :, 1] - 2 ** 15) / 64
 
     # check if there exists a valid GT flow for that pixel (1: True, 0: False)
     F_valid = I[:, :, 0]
@@ -46,7 +46,7 @@ def compute_errors(pred_flow, gt_flow, threshold, plots=False):
     diff_u = gt_flow[:, :, 0] - pred_flow[:, :, 0]
     diff_v = gt_flow[:, :, 1] - pred_flow[:, :, 1]
 
-    sq_diff = np.sqrt(diff_u**2 + diff_v**2)
+    sq_diff = np.sqrt(diff_u ** 2 + diff_v ** 2)
     sq_diff_valid = sq_diff[gt_flow[:, :, 2] == 1]
 
     msen = np.mean(sq_diff_valid)

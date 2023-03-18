@@ -1,4 +1,3 @@
-import concurrent.futures
 import os
 
 import cv2
@@ -8,9 +7,9 @@ import numpy as np
 from week2.models.BaseModel import BaseModel
 
 
-class GaussianModel(BaseModel):
-    def __init__(self, video_path, num_frames,alpha,colorspace='gray', checkpoint=None):
-        super().__init__(video_path, num_frames,colorspace,checkpoint)
+class Gaussian(BaseModel):
+    def __init__(self, video_path, num_frames, alpha, colorspace='gray', checkpoint=None):
+        super().__init__(video_path, num_frames, colorspace, checkpoint)
         # 2 modes
         self.mean = None
         self.std = None
@@ -46,9 +45,10 @@ class GaussianModel(BaseModel):
         if not success:
             return None
 
-        I = cv2.cvtColor(I,self.colorspace_conversion)
-        abs_diff = np.abs(I - self.mean) 
-        foreground = ne.evaluate("abs_diff >= alpha * (std + 2)", local_dict={"abs_diff": abs_diff, "std": self.std, "alpha":self.alpha})
+        I = cv2.cvtColor(I, self.colorspace_conversion)
+        abs_diff = np.abs(I - self.mean)
+        foreground = ne.evaluate("abs_diff >= alpha * (std + 2)",
+                                 local_dict={"abs_diff": abs_diff, "std": self.std, "alpha": self.alpha})
         return foreground.astype(np.uint8) * 255, I
 
     def save_checkpoint(self):
@@ -71,5 +71,3 @@ class GaussianModel(BaseModel):
         self.mean = np.load(mean_path)
         self.std = np.load(std_path)
         print("Checkpoint loaded.")
-
-

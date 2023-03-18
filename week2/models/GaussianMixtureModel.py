@@ -1,9 +1,11 @@
-import cv2
-import numpy as np
 import os
+
+import cv2
 import joblib
+import numpy as np
 
 from week2.models.BaseModel import BaseModel
+
 
 class GaussianMixtureModel(BaseModel):
     def __init__(self, video_path, num_frames, p, checkpoint=None, n_jobs=-1):

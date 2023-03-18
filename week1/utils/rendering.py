@@ -11,7 +11,7 @@ from utils.metrics import (
     mean_IoU_nonrestricted_2,
     mean_IoU_restricted,
 )
-from utils.util import load_from_txt, load_from_xml
+
 
 # Rendering Video AICity Challenge 2023
 

@@ -2,10 +2,8 @@ import argparse
 import os
 
 import yaml
-from week1.utils.metrics import generate_noisy_boxes
-from week1.utils.rendering import rendering_video
-from week1.utils.util import load_from_txt, load_from_xml
-from models import AdaptativeGaussianModel,GaussianModel
+
+from models import AdaptativeGaussian, Gaussian
 
 TOTAL_FRAMES = 2141
 
@@ -17,21 +15,19 @@ def main(cfg):
 
     frames_modelling = int(TOTAL_FRAMES * cfg["percentatge"])
 
-    if cfg["run_mode"] == "GaussianModel":
+    if cfg["run_mode"] == "Gaussian":
         print("Gaussian Function")
         print("----------------------------------------")
-        model = GaussianModel(cfg,frames_modelling)
+        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=1, colorspace='gray', checkpoint=None)
 
-    elif cfg["run_mode"] == "AdaptativeGaussianModel":
-        model = AdaptativeGaussianModel(cfg,frames_modelling)
+    elif cfg["run_mode"] == "AdaptativeGaussian":
+        model = AdaptativeGaussian(cfg, frames_modelling)
 
     else:
         raise ValueError("Invalid run mode")
-    
-    
+
     model.model_background()
     foreground, I = model.compute_next_foreground()
-    
 
     print("Done!")
     print("----------------------------------------")
@@ -46,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config", default="configs/config.yml")
     parser.add_argument("-s", "--save", default=True, type=bool, help="Save the video or not")
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
-    parser.add_argument("-p", "--percentatge", default=False, type=bool, help="Percentatge of video to use background")
+    parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     args = parser.parse_args()
 
     # get the path of this file

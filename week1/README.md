@@ -1,8 +1,10 @@
 # Week 1
 
 ### Goal:
+
 - Learn about the databases to be used: AICityChallenge and KITTI
-- Implement evaluation metrics: Intersection over Union (IoU), Average Precision (AP), Mean Square Error in Non-Occluded areas, Percentage of Erroneous pixels in Non-occluded areas
+- Implement evaluation metrics: Intersection over Union (IoU), Average Precision (AP), Mean Square Error in Non-Occluded
+  areas, Percentage of Erroneous pixels in Non-occluded areas
 - Analyze: Effect of noise additions, IoU vs Time, Optical Flow
 
 &nbsp;
@@ -13,13 +15,11 @@ See Task1_Task2.ipynb
 
 &nbsp;
 
-
 ### Task 3 and 4
 
 See Task3_Task4.ipynb
 
 &nbsp;
-
 
 ### Video Generation
 
@@ -32,18 +32,25 @@ Arguments:\
 -n --noisy    : Noisy or not             [True, False]
 
 #### Noisy generations
+
 ```
 python3 main.py -m noisy -n True -r noisy
 ```
+
 #### Mask R-CNN detections
+
 ```
 python3 main.py -m rcnn -r rcnn
 ```
+
 #### SSD512 detections
+
 ```
 python3 main.py -m ssd -r ssd
 ```
+
 #### YoloV3 detections
+
 ```
 python3 main.py -m yolo -r yolo
 ```
