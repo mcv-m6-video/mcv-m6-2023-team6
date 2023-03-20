@@ -29,24 +29,24 @@ class BaseModel:
             raise Exception('Invalid Colorspace')
 
     def __add_image(self, frame, pos):
-        if self.images is None:
+        """ if self.images is None:
             self.images = np.zeros((self.num_frames, self.channels, frame.shape[0] * frame.shape[1]))
         else:
             if len(frame.shape) == 2:
                 self.images[pos, :, :] = frame.flatten()
             else:
-                self.images[pos, :, :] = frame.transpose(2, 0, 1).reshape(self.channels, -1)
+                self.images[pos, :, :] = frame.transpose(2, 0, 1).reshape(self.channels, -1) """
 
-        """ if self.images is None:
+        if self.images is None:
             if self.channels == 1:
-                self.images = np.zeros((self.num_frames,frame.shape[0],frame.shape[1]))
+                self.images = np.zeros((frame.shape[0],frame.shape[1],self.num_frames))
             else:
-                self.images = np.zeros((self.num_frames,self.channels,frame.shape[0],frame.shape[1]))
+                self.images = np.zeros((frame.shape[0],frame.shape[1],self.channels,self.num_frames))
         else:
             if len(frame.shape) == 2:
-                self.images[pos,:,:] = frame
+                self.images[:,:,pos] = frame
             else:
-                self.images[pos,:,:,:] = frame """
+                self.images[:,:,:,pos] = frame 
 
     def save_images(self):
         if self.modeled:

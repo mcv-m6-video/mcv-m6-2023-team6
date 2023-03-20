@@ -1,7 +1,7 @@
 import os
 import cv2
-
-from week2.utils import util
+import imageio
+from utils import util
 from .metrics import mean_AP_Pascal_VOC
 TOTAL_FRAMES_VIDEO = 2141
 
@@ -13,48 +13,57 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     if not os.path.exists(path_results):
         os.makedirs(path_results)
 
+    writer = imageio.get_writer(f"{path_results}/video.mp4", fps=25)
+
     det_rects = {}
-    gt_rects = util.parse_xml_rects(ai_gt_path)
+    gt_rects = util.load_from_xml(ai_gt_path)
     gt_rects = {k: v for k, v in gt_rects.items() if
-                int(k.split('_')[-1]) >= frames_modelling}  # remove "training" frames
+                int(k.split('_')[-1]) >= frames_modelling}  # remove "training" frames 
 
     foreground, I = model.compute_next_foreground()
-    det_rects = {}
+
+    #det_rects[f'f_{counter}'] = I
+
+    """ det_rects = {}
     gt_rects = util.load_from_xml(ai_gt_path)
     gt_rects = {k: v for k, v in gt_rects.items() if
                 int(k.split('_')[-1]) >= frames_modelling}  # remove "training" frames
 
-    gt_rects_detformat = {f: [{'bbox': r, 'conf': 1} for r in v] for f, v in gt_rects.items()}
+    gt_rects_detformat = {f: [{'bbox': r, 'conf': 1} for r in v] for f, v in gt_rects.items()} """
+    writer.append_data(foreground)
 
-    while foreground is not None:
+    counter = frames_modelling
+    for i in range(frames_modelling):
+        while foreground is not None:
+            if cfg['display']:
+                pass
 
-        if cfg['display']:
-            pass
-        counter += 1
+            
+            counter += 1
 
-        ret = model.compute_next_foreground()
-        if ret:
-            foreground, I = ret
-            foreground_gif.append(foreground)  # ADD IMAGE GIF
-            # TODO: SOMETHING WITH DETECTIONS
+            ret = model.compute_next_foreground()
+            if ret:
+                foreground, I = ret
+                foreground_gif.append(foreground)  # ADD IMAGE GIF
+                # TODO: SOMETHING WITH DETECTIONS
+                writer.append_data(foreground)
+                
+            else:
+                foreground = None
 
-        else:
-            foreground = None
+            if counter % 100 == 0:
+                print(f"{counter} frames processed...")
 
-        if counter % 100 == 0:
-            print(f"{counter} frames processed...")
-
-        # TODO: STOP IN N FRAMES???
-
+            if  counter >= -1:
+                break
+    writer.close()
     print(f"DONE! {counter} frames processed")
     print(f"Saved to '{path_results}'")
 
-    # Remove first frames
-    # det_rects = utils.parse_aicity_rects("../../data/AICity_data/train/S03/c010/gt/gt.txt")
-    mAP = mean_AP_Pascal_VOC(gt_rects, det_rects)
-    print('mAP:', mAP)
-
+    
+    """ mAP = mean_AP_Pascal_VOC(gt_rects, det_rects)
+    print('mAP:', mAP) """
+    
     # Save GIF
     if cfg['save']:
-        pass
-        # TODO save gif
+        imageio.mimsave(f'{path_results}/foreground.gif', foreground_gif[:200])

@@ -4,7 +4,7 @@ import os
 import yaml
 
 from models import AdaptativeGaussian, Gaussian, SOTA
-from utils import rendering
+from utils.rendering import rendering_video
 
 TOTAL_FRAMES_VIDEO = 2141
 
@@ -30,7 +30,7 @@ def main(cfg):
     else:
         raise ValueError("Invalid run mode")
 
-    rendering(cfg, model, frames_modelling, TOTAL_FRAMES_VIDEO)
+    rendering_video(cfg, model, frames_modelling,'week2/results/task1.1/',cfg['paths']['annotations_path'])
 
     print("Done!")
     print("----------------------------------------")
@@ -47,6 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     parser.add_argument("-a", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
+
     args = parser.parse_args()
 
     # get the path of this file
@@ -62,5 +63,6 @@ if __name__ == "__main__":
     config["display"] = args.display
     config["percentatge"] = args.percentatge
     config["sota_method"] = args.sota_method
+
 
     main(config)

@@ -49,7 +49,7 @@ def load_from_xml(path):
             else:
                 continue
 
-    return gt, num_iter
+    return gt
 
 
 def load_from_txt(path):
