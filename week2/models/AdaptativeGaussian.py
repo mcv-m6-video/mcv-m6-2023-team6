@@ -4,11 +4,11 @@ import cv2
 import joblib
 import numpy as np
 
-from week2.models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class AdaptiveGaussian(BaseModel):
-    
+
     def __init__(self, video_path, num_frames, p, alpha, colorspace='gray', checkpoint=None, n_jobs=-1):
         super().__init__(video_path, num_frames, colorspace, checkpoint)
         # 2 modes

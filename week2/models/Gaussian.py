@@ -4,7 +4,7 @@ import cv2
 import numexpr as ne
 import numpy as np
 
-from week2.models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class Gaussian(BaseModel):
