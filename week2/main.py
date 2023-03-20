@@ -30,7 +30,7 @@ def main(cfg):
     else:
         raise ValueError("Invalid run mode")
 
-    rendering_video(cfg, model, frames_modelling,'week2/results/task1.1/',cfg['paths']['annotations_path'])
+    rendering_video(cfg, model, frames_modelling,'./week2/results/task1.1/',cfg['paths']['annotations_path'])
 
     print("Done!")
     print("----------------------------------------")

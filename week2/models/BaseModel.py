@@ -57,10 +57,14 @@ class BaseModel: # Base class for the models
             assert "Number of frames is not defined."
 
         with tqdm(total=self.num_frames) as pbar:
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
             for i in range(self.num_frames):
-                self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
+                
                 success, frame = self.cap.read()
                 frame = cv2.cvtColor(frame, self.colorspace_conversion)
+                # Save frame to visualize
+                cv2.imwrite(f"/ghome/group03/Results/frame_{i}.png", frame)
+
                 if not success:
                     break
                 self.__add_image(frame, i)
