@@ -1,7 +1,7 @@
+import concurrent
 import os
 
 import cv2
-import joblib
 import numpy as np
 
 from models.BaseModel import BaseModel
@@ -9,7 +9,7 @@ from models.BaseModel import BaseModel
 
 class AdaptiveGaussian(BaseModel):
 
-    def __init__(self, video_path, num_frames, p, alpha, colorspace='gray', checkpoint=None, n_jobs=-1):
+    def __init__(self, video_path, num_frames, p, alpha, colorspace='gray', checkpoint=None, n_jobs=1):
         super().__init__(video_path, num_frames, colorspace, checkpoint)
         # 2 modes
         self.p = p
@@ -27,6 +27,8 @@ class AdaptiveGaussian(BaseModel):
         print("Standard deviation computed successfully.")
 
     def compute_next_foreground(self):
+        def _set_fg_mask_uint8_row(i, row, output_row):
+            output_row[row] = 255
         if not self.modeled:
             print("[ERROR] Background has not been modeled yet.")
             return None
@@ -34,26 +36,27 @@ class AdaptiveGaussian(BaseModel):
         success, I = self.cap.read()
         if not success:
             return None
+
         I = cv2.cvtColor(I, self.colorspace_conversion)
+        b_mask = (np.abs(I - self.mean) < self.alpha * (self.std + 2))
+        self.mean[b_mask] = (self.p * I[b_mask] + (1 - self.p) * self.mean[b_mask])
+        img_aux = (I - self.mean)
+        self.std[b_mask] = np.sqrt(self.p * img_aux[b_mask] * img_aux[b_mask] + (1 - self.p) * (self.std[b_mask] * self.std[b_mask]))
 
-        # ADAPTIVE STEP HERE
-        bm = abs(I - self.mean) < self.alpha * (self.std + 2)  # background mask
+        fg_mask = np.abs(I - self.mean) >= self.alpha * (self.std + 2)
+        fg_mask_uint8 = np.zeros_like(fg_mask, dtype=np.uint8)
 
-        self.mean[bm] = joblib.Parallel(n_jobs=self.n_jobs)(
-            joblib.delayed(lambda x: self.p * x[0] + (1 - self.p) * x[1])(I[bm][i], self.mean[bm][i])
-            for i in range(bm.sum())
-        )
-        aux = I - self.mean  # no need of abs because it is squared
-        self.std[bm] = np.sqrt(
-            joblib.Parallel(n_jobs=self.n_jobs)(
-                joblib.delayed(lambda x: self.p * x[0] * x[0] + (1 - self.p) * x[1])(
-                    aux[bm][i], self.std[bm][i] * self.std[bm][i]
-                )
-                for i in range(bm.sum())
-            )
-        )
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = []
+            for i in range(fg_mask.shape[0]):
+                futures.append(executor.submit(_set_fg_mask_uint8_row, i, fg_mask[i], fg_mask_uint8[i]))
 
-        return (abs(I - self.mean) * (self.std + 2)).astype(np.uint8) * 255, I
+            for future in concurrent.futures.as_completed(futures):
+                future.result()
+
+        return fg_mask_uint8, I
+
+
 
     def save_checkpoint(self):
         if not os.path.exists(f"{self.base}/{self.checkpoint}"):
