@@ -3,6 +3,7 @@ import cv2
 import imageio
 from utils import util
 from .metrics import mean_AP_Pascal_VOC
+
 TOTAL_FRAMES_VIDEO = 2141
 
 def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save=True,
@@ -44,10 +45,6 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 foreground, I = ret
                 foreground = util.noise_reduction(foreground)
                 foreground_gif.append(foreground)  # ADD IMAGE GIF
-                #show image in the screen
-                cv2.imshow('Foreground', foreground)
-                cv2.imshow('Image', I)
-                cv2.waitKey(1)
                 
                 # TODO: SOMETHING WITH DETECTIONS
                
