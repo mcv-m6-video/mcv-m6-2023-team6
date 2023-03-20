@@ -108,6 +108,14 @@ def bounding_box_visualization(path, gt_boxes, predicted_boxes, video_capture, f
     ret, frame = video_capture.read()
 
 
+def noise_reduction(frame):
+    frame = cv2.erode(frame, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
+    frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
+
+    return frame
+
+
+
 if __name__ == "__main__":
     # Set the parent directory of your current directory
     parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))

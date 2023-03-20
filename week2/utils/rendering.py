@@ -16,10 +16,10 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     det_rects = {}
     gt_rects = util.load_from_xml(ai_gt_path)
     gt_rects = {k: v for k, v in gt_rects.items() if
-                int(k.split('_')[-1]) >= frames_modelling}  # remove "training" frames 
+                int(k.split('_')[-1]) >= frames_modelling}  
 
     foreground, I = model.compute_next_foreground()
-
+    foreground = util.noise_reduction(foreground)
     #det_rects[f'f_{counter}'] = I
 
     """ det_rects = {}
@@ -31,7 +31,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
    
 
     counter = frames_modelling
-    for i in range(TOTAL_FRAMES_VIDEO):
+    for i in range(TOTAL_FRAMES_VIDEO-frames_modelling):
         while foreground is not None:
             if cfg['display']:
                 pass
@@ -42,6 +42,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
             ret = model.compute_next_foreground()
             if ret:
                 foreground, I = ret
+                foreground = util.noise_reduction(foreground)
                 foreground_gif.append(foreground)  # ADD IMAGE GIF
                 #show image in the screen
                 cv2.imshow('Foreground', foreground)
@@ -69,4 +70,4 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     
     # Save GIF
     if cfg['save']:
-        imageio.mimsave(f'{path_results}/foreground.gif', foreground_gif[:200])
+        imageio.mimsave(f'{path_results}/denoised3_foreground.gif', foreground_gif[:200])
