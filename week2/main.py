@@ -3,7 +3,7 @@ import os
 
 import yaml
 
-from models import AdaptativeGaussian, Gaussian, SOTA
+from models import Gaussian, AdaptiveGaussian, SOTA
 from utils.rendering import rendering_video
 
 TOTAL_FRAMES_VIDEO = 2141
@@ -22,11 +22,10 @@ def main(cfg):
         model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=1, colorspace='gray', checkpoint=None)
 
     elif cfg["run_mode"] == "AdaptativeGaussian":
-        model = AdaptativeGaussian(cfg, frames_modelling)
+        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=0.05, alpha=1, colorspace='gray', checkpoint=None, n_jobs=-1)
 
     elif cfg["run_mode"] == "SOTA":
-        model = SOTA(cfg['paths']['video_path'], frames_modelling, args.method)
-
+        model = SOTA(cfg['paths']['video_path'], frames_modelling, p=0.05, checkpoint=None, n_jobs=-1, method='MOG')
     else:
         raise ValueError("Invalid run mode")
 

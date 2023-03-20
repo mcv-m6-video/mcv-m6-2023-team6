@@ -4,7 +4,7 @@ import cv2
 from week2.models.BaseModel import BaseModel
 
 
-class SOTA (BaseModel):
+class SOTA(BaseModel):
     def __init__(self, video_path, num_frames, p, checkpoint=None, n_jobs=-1, method='MOG'):
         super().__init__(video_path, num_frames, checkpoint)
 
