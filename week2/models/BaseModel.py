@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-class BaseModel:
+class BaseModel: # Base class for the models
     def __init__(self, video_path, num_frames, colorspace='gray', checkpoint=None):
         self.cap = cv2.VideoCapture(video_path)
         if self.cap.isOpened():

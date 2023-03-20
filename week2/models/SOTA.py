@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-from week2.models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class SOTA(BaseModel):
