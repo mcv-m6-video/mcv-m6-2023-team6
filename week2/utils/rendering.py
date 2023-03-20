@@ -43,6 +43,11 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
             if ret:
                 foreground, I = ret
                 foreground_gif.append(foreground)  # ADD IMAGE GIF
+                #show image in the screen
+                cv2.imshow('Foreground', foreground)
+                cv2.imshow('Image', I)
+                cv2.waitKey(1)
+                
                 # TODO: SOMETHING WITH DETECTIONS
                
                 
