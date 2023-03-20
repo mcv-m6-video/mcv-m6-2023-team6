@@ -13,8 +13,6 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     if not os.path.exists(path_results):
         os.makedirs(path_results)
 
-    writer = imageio.get_writer(f"{path_results}/video.mp4", fps=25)
-
     det_rects = {}
     gt_rects = util.load_from_xml(ai_gt_path)
     gt_rects = {k: v for k, v in gt_rects.items() if
@@ -30,10 +28,10 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 int(k.split('_')[-1]) >= frames_modelling}  # remove "training" frames
 
     gt_rects_detformat = {f: [{'bbox': r, 'conf': 1} for r in v] for f, v in gt_rects.items()} """
-    writer.append_data(foreground)
+   
 
     counter = frames_modelling
-    for i in range(frames_modelling):
+    for i in range(TOTAL_FRAMES_VIDEO):
         while foreground is not None:
             if cfg['display']:
                 pass
@@ -46,7 +44,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 foreground, I = ret
                 foreground_gif.append(foreground)  # ADD IMAGE GIF
                 # TODO: SOMETHING WITH DETECTIONS
-                writer.append_data(foreground)
+               
                 
             else:
                 foreground = None
@@ -56,7 +54,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
 
             if  counter >= -1:
                 break
-    writer.close()
+    
     print(f"DONE! {counter} frames processed")
     print(f"Saved to '{path_results}'")
 
