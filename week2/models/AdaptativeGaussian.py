@@ -17,7 +17,6 @@ class AdaptiveGaussian(BaseModel):
         self.std = None
         self.alpha = alpha
 
-        self.channels = 3
         self.base = os.path.join(os.getcwd(), "checkpoints", "AdaptativeGaussianModel")
         self.n_jobs = n_jobs
 
