@@ -47,6 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     parser.add_argument("-a", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
+    
 
     args = parser.parse_args()
 

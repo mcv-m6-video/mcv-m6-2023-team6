@@ -112,7 +112,7 @@ def bounding_box_visualization(path, gt_boxes, predicted_boxes, video_capture, f
 def noise_reduction(frame):
     #frame = cv2.erode(frame, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
     #frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
-
+    
     kernel = np.ones((2, 2), np.uint8)
     seg = cv2.erode(frame, kernel, iterations=1)
     kernel = np.ones((2,4), np.uint8)
