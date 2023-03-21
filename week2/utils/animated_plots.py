@@ -91,7 +91,7 @@ TOTAL_FRAMES_VIDEO = 2141
 def plot_task1():
     # Get the frame_id list
     wait_time = 1
-    frames_num = int(TOTAL_FRAMES_VIDEO * 0.25)
+    frames_num = int(TOTAL_FRAMES_VIDEO * 0.25) + 200 # 535
     video_capture = '../../../dataset/AICity_data/train/S03/c010/vdo.avi'
     # read actual path
     path = os.path.dirname(os.path.abspath(__file__))
@@ -121,7 +121,7 @@ def plot_task1():
     # Set the y label
     ax.set_ylabel('Pixel Value')
     # Set the x axis range
-    ax.set_xlim(0, total_frames)
+    ax.set_xlim(0, frames_num)
     # Set the y axis range
     ax.set_ylim(0, 255)
     # Create a line
@@ -132,6 +132,8 @@ def plot_task1():
     mean.set_data([], [])
     std.set_data([], [])
     value.set_data([], [])
+    # Create a legend
+    ax.legend((mean, std, value), ('Mean', 'Std', 'Value'), loc='upper right')
     fig.show()
     fig.canvas.draw()
 
@@ -139,9 +141,9 @@ def plot_task1():
     mean_values = []
     std_values = []
     # create a list of frames
-    frames_list = [i for i in range(total_frames)]
+    frames_list = [i for i in range(frames_num)]
     # Loop through each frame
-    for i in range(total_frames):
+    for i in range(frames_num):
         # Read the frame
         ret, frame = video_capture.read()
         if ret:
@@ -156,8 +158,13 @@ def plot_task1():
             # Write the frame to the video
             out.write(frame)
             # get one pixel value
+            # print a square in the middle of the image
+            cv2.rectangle(frame, (730, 150), (750, 170), (0, 255, 0), 2)
             frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            pixel = frame_gray[500,500]
+            # get pixel value of the middle in the square
+            pixel = frame_gray[740, 160]
+            # cv2 point
+            cv2.circle(frame, (740, 160), 1, (0, 0, 255), 2)
             pixel_values.append(pixel)
             mean_values.append(np.mean(pixel_values, axis=0))
             std_values.append(np.std(pixel_values, axis=0))
