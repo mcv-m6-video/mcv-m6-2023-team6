@@ -3,6 +3,7 @@ import os
 import cv2
 import numexpr as ne
 import numpy as np
+import matplotlib.pyplot as plt
 
 from models.BaseModel import BaseModel
 
@@ -14,6 +15,7 @@ class Gaussian(BaseModel):
         self.mean = None
         self.std = None
         self.alpha = alpha
+        self.colorspace = colorspace
 
         self.base = os.path.join(os.getcwd(), "checkpoints", "GaussianModel")
 
@@ -22,6 +24,17 @@ class Gaussian(BaseModel):
         print("Mean computed successfully.")
         self.std = np.std(self.images, axis=-1, dtype=np.float32)
         print("Standard deviation computed successfully.")
+        
+        if self.colorspace == 'gray':
+            cv2.imwrite("week2/results/task1.1/mean.png", self.mean)
+            cv2.imwrite("week2/results/task1.1/std.png", self.std)
+            # Plot the heatmap of the standard deviation without showing it
+            plt.imshow(self.std, cmap='hot')
+            plt.colorbar()
+            plt.savefig("week2/results/task1.1/std_heatmap.png")
+            
+
+
 
     """ NOT TESTED YET
     @staticmethod
