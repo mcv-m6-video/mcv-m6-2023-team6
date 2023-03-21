@@ -56,19 +56,15 @@ def main(cfg):
         else:
             raise ValueError("Invalid run mode")
 
-    if cfg["run_mode"] != "AdaptativeGaussian":
-        map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
-        dic[alpha] = [map,iou]
-        
+        if cfg["run_mode"] != "AdaptativeGaussian":
+            map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+            dic[alpha] = [map,iou]
+            
             
 
-    print("Done for alpha = ", alpha)
-    print("----------------------------------------")
+        print("Done for alpha = ", alpha)
+        print("----------------------------------------")
 
-    #add alpha to dictand save its map and iou
-    alphas[alpha] = [map,iou]
-
-        #add alpha to dictand save its map and iou
         
     print("Done for all alphas")
     print(dic)
