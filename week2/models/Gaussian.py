@@ -54,7 +54,7 @@ class Gaussian(BaseModel):
             print("[ERROR] Background has not been modeled yet.")
             return None
 
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux - 1)   ##################################################3
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux )   ##################################################3
 
         success, I = self.cap.read()
         if not success:
