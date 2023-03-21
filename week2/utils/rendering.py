@@ -45,6 +45,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 
                
                 frame_bbox = util.findBBOX(foreground)
+                # if foreground.shape[2] == 1:
                 foreground = cv2.cvtColor(foreground, cv2.COLOR_GRAY2RGB)
                 # GT bounding box
                 for box in gt_rects[frames_id]:

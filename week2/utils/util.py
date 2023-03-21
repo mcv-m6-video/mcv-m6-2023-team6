@@ -131,6 +131,12 @@ def findBBOX(mask):
     minW = 100#120
     maxW =1920/2# 1920--> width frame
 
+    if mask.shape[-1] == 3:
+        # Sum over the channels to create a single channel mask
+        mask = mask.sum(axis=-1)
+        # Binarize to put 255 on the pixels that are not black
+        mask = (mask != 0).astype(np.uint8) * 255
+
     contours, hierarchy = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     box = []
     for c in contours:
