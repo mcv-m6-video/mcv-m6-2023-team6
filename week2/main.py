@@ -21,38 +21,38 @@ def main(cfg):
     alpha_list = cfg["alphas"]
     alphas = {}
 
-    for alpha in alpha_list:
+    #for alpha in alpha_list:
 
-        if cfg["run_mode"] == "Gaussian":
-            print("Gaussian Function")
-            print("----------------------------------------")
-            model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace='gray',
-                            checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
-
-        elif cfg["run_mode"] == "AdaptativeGaussian":
-            model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=float(alpha),
-                                    colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
-
-        elif cfg["run_mode"] == "SOTA":
-            model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1,
-                        method='MOG')
-        else:
-            raise ValueError("Invalid run mode")
-
-        map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
-
-        
-
-        print("Done for alpha = ", alpha)
+    if cfg["run_mode"] == "Gaussian":
+        print("Gaussian Function")
         print("----------------------------------------")
+        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(1), colorspace='gray',
+                        checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
 
-        #add alpha to dictand save its map and iou
-        alphas[alpha] = [map,iou]
-    
+    elif cfg["run_mode"] == "AdaptativeGaussian":
+        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=float(1),
+                                colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
+
+    elif cfg["run_mode"] == "SOTA":
+        
+        model = SOTA(cfg['paths']['video_path'], frames_modelling, checkpoint=None, method=cfg['sota_method'])
+    else:
+        raise ValueError("Invalid run mode")
+
+    map,iou = rendering_video(cfg, model, frames_modelling, f'week2/results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+
+      
+
+    """ print("Done for alpha = ", alpha)
+    print("----------------------------------------")
+
+    #add alpha to dictand save its map and iou
+    alphas[alpha] = [map,iou]
+
     print("Done for all alphas")
     print(alphas)
     visualizeTask1_2(alphas)
-    print("----------------------------------------")
+    print("----------------------------------------") """
 
 if __name__ == "__main__":
     # check ffmepg in your system
