@@ -18,7 +18,6 @@ class AdaptiveGaussian(BaseModel):
         self.alpha = alpha
 
         self.base = os.path.join(os.getcwd(), "checkpoints", "AdaptativeGaussianModel")
-        self.n_jobs = n_jobs
 
     def compute_parameters(self):
         self.mean = self.images.mean(axis=-1)  # , dtype=np.float64)
