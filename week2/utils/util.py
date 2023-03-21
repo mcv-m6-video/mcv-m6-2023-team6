@@ -219,7 +219,7 @@ def visualizeTask2(dict):
 
     #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
     # save the dictionary of dictionaries as a csv file
-    df = pd.DataFrame.from_dict()
+    df = pd.DataFrame()
     
     #append columns
     df['alpha'] = alphas
