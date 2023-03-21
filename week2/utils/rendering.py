@@ -46,8 +46,11 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 
                
                 frame_bbox = util.findBBOX(foreground)
-                # if foreground.shape[2] == 1:
-                foreground = cv2.cvtColor(foreground, cv2.COLOR_GRAY2RGB)
+
+                # if foreground is grayscale, convert to RGB
+                if len(foreground.shape) == 2:
+                    foreground = cv2.cvtColor(foreground, cv2.COLOR_GRAY2RGB)
+
                 # GT bounding box
                 for box in gt_rects[frames_id]:
                     cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
@@ -87,10 +90,13 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     
     # Save GIF
     if cfg['save']:
-
-        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif[:200])
-        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif_boxes[:200])
-        if cfg["sota_method"]:
+        if cfg['run_mode'] == 'Gaussian':
+            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif[:200])
+            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif_boxes[:200])
+        elif cfg['run_mode'] == 'AdaptiveGaussian':
+            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif[:200])
+            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif_boxes[:200])
+        elif cfg['run_mode'] == 'SOTA':
             imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}.gif', foreground_gif[:200])
             imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}_boxes.gif', foreground_gif_boxes[:200])
 

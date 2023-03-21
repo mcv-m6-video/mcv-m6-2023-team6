@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+import datetime
+
 """ def load_from_xml(path):
 
     frame_dict = defaultdict(list)
@@ -147,8 +149,16 @@ def findBBOX(mask):
 
     return box
 
-def visualizeTask1_2(dict):
+
+
+def visualizeTask1(dict,output_path):
     "dict: keys the value of alpha and for values [mIoU, mAP]"
+    # create the output path : output_path + '/GridSearch' + time
+    time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    ouput_path_grid = os.path.join(output_path, 'GridSearch', time)
+
+    # create the directory output 
+    os.makedirs(output_path, exist_ok=True)
 
     #plot mIoU scatter plot
     plt.figure()
@@ -157,7 +167,7 @@ def visualizeTask1_2(dict):
     plt.ylabel('IoU')
     plt.title('IoU vs alpha')
     plt.xticks(list(dict.keys()))
-    plt.savefig('/ghome/group03/results/Gaussian/IoU.png')
+    plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
 
     #plot mAP
     plt.figure()
@@ -166,7 +176,7 @@ def visualizeTask1_2(dict):
     plt.ylabel('mAP')
     plt.title('mAP vs alpha')
     plt.xticks(list(dict.keys()))
-    plt.savefig('/ghome/group03/results/Gaussian/mAP.png')
+    plt.savefig(os.path.join(ouput_path_grid,'mAP.png'))
 
     #the two metrics together
     plt.figure()
@@ -177,15 +187,23 @@ def visualizeTask1_2(dict):
     plt.title('mAP and IoU vs alpha')
     plt.xticks(list(dict.keys())) # set x-axis ticks to dictionary keys
     plt.legend()
-    plt.savefig('/ghome/group03/results/Gaussian/mAP_IoU.png')
+    plt.savefig(os.path.join(ouput_path_grid,'mAP_IoU.png'))
 
     #create a table with pandas and save it as a csv file
     df = pd.DataFrame.from_dict(dict, orient='index', columns=['mAP', 'IoU'])
-    df.to_csv('/ghome/group03/results/Gaussian/task1_2.csv')
+    df.to_csv(os.path.join(ouput_path_grid,'task1_2.csv'))
 
-def visualizeTask2(dict):
+
+
+def visualizeTask2(dict, output_path):
     """dict: keys the value of alpha and rho and for values [mIoU, mAP]
      dic[alpha][rho] = [map,iou]"""
+    # create the output path : output_path + '/GridSearch' + time
+    time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    ouput_path_grid = os.path.join(output_path, 'GridSearch', time)
+
+    # create the directory
+    os.makedirs(output_path, exist_ok=True)
 
     #plot mIoU scatter plot in 3D, for each alpha the rho values
     # extract the alpha, rho, and value data from the results dictionary
@@ -208,7 +226,7 @@ def visualizeTask2(dict):
     ax.set_ylabel('rho')
     ax.set_zlabel('mAP')
     ax.set_title('Grid Search Results for the mAP')
-    plt.savefig('mAP.png')
+    plt.savefig(os.path.join(ouput_path_grid,'mAP.png'))
 
     #plot mIoU scatter plot in 3D, for each alpha the rho values
     # create a 3D scatter plot
@@ -221,7 +239,7 @@ def visualizeTask2(dict):
     ax.set_ylabel('rho')
     ax.set_zlabel('IoU')
     ax.set_title('Grid Search Results for the IoU')
-    plt.savefig('IoU.png')
+    plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
 
     #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
     # save the dictionary of dictionaries as a csv file
@@ -234,7 +252,8 @@ def visualizeTask2(dict):
     df['IoU'] = values[1]
     df = df[['alpha', 'rho', 'mAP', 'IoU']]
 
-    df.to_csv('task2.csv')
+    df.to_csv(os.path.join(ouput_path_grid,'task2.csv'))
+ 
     
     
     
