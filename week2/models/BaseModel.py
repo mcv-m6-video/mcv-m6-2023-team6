@@ -57,7 +57,7 @@ class BaseModel: # Base class for the models
             assert "Number of frames is not defined."
 
         with tqdm(total=self.num_frames) as pbar:
-            self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
+            # self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
             for i in range(self.num_frames):
                 
                 success, frame = self.cap.read()

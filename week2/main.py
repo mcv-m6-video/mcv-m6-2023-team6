@@ -29,7 +29,7 @@ def main(cfg):
     else:
         raise ValueError("Invalid run mode")
 
-    rendering_video(cfg, model, frames_modelling,'./week2/results/task1.1/',cfg['paths']['annotations_path'])
+    rendering_video(cfg, model, frames_modelling,f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
 
     print("Done!")
     print("----------------------------------------")
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
-    parser.add_argument("-a", "--alpha", default=0.25, type=float, help="Alpha Thresholding")
+    parser.add_argument("-a", "--alpha", default=1, type=float, help="Alpha Thresholding")
     parser.add_argument("--rho", default=0.05, type=float, help="Rho Thresholding")
 
 

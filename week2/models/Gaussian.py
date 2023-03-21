@@ -26,12 +26,12 @@ class Gaussian(BaseModel):
         print("Standard deviation computed successfully.")
         
         if self.colorspace == 'gray':
-            cv2.imwrite("week2/results/task1.1/mean.png", self.mean)
-            cv2.imwrite("week2/results/task1.1/std.png", self.std)
+            cv2.imwrite("./results/Gaussian/mean.png", self.mean)
+            cv2.imwrite("./results/Gaussian/std.png", self.std)
             # Plot the heatmap of the standard deviation without showing it
             plt.imshow(self.std, cmap='hot')
             plt.colorbar()
-            plt.savefig("week2/results/task1.1/std_heatmap.png")
+            plt.savefig("./results/Gaussian/std_heatmap.png")
             
 
 
@@ -49,10 +49,12 @@ class Gaussian(BaseModel):
         print("Mean and standard deviation computed successfully.")
     """
 
-    def compute_next_foreground(self):
+    def compute_next_foreground(self, frame_aux):
         if not self.modeled:
             print("[ERROR] Background has not been modeled yet.")
             return None
+
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux - 1)   ##################################################3
 
         success, I = self.cap.read()
         if not success:

@@ -8,63 +8,70 @@ TOTAL_FRAMES_VIDEO = 2141
 
 def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save=True,
                     display=False):
-    counter = model.model_background()
+  
+    model.model_background()
     foreground_gif = []
     foreground_gif_boxes = []
 
-    cap = cv2.VideoCapture(cfg["paths"]["video_path"])
+   
 
     if not os.path.exists(path_results):
         os.makedirs(path_results)
 
     det_rects = []
     gt_rects = util.load_from_xml(ai_gt_path)
+    # Remove the first "frames_modelling" frames
     gt_rects = {k: v for k, v in gt_rects.items() if
                 int(k.split('_')[-1]) >= frames_modelling}  
 
-    foreground, I = model.compute_next_foreground()
+
+    foreground, I = model.compute_next_foreground(frames_modelling)
     foreground = util.noise_reduction(foreground)
     frame_bbox = util.findBBOX(foreground)
-    #det_rects[f'f_{counter}'] = frame_bbox
-    
-    det_rects.append([f'f{counter}',frame_bbox])
-    counter = frames_modelling
-    for i,frames_id in enumerate(gt_rects):
+
+
+    for frames_id in gt_rects:
+        
+        frames_id_num = int(frames_id.split('_')[-1])
+
         while foreground is not None:
-            if cfg['display']:
-                pass
-
-            counter += 1
-
-            ret = model.compute_next_foreground()
+    
+            ret = model.compute_next_foreground(frames_id_num)
             if ret:
                 foreground, I = ret
                 foreground = util.noise_reduction(foreground)
-                foreground_gif.append(foreground)  # ADD IMAGE GIF
+                # foreground_gif.append(foreground)  # ADD IMAGE GIF
+                
+               
                 frame_bbox = util.findBBOX(foreground)
-                det_rects.append([f'f{frames_id}',frame_bbox])
-                #det_rects[f'f_{frames_id}'] = frame_bbox
+                foreground = cv2.cvtColor(foreground, cv2.COLOR_GRAY2RGB)
                 # GT bounding box
                 for box in gt_rects[frames_id]:
                     cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
+
                 # Detected bounding box
                 for box in frame_bbox:
-                    cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
+                    if len(box) != 0:
+                        cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (255, 0, 0), 2)
+                    det_rects.append([frames_id,box[0], box[1], box[2], box[3]])
+            
                 foreground_gif_boxes.append(foreground)  # ADD IMAGE GIF
-               
+                
                 
             else:
                 foreground = None
 
-            if counter % 100 == 0:
-                print(f"{counter} frames processed...")
 
-            if  counter >= -1:
+            if frames_id_num % 100 == 0:
+                print(f"{frames_id_num} frames processed...")
+
+            if  frames_id_num >= -1:
                 break
     
-    print(f"DONE! {counter} frames processed")
+    print(f"DONE! {frames_id_num} frames processed")
     print(f"Saved to '{path_results}'")
     
+
     mAP = compute_confidences_ap(gt_rects, len(gt_rects),det_rects)
     print('mAP:', mAP)
     

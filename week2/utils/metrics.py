@@ -187,28 +187,30 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
     for i in range(len(predicted_boxes)):
         frame = predicted_boxes[i][0]
         predicted = predicted_boxes[i][1:5]
-        gt = gt_detected[frame]
-        iou_score = []
-        if len(gt) != 0:
-            for b in range(len(gt)):
-                iou_score.append(iou(gt[b], predicted))
-            id = np.argmax(iou_score)
-            max_iou = iou_score[id]
-            mIOU += max_iou
-            # Save max iou for each frame
-            if frame not in mIOU_frame:
-                mIOU_frame[frame] = []
-            mIOU_frame[frame].append(max_iou)
+        if frame in gt_detected.keys():
+            gt = gt_detected[frame]
+            iou_score = []
+            if len(gt) != 0:
+                for b in range(len(gt)):
+                    iou_score.append(iou(gt[b], predicted))
+                id = np.argmax(iou_score)
+                max_iou = iou_score[id]
+                mIOU += max_iou
+                # Save max iou for each frame
+                if frame not in mIOU_frame:
+                    mIOU_frame[frame] = []
+                mIOU_frame[frame].append(max_iou)
 
-            if max_iou > iou_th:
-                if len(gt_detected[frame][id]) == 4:
-                    gt_detected[frame][id].append(True)
-                    tp[i] = 1
+                if max_iou > iou_th:
+                    if len(gt_detected[frame][id]) == 4:
+                        gt_detected[frame][id].append(True)
+                        tp[i] = 1
+                    else:
+                        fp[i] = 1
                 else:
                     fp[i] = 1
-            else:
-                fp[i] = 1
-
+        
+        
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
 
@@ -230,6 +232,7 @@ def compute_confidences_ap(gt_boxes, N_gt, predicted_boxes, N=10, iou_th=0.5):
     """
     Randomly generates the order of the bounding boxes to calculate the average precision (N times).
     Average values will be returned.
+    predicted_frame --> [frame, x,y,w,h, confidence]
     """
     ap_scores = []
 
