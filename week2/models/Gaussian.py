@@ -24,7 +24,7 @@ class Gaussian(BaseModel):
         print("Mean computed successfully.")
         self.std = np.std(self.images, axis=-1, dtype=np.float32)
         print("Standard deviation computed successfully.")
-        
+
         if self.colorspace == 'gray':
             cv2.imwrite("./results/Gaussian/mean.png", self.mean)
             cv2.imwrite("./results/Gaussian/std.png", self.std)
@@ -82,7 +82,14 @@ class Gaussian(BaseModel):
         mean_path = f"{self.base}/{self.checkpoint}/mean.npy"
         std_path = f"{self.base}/{self.checkpoint}/std.npy"
         if not os.path.exists(mean_path) or not os.path.exists(std_path):
+            print("[WARNING] Checkpoint does not exist.")
             return -1
         self.mean = np.load(mean_path)
         self.std = np.load(std_path)
         print("Checkpoint loaded.")
+
+
+    def compute_parameters_image(self, image):
+        self.mean = np.mean(self.image, axis=-1, dtype=np.float32)
+        print("Mean computed successfully.")
+        self.std = np.std(self.image, axis=-1, dtype=np.float32)

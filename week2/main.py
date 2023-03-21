@@ -16,16 +16,21 @@ def main(cfg):
 
     frames_modelling = int(TOTAL_FRAMES_VIDEO * cfg["percentatge"])
 
+    path = os.path.dirname(os.path.abspath(__file__))
+
     if cfg["run_mode"] == "Gaussian":
         print("Gaussian Function")
         print("----------------------------------------")
-        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=cfg['alpha'], colorspace='gray', checkpoint=None)
+        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=cfg['alpha'], colorspace='gray',
+                         checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
 
     elif cfg["run_mode"] == "AdaptativeGaussian":
-        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=cfg['alpha'], colorspace='gray', checkpoint=None, n_jobs=-1)
+        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=cfg['alpha'],
+                                 colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
 
     elif cfg["run_mode"] == "SOTA":
-        model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1, method='MOG')
+        model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1,
+                     method='MOG')
     else:
         raise ValueError("Invalid run mode")
 
@@ -48,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
     parser.add_argument("-a", "--alpha", default=1, type=float, help="Alpha Thresholding")
     parser.add_argument("--rho", default=0.05, type=float, help="Rho Thresholding")
-
+    parser.add_argument("--colorspace", default="gray", type=str, help="Colorspace to use (gray, rgb, hsv, yuv)")
 
     args = parser.parse_args()
 
@@ -67,6 +72,6 @@ if __name__ == "__main__":
     config["sota_method"] = args.sota_method
     config["alpha"] = args.alpha
     config["rho"] = args.rho
-
+    config["colorspace"] = args.colorspace
 
     main(config)

@@ -9,7 +9,7 @@ from models.BaseModel import BaseModel
 
 class AdaptiveGaussian(BaseModel):
 
-    def __init__(self, video_path, num_frames, p, alpha, colorspace='gray', checkpoint=None, n_jobs=1):
+    def __init__(self, video_path, num_frames, p, alpha, colorspace='gray', checkpoint=None):
         super().__init__(video_path, num_frames, colorspace, checkpoint)
         # 2 modes
         self.p = p
@@ -18,7 +18,6 @@ class AdaptiveGaussian(BaseModel):
         self.alpha = alpha
 
         self.base = os.path.join(os.getcwd(), "checkpoints", "AdaptativeGaussianModel")
-        self.n_jobs = n_jobs
 
     def compute_parameters(self):
         self.mean = self.images.mean(axis=-1)  # , dtype=np.float64)

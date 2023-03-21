@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-class BaseModel: # Base class for the models
+class BaseModel:  # Base class for the models
     def __init__(self, video_path, num_frames, colorspace='gray', checkpoint=None):
         self.cap = cv2.VideoCapture(video_path)
         if self.cap.isOpened():
@@ -39,14 +39,14 @@ class BaseModel: # Base class for the models
 
         if self.images is None:
             if self.channels == 1:
-                self.images = np.zeros((frame.shape[0],frame.shape[1],self.num_frames))
+                self.images = np.zeros((frame.shape[0], frame.shape[1], self.num_frames))
             else:
-                self.images = np.zeros((frame.shape[0],frame.shape[1],self.channels,self.num_frames))
+                self.images = np.zeros((frame.shape[0], frame.shape[1], self.channels, self.num_frames))
         else:
             if len(frame.shape) == 2:
-                self.images[:,:,pos] = frame
+                self.images[:, :, pos] = frame
             else:
-                self.images[:,:,:,pos] = frame 
+                self.images[:, :, :, pos] = frame
 
     def save_images(self):
         if self.modeled:
@@ -59,11 +59,11 @@ class BaseModel: # Base class for the models
         with tqdm(total=self.num_frames) as pbar:
             # self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
             for i in range(self.num_frames):
-                
+
                 success, frame = self.cap.read()
                 frame = cv2.cvtColor(frame, self.colorspace_conversion)
                 # Save frame to visualize
-                cv2.imwrite(f"/ghome/group03/Results/frame_{i}.png", frame)
+                cv2.imwrite(f"./Results/frame_{i}.png", frame)
 
                 if not success:
                     break
@@ -74,16 +74,16 @@ class BaseModel: # Base class for the models
         print("Background modeled!")
 
     def model_background(self):
-        if self.checkpoint and self.load_checkpoint():
+        if self.checkpoint is not None and self.load_checkpoint() == 1:
             print("Background modeled!")
-            return self.num_frames
+            # return self.num_frames
 
         self.save_images()
         self.compute_parameters()
         self.modeled = True
         print("Background modeled!")
 
-        if self.checkpoint:
+        if self.checkpoint is not None:
             self.save_checkpoint()
             print("Checkpoint saved!")
 
