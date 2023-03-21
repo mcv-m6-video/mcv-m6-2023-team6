@@ -51,19 +51,22 @@ def main(cfg):
             print("----------------------------------------")
 
         elif cfg["run_mode"] == "SOTA":
-            model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1,
-                        method='MOG')
+            model = SOTA(cfg['paths']['video_path'], frames_modelling, checkpoint=None, method=cfg['sota_method'])
+        
         else:
             raise ValueError("Invalid run mode")
 
-        if cfg["run_mode"] != "AdaptativeGaussian":
-            map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
-            dic[alpha] = [map,iou]
+    if cfg["run_mode"] != "AdaptativeGaussian":
+        map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+        dic[alpha] = [map,iou]
         
             
 
-        print("Done for alpha = ", alpha)
-        print("----------------------------------------")
+    print("Done for alpha = ", alpha)
+    print("----------------------------------------")
+
+    #add alpha to dictand save its map and iou
+    alphas[alpha] = [map,iou]
 
         #add alpha to dictand save its map and iou
         

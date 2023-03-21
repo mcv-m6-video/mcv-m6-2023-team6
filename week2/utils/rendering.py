@@ -9,12 +9,13 @@ TOTAL_FRAMES_VIDEO = 2141
 
 def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save=True,
                     display=False):
-  
-    model.model_background()
+    
+    if cfg['run_mode'] != 'SOTA':
+        model.model_background()
+
     foreground_gif = []
     foreground_gif_boxes = []
 
-   
 
     if not os.path.exists(path_results):
         os.makedirs(path_results)
@@ -41,7 +42,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
             if ret:
                 foreground, I = ret
                 foreground = util.noise_reduction(foreground)
-                # foreground_gif.append(foreground)  # ADD IMAGE GIF
+                foreground_gif.append(foreground)  # ADD IMAGE GIF
                 
                
                 frame_bbox = util.findBBOX(foreground)
@@ -61,10 +62,12 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                         det_rects.append([frames_id,box[0], box[1], box[2], box[3]])
             
                 foreground_gif_boxes.append(foreground)  # ADD IMAGE GIF
+               
                 
                 
             else:
                 foreground = None
+               
 
 
             if frames_id_num % 100 == 0:
@@ -83,7 +86,14 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     
     # Save GIF
     if cfg['save']:
+
         imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif[:200])
         imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif_boxes[:200])
+        if cfg["sota_method"]:
+            imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}.gif', foreground_gif[:200])
+            imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}_boxes.gif', foreground_gif_boxes[:200])
+
 
     return mAP,mIoU
+
+
