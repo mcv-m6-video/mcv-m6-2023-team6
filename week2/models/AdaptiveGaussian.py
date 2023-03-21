@@ -32,7 +32,7 @@ class AdaptiveGaussian(BaseModel):
             print("[ERROR] Background has not been modeled yet.")
             return None
 
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux - 1)          ##############################
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux)          ##############################
         success, I = self.cap.read()
         if not success:
             return None

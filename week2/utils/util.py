@@ -157,7 +157,7 @@ def visualizeTask1_2(dict):
     plt.ylabel('IoU')
     plt.title('IoU vs alpha')
     plt.xticks(list(dict.keys()))
-    plt.savefig('results/mIoU.png')
+    plt.savefig('/ghome/group03/results/Gaussian/IoU.png')
 
     #plot mAP
     plt.figure()
@@ -166,7 +166,7 @@ def visualizeTask1_2(dict):
     plt.ylabel('mAP')
     plt.title('mAP vs alpha')
     plt.xticks(list(dict.keys()))
-    plt.savefig('results/mAP.png')
+    plt.savefig('/ghome/group03/results/Gaussian/mAP.png')
 
     #the two metrics together
     plt.figure()
@@ -177,11 +177,66 @@ def visualizeTask1_2(dict):
     plt.title('mAP and IoU vs alpha')
     plt.xticks(list(dict.keys())) # set x-axis ticks to dictionary keys
     plt.legend()
-    plt.savefig('mAP_IoU.png')
+    plt.savefig('/ghome/group03/results/Gaussian/mAP_IoU.png')
 
     #create a table with pandas and save it as a csv file
     df = pd.DataFrame.from_dict(dict, orient='index', columns=['mAP', 'IoU'])
-    df.to_csv('results/task1_2.csv')
+    df.to_csv('/ghome/group03/results/Gaussian/task1_2.csv')
+
+def visualizeTask2(dict):
+    """dict: keys the value of alpha and rho and for values [mIoU, mAP]
+     dic[alpha][rho] = [map,iou]"""
+
+    #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # extract the alpha, rho, and value data from the results dictionary
+    alphas = []
+    rhos = []
+    values = []
+    for key, value in dict.items():
+        for key2, value2 in value.items():
+            alphas.append(key)
+            rhos.append(key2)
+            values.append(value2)
+
+    # create a 3D scatter plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(alphas, rhos, values[0])
+
+    # set axis labels and title
+    ax.set_xlabel('alpha')
+    ax.set_ylabel('rho')
+    ax.set_zlabel('mAP')
+    ax.set_title('Grid Search Results for the mAP')
+    plt.savefig('mAP.png')
+
+    #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # create a 3D scatter plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(alphas, rhos, values[1])
+
+    # set axis labels and title
+    ax.set_xlabel('alpha')
+    ax.set_ylabel('rho')
+    ax.set_zlabel('IoU')
+    ax.set_title('Grid Search Results for the IoU')
+    plt.savefig('IoU.png')
+
+    #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
+    # save the dictionary of dictionaries as a csv file
+    df = pd.DataFrame()
+    
+    #append columns
+    df['alpha'] = alphas
+    df['rho'] = rhos
+    df['mAP'] = values[0]
+    df['IoU'] = values[1]
+    df = df[['alpha', 'rho', 'mAP', 'IoU']]
+
+    df.to_csv('task2.csv')
+    
+    
     
 def filter_boxes(boxes, max_aspect_ratio,nms_threshold):
    
