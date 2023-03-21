@@ -156,15 +156,14 @@ def plot_task1():
             # put fps
             cv2.putText(frame, f"FPS: {fps}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             # Write the frame to the video
-            out.write(frame)
+
             # get one pixel value
             # print a square in the middle of the image
             cv2.rectangle(frame, (730, 150), (750, 170), (0, 255, 0), 2)
-            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # get pixel value of the middle in the square
-            pixel = frame_gray[740, 160]
             # cv2 point
             cv2.circle(frame, (740, 160), 1, (0, 0, 255), 2)
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            pixel = frame_gray[740, 160]
             pixel_values.append(pixel)
             mean_values.append(np.mean(pixel_values, axis=0))
             std_values.append(np.std(pixel_values, axis=0))
@@ -172,6 +171,7 @@ def plot_task1():
             mean.set_data(frames_list[:i], mean_values[:i])
             std.set_data(frames_list[:i], std_values[:i])
             value.set_data(frames_list[:i], pixel_values[:i])
+
             fig.canvas.draw()
             image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
             image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
