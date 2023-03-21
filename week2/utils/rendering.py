@@ -65,7 +65,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     print(f"Saved to '{path_results}'")
     
     mAP = compute_confidences_ap(gt_rects, len(gt_rects),det_rects)
-    print('mAP:', mAP) 
+    print('mAP:', mAP)
     
     # Save GIF
     if cfg['save']:
