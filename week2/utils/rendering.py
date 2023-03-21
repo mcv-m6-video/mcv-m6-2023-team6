@@ -17,7 +17,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     if not os.path.exists(path_results):
         os.makedirs(path_results)
 
-    det_rects = {}
+    det_rects = []
     gt_rects = util.load_from_xml(ai_gt_path)
     gt_rects = {k: v for k, v in gt_rects.items() if
                 int(k.split('_')[-1]) >= frames_modelling}  
@@ -25,8 +25,9 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     foreground, I = model.compute_next_foreground()
     foreground = util.noise_reduction(foreground)
     frame_bbox = util.findBBOX(foreground)
-    det_rects[f'f_{counter}'] = frame_bbox
+    #det_rects[f'f_{counter}'] = frame_bbox
     
+    det_rects.append([f'f{counter}',frame_bbox])
     counter = frames_modelling
     for i,frames_id in enumerate(gt_rects):
         while foreground is not None:
@@ -41,7 +42,8 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 foreground = util.noise_reduction(foreground)
                 foreground_gif.append(foreground)  # ADD IMAGE GIF
                 frame_bbox = util.findBBOX(foreground)
-                det_rects[f'f_{frames_id}'] = frame_bbox
+                det_rects.append([f'f{frames_id}',frame_bbox])
+                #det_rects[f'f_{frames_id}'] = frame_bbox
                 # GT bounding box
                 for box in gt_rects[frames_id]:
                     cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
