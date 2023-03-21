@@ -9,7 +9,7 @@ TOTAL_FRAMES_VIDEO = 2141
 
 def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save=True,
                     display=False):
-    counter = model.model_background()
+    model.model_background()
     foreground_gif = []
     foreground_gif_boxes = []
 

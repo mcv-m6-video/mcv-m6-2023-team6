@@ -24,17 +24,14 @@ class Gaussian(BaseModel):
         print("Mean computed successfully.")
         self.std = np.std(self.images, axis=-1, dtype=np.float32)
         print("Standard deviation computed successfully.")
-        
+
         if self.colorspace == 'gray':
-            cv2.imwrite("week2/results/task1.1/mean.png", self.mean)
-            cv2.imwrite("week2/results/task1.1/std.png", self.std)
+            cv2.imwrite("./Results/task1.1/mean.png", self.mean)
+            cv2.imwrite("./Results/task1.1/std.png", self.std)
             # Plot the heatmap of the standard deviation without showing it
             plt.imshow(self.std, cmap='hot')
             plt.colorbar()
-            plt.savefig("week2/results/task1.1/std_heatmap.png")
-            
-
-
+            plt.savefig("./Results/task1.1/std_heatmap.png")
 
     """ NOT TESTED YET
     @staticmethod
@@ -85,3 +82,9 @@ class Gaussian(BaseModel):
         self.mean = np.load(mean_path)
         self.std = np.load(std_path)
         print("Checkpoint loaded.")
+
+
+    def compute_parameters_image(self, image):
+        self.mean = np.mean(self.image, axis=-1, dtype=np.float32)
+        print("Mean computed successfully.")
+        self.std = np.std(self.image, axis=-1, dtype=np.float32)

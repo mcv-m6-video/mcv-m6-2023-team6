@@ -90,6 +90,9 @@ TOTAL_FRAMES_VIDEO = 2141
 
 def plot_task1():
     # Get the frame_id list
+    wait_time = 1
+    mean_np = np.load('/Users/johnny/Projects/mcv-m6-2023-team6/week2/checkpoints/GaussianModel/gray_0.25/mean.npy')
+    std_np = np.load('/Users/johnny/Projects/mcv-m6-2023-team6/week2/checkpoints/GaussianModel/gray_0.25/std.npy')
     frames_num = int(TOTAL_FRAMES_VIDEO * 0.25)
     video_capture = '../../../dataset/AICity_data/train/S03/c010/vdo.avi'
     # read actual path
@@ -149,9 +152,9 @@ def plot_task1():
             cv2.putText(frame, f"FPS: {fps}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             # Write the frame to the video
             out.write(frame)
-            mean.set_data(i, )
-            std.set_data(i, )
-            value.set_data(i, )
+            mean.set_data(i, mean_np[i])
+            std.set_data(i, std_np[i].T)
+            value.set_data(i, mean_np[i].T)
             fig.canvas.draw()
             image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
             image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
