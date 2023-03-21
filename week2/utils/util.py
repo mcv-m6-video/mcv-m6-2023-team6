@@ -128,6 +128,22 @@ def noise_reduction(frame):
 
     return seg
 
+def findBBOX(mask):
+
+    minH = 50
+    maxH =  1080/2 # 1080--> height frame
+    minW = 100#120
+    maxW =1920/2# 1920--> width frame
+
+    contours, hierarchy = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    box = []
+    for c in contours:
+        x, y, w, h = cv2.boundingRect(c)
+        if minW < w < maxW and minH < h < maxH:
+            if 0.2 < w/h < 10:
+                box.append([x, y, x + w, y + h])
+
+    return box
 
 
 if __name__ == "__main__":
