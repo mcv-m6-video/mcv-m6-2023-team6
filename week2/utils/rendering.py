@@ -29,7 +29,6 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     
     counter = frames_modelling
     cap.set(cv2.CAP_PROP_POS_FRAMES, frames_modelling - 1)
-    
     for i in range(TOTAL_FRAMES_VIDEO-frames_modelling):
         while foreground is not None:
             if cfg['display']:
@@ -43,9 +42,9 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 foreground = util.noise_reduction(foreground)
                 foreground_gif.append(foreground)  # ADD IMAGE GIF
                 frame_bbox = util.findBBOX(foreground)
-                det_rects[f'f_{counter}'] = frame_bbox
+                det_rects[f'f_{frames_id}'] = frame_bbox
                 # GT bounding box
-                for box in gt_rects[counter]:
+                for box in gt_rects[frames_id]:
                     cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
                 # Detected bounding box
                 for box in frame_bbox:
@@ -66,7 +65,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     print(f"Saved to '{path_results}'")
     
     mAP = compute_confidences_ap(gt_rects, len(gt_rects),det_rects)
-    print('mAP:', mAP) 
+    print('mAP:', mAP)
     
     # Save GIF
     if cfg['save']:
