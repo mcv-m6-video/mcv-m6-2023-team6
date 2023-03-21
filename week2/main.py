@@ -19,7 +19,7 @@ def main(cfg):
     if cfg["run_mode"] == "Gaussian":
         print("Gaussian Function")
         print("----------------------------------------")
-        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=args['alpha'], colorspace='gray', checkpoint=None)
+        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=cfg['alpha'], colorspace='gray', checkpoint=None)
 
     elif cfg["run_mode"] == "AdaptativeGaussian":
         model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=0.05, alpha=args['alpha'], colorspace='gray', checkpoint=None, n_jobs=-1)
@@ -29,7 +29,7 @@ def main(cfg):
     else:
         raise ValueError("Invalid run mode")
 
-    rendering_video(cfg, model, frames_modelling,'./week2/results/task1.1/',cfg['paths']['annotations_path'])
+    rendering_video(cfg, model, frames_modelling,'./week2/results/task1.1/', cfg['paths']['annotations_path'])
 
     print("Done!")
     print("----------------------------------------")
@@ -64,6 +64,7 @@ if __name__ == "__main__":
     config["display"] = args.display
     config["percentatge"] = args.percentatge
     config["sota_method"] = args.sota_method
+    config["alpha"] = args.alpha
 
 
     main(config)
