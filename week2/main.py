@@ -28,7 +28,7 @@ import yaml
 
 from models import Gaussian, AdaptiveGaussian, SOTA
 from utils.rendering import rendering_video
-from utils.util import visualizeTask1, visualizeTask2
+from utils.util import visualizeTask1, visualizeTask2, visualizeTask4
 
 TOTAL_FRAMES_VIDEO = 2141
 
@@ -46,6 +46,7 @@ def main(cfg):
     rho_list = cfg["rhos"]
     colorspace_list = cfg["colorspaces"]
 
+    dic = {3.0: {'RGB': [0.1914155172426097, 0.30746237783273]}, 4.0: {'RGB': [0.24329121881945795, 0.3245133419892088]}, 5.0: {'RGB': [0.3747929509268023, 0.2923283266021336]}, 6.0: {'RGB': [0.4197453967389858, 0.2562019770092611]}, 7.0: {'RGB': [0.327080989856914, 0.20981285236257938]}, 8.0: {'RGB': [0.22314822829941056, 0.16196997242268618]}}
 
     dic = {}
 
@@ -55,22 +56,41 @@ def main(cfg):
             print("Gaussian Function")
             print("----------------------------------------")
 
-            for colorspace in colorspace_list:
-                model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace=colorspace,
-                                checkpoint=f"{colorspace}_{cfg['percentatge']}")
+            if cfg["run_name"] == "task_4":
+                dic[alpha] = {}
+
+                for colorspace in colorspace_list:
+                    model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace=colorspace,
+                                    checkpoint=f"{colorspace}_{cfg['percentatge']}")
+                    map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
+                    dic[alpha][colorspace] = [map,iou]
+
+                    print("Done for colorspace = ", colorspace)
+                    print("----------------------------------------")
+            
+            elif cfg["run_name"] == "task_1":
+                model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace="gray",
+                                checkpoint=f"gray_{cfg['percentatge']}")
+                map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
+                dic[alpha] = [map,iou]
+            
+            else:
+                raise ValueError("Invalid run name")
+
 
         elif cfg["run_mode"] == "AdaptiveGaussian":
             dic[alpha] = {}
             for rho in rho_list:
 
                 for colorspace in colorspace_list:
-                    print("Adaptive Gaussian Function")
-                    print("----------------------------------------")
-                    model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=float(rho), alpha=float(alpha),
-                                            colorspace=colorspace, checkpoint=f"{colorspace}_{cfg['percentatge']}")
-                    
-                    map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
-                    dic[alpha][rho] = [map,iou]
+                    if colorspace == "gray":
+                        print("Adaptive Gaussian Function")
+                        print("----------------------------------------")
+                        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=float(rho), alpha=float(alpha),
+                                                colorspace=colorspace, checkpoint=f"{colorspace}_{cfg['percentatge']}")
+                        
+                        map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
+                        dic[alpha][rho] = [map,iou]
 
                     
                 
@@ -82,14 +102,11 @@ def main(cfg):
 
         elif cfg["run_mode"] == "SOTA":
             model = SOTA(cfg['paths']['video_path'], frames_modelling, checkpoint=None, method=cfg['sota_method'])
-        
+            map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
+
         else:
             raise ValueError("Invalid run mode")
 
-        if cfg["run_mode"] != "AdaptiveGaussian":
-            map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
-            dic[alpha] = [map,iou]
-            
             
 
         print("Done for alpha = ", alpha)
@@ -103,8 +120,8 @@ def main(cfg):
             visualizeTask1(dic, output_path)
         elif cfg['run_name'] == 'task_2':
             visualizeTask2(dic, output_path)
-        # elif cfg['run_name'] == 'task_4':
-            # visualizeTask4(dic, output_path)
+        elif cfg['run_name'] == 'task_4':
+            visualizeTask4(dic, output_path)
     print("----------------------------------------")
 
 if __name__ == "__main__":
@@ -120,7 +137,7 @@ if __name__ == "__main__":
     parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
     parser.add_argument("-a", "--alpha", default=5, nargs="+", type=float, help="Alpha Thresholding")
     parser.add_argument("--rho", default=0.05, nargs="+",type=float, help="Rho Thresholding")
-    parser.add_argument("-c", "--colorspaces", nargs='+', default="gray", type=str, help="Colorspace to use (gray, RGB, hsv, yuv)")
+    parser.add_argument("-c", "--colorspaces", nargs='+', default="gray", type=str, help="Colorspace to use (gray, RGB, YCRCB, HSV, YUV)")
     parser.add_argument("-g", "--grid", default=False, type=bool, help="Show the grid or not")
 
     args = parser.parse_args()
@@ -142,6 +159,5 @@ if __name__ == "__main__":
     config["rhos"] = args.rho
     config["colorspaces"] = args.colorspaces
     config["grid"] = args.grid
-    print(config["colorspaces"])
 
     main(config)

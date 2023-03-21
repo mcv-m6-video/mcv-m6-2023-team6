@@ -20,11 +20,19 @@ class BaseModel:  # Base class for the models
             self.colorspace_conversion = cv2.COLOR_BGR2GRAY
             self.channels = 1
 
-        elif colorspace == 'ycrcb':
-            self.colorspace_conversion = cv2.COLOR_BGR2YCrCb
-
         elif colorspace == 'RGB':
             self.colorspace_conversion = cv2.COLOR_BGR2RGB
+            self.channels = 3
+
+        elif colorspace == 'YCRCB':
+            self.colorspace_conversion = cv2.COLOR_BGR2YCrCb
+
+        elif colorspace == 'HSV':
+            self.colorspace_conversion = cv2.COLOR_BGR2HSV
+
+        elif colorspace == 'YUV':
+            self.colorspace_conversion = cv2.COLOR_BGR2YUV
+
         else:
             raise Exception('Invalid Colorspace')
 

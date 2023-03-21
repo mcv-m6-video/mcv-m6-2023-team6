@@ -91,15 +91,14 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     # Save GIF
     if cfg['save']:
         if cfg['run_mode'] == 'Gaussian':
-            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif[:200])
-            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif_boxes[:200])
+            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_colorspace{model.colorspace}.gif', foreground_gif[:200])
+            imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_colorspace{model.colorspace}.gif', foreground_gif_boxes[:200])
         elif cfg['run_mode'] == 'AdaptiveGaussian':
             imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif[:200])
             imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif_boxes[:200])
         elif cfg['run_mode'] == 'SOTA':
             imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}.gif', foreground_gif[:200])
             imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}_boxes.gif', foreground_gif_boxes[:200])
-
 
     return mAP,mIoU
 

@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import datetime
+from datetime import datetime
 
 """ def load_from_xml(path):
 
@@ -154,11 +154,11 @@ def findBBOX(mask):
 def visualizeTask1(dict,output_path):
     "dict: keys the value of alpha and for values [mIoU, mAP]"
     # create the output path : output_path + '/GridSearch' + time
-    time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
     ouput_path_grid = os.path.join(output_path, 'GridSearch', time)
 
     # create the directory output 
-    os.makedirs(output_path, exist_ok=True)
+    os.makedirs(ouput_path_grid)
 
     #plot mIoU scatter plot
     plt.figure()
@@ -199,11 +199,11 @@ def visualizeTask2(dict, output_path):
     """dict: keys the value of alpha and rho and for values [mIoU, mAP]
      dic[alpha][rho] = [map,iou]"""
     # create the output path : output_path + '/GridSearch' + time
-    time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
     ouput_path_grid = os.path.join(output_path, 'GridSearch', time)
 
     # create the directory
-    os.makedirs(output_path, exist_ok=True)
+    os.makedirs(ouput_path_grid)
 
     #plot mIoU scatter plot in 3D, for each alpha the rho values
     # extract the alpha, rho, and value data from the results dictionary
@@ -253,6 +253,72 @@ def visualizeTask2(dict, output_path):
     df = df[['alpha', 'rho', 'mAP', 'IoU']]
 
     df.to_csv(os.path.join(ouput_path_grid,'task2.csv'))
+
+
+
+def visualizeTask4(dict, output_path):
+    """dict: keys the value of alpha and rho and for values [mIoU, mAP]
+     dic[alpha][rho] = [map,iou]"""
+    # create the output path : output_path + '/GridSearch' + time
+    time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+    ouput_path_grid = os.path.join(output_path, 'GridSearch', time)
+
+    # create the directory
+    os.makedirs(ouput_path_grid)
+
+    #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # extract the alpha, rho, and value data from the results dictionary
+    alphas = []
+    colors = []
+    values = []
+    for key, value in dict.items():
+        for key2, value2 in value.items():
+            alphas.append(key)
+            colors.append(key2)
+            values.append(value2)
+
+    values = np.array(values).T
+
+    #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
+    # save the dictionary of dictionaries as a csv file
+    df = pd.DataFrame()
+    
+    #append columns
+    df['alpha'] = alphas
+    df['color'] = colors
+    df['mAP'] = values[0]
+    df['IoU'] = values[1]
+    df = df[['alpha', 'color', 'mAP', 'IoU']]
+
+    df.to_csv(os.path.join(ouput_path_grid,'task4.csv'))
+
+
+    # # create a 3D scatter plot
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.scatter(alphas, colors, values[0])
+
+    # # set axis labels and title
+    # ax.set_xlabel('alpha')
+    # ax.set_ylabel('color')
+    # ax.set_zlabel('mAP')
+    # ax.set_title('Grid Search Results for the mAP')
+    # plt.savefig(os.path.join(ouput_path_grid,'mAP.png'))
+
+    # #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # # create a 3D scatter plot
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.scatter(alphas, colors, values[1])
+
+    # # set axis labels and title
+    # ax.set_xlabel('alpha')
+    # ax.set_ylabel('color')
+    # ax.set_zlabel('IoU')
+    # ax.set_title('Grid Search Results for the IoU')
+    # plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
+
+    
  
     
     
