@@ -22,10 +22,10 @@ def main(cfg):
         model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=cfg['alpha'], colorspace='gray', checkpoint=None)
 
     elif cfg["run_mode"] == "AdaptativeGaussian":
-        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=0.05, alpha=args['alpha'], colorspace='gray', checkpoint=None, n_jobs=-1)
+        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=cfg['alpha'], colorspace='gray', checkpoint=None, n_jobs=-1)
 
     elif cfg["run_mode"] == "SOTA":
-        model = SOTA(cfg['paths']['video_path'], frames_modelling, p=0.05, checkpoint=None, n_jobs=-1, method='MOG')
+        model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1, method='MOG')
     else:
         raise ValueError("Invalid run mode")
 
@@ -47,6 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
     parser.add_argument("-a", "--alpha", default=0.25, type=float, help="Alpha Thresholding")
+    parser.add_argument("--rho", default=0.05, type=float, help="Rho Thresholding")
 
 
     args = parser.parse_args()
@@ -65,6 +66,7 @@ if __name__ == "__main__":
     config["percentatge"] = args.percentatge
     config["sota_method"] = args.sota_method
     config["alpha"] = args.alpha
+    config["rho"] = args.rho
 
 
     main(config)
