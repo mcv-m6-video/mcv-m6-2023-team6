@@ -4,7 +4,9 @@ dataset/
 *.err
 *.out
 *.mp4
+*.npy
 
+./week2/checkpoints/
 
 *.err
 *.out

@@ -19,7 +19,10 @@ class SOTA(BaseModel):
         else:
             raise Exception('Invalid method')
     
-    def compute_next_foreground(self):
+    def compute_next_foreground(self, frame_aux):
+        
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux - 1)
+        
         ok, frame = self.cap.read()
 
         if not ok:

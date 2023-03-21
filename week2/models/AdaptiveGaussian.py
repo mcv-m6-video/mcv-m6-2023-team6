@@ -25,13 +25,14 @@ class AdaptiveGaussian(BaseModel):
         self.std = self.images.std(axis=-1)  # , dtype=np.float64)
         print("Standard deviation computed successfully.")
 
-    def compute_next_foreground(self):
+    def compute_next_foreground(self, frame_aux):
         def _set_fg_mask_uint8_row(i, row, output_row):
             output_row[row] = 255
         if not self.modeled:
             print("[ERROR] Background has not been modeled yet.")
             return None
 
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux - 1)          ##############################
         success, I = self.cap.read()
         if not success:
             return None
