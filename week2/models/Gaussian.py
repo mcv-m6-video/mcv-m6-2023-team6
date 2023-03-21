@@ -26,12 +26,12 @@ class Gaussian(BaseModel):
         print("Standard deviation computed successfully.")
 
         if self.colorspace == 'gray':
-            cv2.imwrite("./results/Gaussian/mean.png", self.mean)
-            cv2.imwrite("./results/Gaussian/std.png", self.std)
+            #cv2.imwrite("./results/Gaussian/mean.png", self.mean)
+            #cv2.imwrite("./results/Gaussian/std.png", self.std)
             # Plot the heatmap of the standard deviation without showing it
             plt.imshow(self.std, cmap='hot')
             plt.colorbar()
-            plt.savefig("./results/Gaussian/std_heatmap.png")
+            #plt.savefig("./results/Gaussian/std_heatmap.png")
             
 
 

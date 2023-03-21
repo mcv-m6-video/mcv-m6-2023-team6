@@ -115,14 +115,10 @@ def noise_reduction(frame):
     #frame = cv2.erode(frame, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
     #frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
 
-    kernel = np.ones((2, 2), np.uint8)
-    frame = cv2.erode(frame, kernel, iterations=1)
-    kernel = np.ones((2,4), np.uint8)
-    frame = cv2.dilate(frame, kernel, iterations=1)
-
-    fame = cv2.morphologyEx(frame, cv2.MORPH_CLOSE, np.ones((2, 5), np.uint8))
-    #frame = cv2.morphologyEx(frame, cv2.MORPH_OPEN, np.ones((9, 5), np.uint8))
-    #frame = cv2.morphologyEx(frame, cv2.MORPH_CLOSE, np.ones((5, 7), np.uint8))
+    kernel_m = 3
+    kernel_g = (5, 5)
+    im_median = cv2.medianBlur(frame, kernel_m)
+    frame = cv2.GaussianBlur(im_median, kernel_g, 0)
 
     return frame
 
@@ -174,39 +170,33 @@ def filter_boxes(boxes, max_aspect_ratio,nms_threshold):
    
     # Convert frame_bbox to a NumPy array and extract the boxes and confidence scores
     #boxes = np.array([box for box in boxes if len(box) != 0])
-    scores = np.ones(len(boxes))
+    
 
     # Filter boxes based on aspect ratio if the length of boxes is greater than 0
-    print(f"the lengthi of boxes is {len(boxes)}")
     filtered_boxes = []
 
     for box in boxes:
         if len(box) == 0:
-            aspect_ratio = 0
-            filtered_boxes.append([])
+            continue
         else:
             aspect_ratio = (box[3] - box[1]) / (box[2] - box[0])
             if aspect_ratio > max_aspect_ratio:
-                filtered_boxes.append([])
+                continue
             else:   
                 filtered_boxes.append(box)
                 
-        
-        
+    scores = np.ones(len(filtered_boxes))    
     # Apply NMS on the filtered boxes
     nms_indices = cv2.dnn.NMSBoxes(filtered_boxes, scores, 0.0, nms_threshold)
-    print(nms_indices)
+    #print(nms_indices)
 
+    # Set the supressed boxes to be empty
+    for i in range(len(filtered_boxes)):
+        if i not in nms_indices:
+            filtered_boxes[i] = []
     
 
-    return boxes
-
-
-
-
-
-
-
+    return filtered_boxes
 
 
 

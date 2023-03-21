@@ -5,7 +5,7 @@ dataset/
 *.out
 *.mp4
 *.npy
-
+*.gif
 ./week2/checkpoints/
 
 *.err

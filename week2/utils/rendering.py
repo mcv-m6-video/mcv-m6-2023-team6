@@ -50,12 +50,15 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 for box in gt_rects[frames_id]:
                     cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
 
-                filtered_bboxs = util.filter_boxes(frame_bbox,1.5,0.5)
+                filtered_bboxs = util.filter_boxes(frame_bbox,1.25,0.5)
                 # Detected bounding box
                 for box in filtered_bboxs:
                     if len(box) != 0 :
                         cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (255, 0, 0), 2)
-                    det_rects.append([frames_id,box[0], box[1], box[2], box[3]])
+                    if box == []:
+                        continue
+                    else:
+                        det_rects.append([frames_id,box[0], box[1], box[2], box[3]])
             
                 foreground_gif_boxes.append(foreground)  # ADD IMAGE GIF
                 

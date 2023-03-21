@@ -8,7 +8,7 @@ from utils.rendering import rendering_video
 from utils.util import visualizeTask1_2
 
 TOTAL_FRAMES_VIDEO = 2141
-
+current_path = os.path.dirname(os.path.abspath(__file__))
 
 def main(cfg):
     os.makedirs(f"runs/{cfg['run_name']}/", exist_ok=True)
@@ -39,7 +39,9 @@ def main(cfg):
         else:
             raise ValueError("Invalid run mode")
 
-        map,iou = rendering_video(cfg, model, frames_modelling,f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+        map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+
+        
 
         print("Done for alpha = ", alpha)
         print("----------------------------------------")
