@@ -1,6 +1,7 @@
 import os
 import cv2
 import imageio
+import numpy as np
 from utils import util
 from .metrics import mean_AP_Pascal_VOC,compute_confidences_ap
 

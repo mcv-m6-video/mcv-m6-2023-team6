@@ -80,6 +80,7 @@ class Gaussian(BaseModel):
         mean_path = f"{self.base}/{self.checkpoint}/mean.npy"
         std_path = f"{self.base}/{self.checkpoint}/std.npy"
         if not os.path.exists(mean_path) or not os.path.exists(std_path):
+            print("[WARNING] Checkpoint does not exist.")
             return -1
         self.mean = np.load(mean_path)
         self.std = np.load(std_path)

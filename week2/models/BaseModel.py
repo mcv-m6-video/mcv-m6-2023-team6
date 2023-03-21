@@ -59,7 +59,7 @@ class BaseModel: # Base class for the models
         with tqdm(total=self.num_frames) as pbar:
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
             for i in range(self.num_frames):
-                
+
                 success, frame = self.cap.read()
                 frame = cv2.cvtColor(frame, self.colorspace_conversion)
                 # Save frame to visualize
@@ -76,12 +76,12 @@ class BaseModel: # Base class for the models
     def model_background(self):
         if self.checkpoint and self.load_checkpoint():
             print("Background modeled!")
-            return self.num_frames
+            # return self.num_frames
 
-        self.save_images()
-        self.compute_parameters()
-        self.modeled = True
-        print("Background modeled!")
+            self.save_images()
+            self.compute_parameters()
+            self.modeled = True
+            print("Background modeled!")
 
         if self.checkpoint:
             self.save_checkpoint()
