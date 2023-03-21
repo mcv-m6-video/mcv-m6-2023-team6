@@ -19,10 +19,10 @@ def main(cfg):
     if cfg["run_mode"] == "Gaussian":
         print("Gaussian Function")
         print("----------------------------------------")
-        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=1, colorspace='gray', checkpoint=None)
+        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=args['alpha'], colorspace='gray', checkpoint=None)
 
     elif cfg["run_mode"] == "AdaptativeGaussian":
-        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=0.05, alpha=1, colorspace='gray', checkpoint=None, n_jobs=-1)
+        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=0.05, alpha=args['alpha'], colorspace='gray', checkpoint=None, n_jobs=-1)
 
     elif cfg["run_mode"] == "SOTA":
         model = SOTA(cfg['paths']['video_path'], frames_modelling, p=0.05, checkpoint=None, n_jobs=-1, method='MOG')
@@ -45,8 +45,9 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--save", default=True, type=bool, help="Save the video or not")
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
-    parser.add_argument("-a", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
-    
+    parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
+    parser.add_argument("-a", "--alpha", default=0.25, type=float, help="Alpha Thresholding")
+
 
     args = parser.parse_args()
 

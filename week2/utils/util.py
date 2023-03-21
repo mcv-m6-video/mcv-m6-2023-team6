@@ -34,7 +34,7 @@ def load_from_xml(path):
         label = track["@label"]
         boxes = track["box"]
         for box in boxes:
-            if label == "car":
+            if label == "car" and box['attribute']['#text'].lower() == 'false' :
                 frame = int(box["@frame"])
                 frame = f"f_{frame}"
                 gt[frame].append(
@@ -112,7 +112,7 @@ def bounding_box_visualization(path, gt_boxes, predicted_boxes, video_capture, f
 def noise_reduction(frame):
     #frame = cv2.erode(frame, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
     #frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
-    
+
     kernel = np.ones((2, 2), np.uint8)
     seg = cv2.erode(frame, kernel, iterations=1)
     kernel = np.ones((2,4), np.uint8)
@@ -123,11 +123,27 @@ def noise_reduction(frame):
 
 
     seg = cv2.morphologyEx(seg, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
-    seg = cv2.morphologyEx(seg, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    seg = cv2.morphologyEx(seg, cv2.MORPH_CLOSE, np.ones((3, 7), np.uint8))
 
 
     return seg
 
+def findBBOX(mask):
+
+    minH = 50
+    maxH =  1080/2 # 1080--> height frame
+    minW = 100#120
+    maxW =1920/2# 1920--> width frame
+
+    contours, hierarchy = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    box = []
+    for c in contours:
+        x, y, w, h = cv2.boundingRect(c)
+        if minW < w < maxW and minH < h < maxH:
+            if 0.2 < w/h < 10:
+                box.append([x, y, x + w, y + h])
+
+    return box
 
 
 if __name__ == "__main__":
