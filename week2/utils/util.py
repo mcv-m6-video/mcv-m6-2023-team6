@@ -146,24 +146,35 @@ def visualizeTask1_2(dict):
 
     #plot mIoU scatter plot
     plt.figure()
-    plt.scatter(list(dict.keys()), [x[0] for x in dict.values()], label='mIoU')
+    plt.scatter(list(dict.keys()), [x[1] for x in dict.values()], label='IoU')
     plt.xlabel('alpha')
-    plt.ylabel('mIoU')
-    plt.title('mIoU vs alpha')
-    plt.legend()
+    plt.ylabel('IoU')
+    plt.title('IoU vs alpha')
+    plt.xticks(list(dict.keys()))
     plt.savefig('results/mIoU.png')
 
     #plot mAP
     plt.figure()
-    plt.scatter(list(dict.keys()), [x[1] for x in dict.values()], label='mAP')
+    plt.scatter(list(dict.keys()), [x[0] for x in dict.values()], label='mAP')
     plt.xlabel('alpha')
     plt.ylabel('mAP')
     plt.title('mAP vs alpha')
-    plt.legend()
+    plt.xticks(list(dict.keys()))
     plt.savefig('results/mAP.png')
 
+    #the two metrics together
+    plt.figure()
+    plt.scatter(list(dict.keys()), [x[0] for x in dict.values()], label='mAP', color='orange')
+    plt.scatter(list(dict.keys()), [x[1] for x in dict.values()], label='IoU', color='blue')
+    plt.xlabel('alpha')
+    plt.ylabel("metric's value")
+    plt.title('mAP and IoU vs alpha')
+    plt.xticks(list(dict.keys())) # set x-axis ticks to dictionary keys
+    plt.legend()
+    plt.savefig('mAP_IoU.png')
+
     #create a table with pandas and save it as a csv file
-    df = pd.DataFrame.from_dict(dict, orient='index', columns=['mIoU', 'mAP'])
+    df = pd.DataFrame.from_dict(dict, orient='index', columns=['mAP', 'IoU'])
     df.to_csv('results/task1_2.csv')
     
 def filter_boxes(boxes, max_aspect_ratio,nms_threshold):
