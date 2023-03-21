@@ -50,9 +50,10 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
                 for box in gt_rects[frames_id]:
                     cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
 
+                filtered_bboxs = util.filter_boxes(frame_bbox,1.5,0.5)
                 # Detected bounding box
-                for box in frame_bbox:
-                    if len(box) != 0:
+                for box in filtered_bboxs:
+                    if len(box) != 0 :
                         cv2.rectangle(foreground, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (255, 0, 0), 2)
                     det_rects.append([frames_id,box[0], box[1], box[2], box[3]])
             
@@ -79,5 +80,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     
     # Save GIF
     if cfg['save']:
-        imageio.mimsave(f'{path_results}/denoised3_foreground.gif', foreground_gif[:200])
-        imageio.mimsave(f'{path_results}/denoised3_foreground.gif', foreground_gif_boxes[:200])
+        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif[:200])
+        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif_boxes[:200])
+
+    return mAP,mIoU

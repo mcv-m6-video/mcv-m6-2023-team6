@@ -5,6 +5,7 @@ import yaml
 
 from models import Gaussian, AdaptiveGaussian, SOTA
 from utils.rendering import rendering_video
+from utils.util import visualizeTask1_2
 
 TOTAL_FRAMES_VIDEO = 2141
 
@@ -17,28 +18,39 @@ def main(cfg):
     frames_modelling = int(TOTAL_FRAMES_VIDEO * cfg["percentatge"])
 
     path = os.path.dirname(os.path.abspath(__file__))
+    alpha_list = cfg["alphas"]
+    alphas = {}
 
-    if cfg["run_mode"] == "Gaussian":
-        print("Gaussian Function")
+    for alpha in alpha_list:
+
+        if cfg["run_mode"] == "Gaussian":
+            print("Gaussian Function")
+            print("----------------------------------------")
+            model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace='gray',
+                            checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
+
+        elif cfg["run_mode"] == "AdaptativeGaussian":
+            model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=float(alpha),
+                                    colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
+
+        elif cfg["run_mode"] == "SOTA":
+            model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1,
+                        method='MOG')
+        else:
+            raise ValueError("Invalid run mode")
+
+        map,iou = rendering_video(cfg, model, frames_modelling,f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+
+        print("Done for alpha = ", alpha)
         print("----------------------------------------")
-        model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=cfg['alpha'], colorspace='gray',
-                         checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
 
-    elif cfg["run_mode"] == "AdaptativeGaussian":
-        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=cfg['alpha'],
-                                 colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
-
-    elif cfg["run_mode"] == "SOTA":
-        model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1,
-                     method='MOG')
-    else:
-        raise ValueError("Invalid run mode")
-
-    rendering_video(cfg, model, frames_modelling,f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
-
-    print("Done!")
+        #add alpha to dictand save its map and iou
+        alphas[alpha] = [map,iou]
+    
+    print("Done for all alphas")
+    print(alphas)
+    visualizeTask1_2(alphas)
     print("----------------------------------------")
-
 
 if __name__ == "__main__":
     # check ffmepg in your system
@@ -51,7 +63,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
-    parser.add_argument("-a", "--alpha", default=1, type=float, help="Alpha Thresholding")
+    parser.add_argument("-a", "--alpha", default=1, nargs="+", type=float, help="Alpha Thresholding")
     parser.add_argument("--rho", default=0.05, type=float, help="Rho Thresholding")
     parser.add_argument("--colorspace", default="gray", type=str, help="Colorspace to use (gray, rgb, hsv, yuv)")
 
@@ -70,7 +82,7 @@ if __name__ == "__main__":
     config["display"] = args.display
     config["percentatge"] = args.percentatge
     config["sota_method"] = args.sota_method
-    config["alpha"] = args.alpha
+    config["alphas"] = args.alpha
     config["rho"] = args.rho
     config["colorspace"] = args.colorspace
 

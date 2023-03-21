@@ -4,6 +4,8 @@ from collections import defaultdict
 import cv2
 import xmltodict
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 
 """ def load_from_xml(path):
 
@@ -114,19 +116,17 @@ def noise_reduction(frame):
     #frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
 
     kernel = np.ones((2, 2), np.uint8)
-    seg = cv2.erode(frame, kernel, iterations=1)
+    frame = cv2.erode(frame, kernel, iterations=1)
     kernel = np.ones((2,4), np.uint8)
-    seg = cv2.dilate(seg, kernel, iterations=1)
+    frame = cv2.dilate(frame, kernel, iterations=1)
 
-    seg = cv2.morphologyEx(seg, cv2.MORPH_OPEN, np.ones((10, 5), np.uint8))
-    seg = cv2.morphologyEx(seg, cv2.MORPH_CLOSE, np.ones((5, 7), np.uint8))
+    fame = cv2.morphologyEx(frame, cv2.MORPH_CLOSE, np.ones((2, 5), np.uint8))
+    #frame = cv2.morphologyEx(frame, cv2.MORPH_OPEN, np.ones((9, 5), np.uint8))
+    #frame = cv2.morphologyEx(frame, cv2.MORPH_CLOSE, np.ones((5, 7), np.uint8))
+
+    return frame
 
 
-    seg = cv2.morphologyEx(seg, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
-    seg = cv2.morphologyEx(seg, cv2.MORPH_CLOSE, np.ones((3, 7), np.uint8))
-
-
-    return seg
 
 def findBBOX(mask):
 
@@ -144,6 +144,71 @@ def findBBOX(mask):
                 box.append([x, y, x + w, y + h])
 
     return box
+
+def visualizeTask1_2(dict):
+    "dict: keys the value of alpha and for values [mIoU, mAP]"
+
+    #plot mIoU scatter plot
+    plt.figure()
+    plt.scatter(list(dict.keys()), [x[0] for x in dict.values()], label='mIoU')
+    plt.xlabel('alpha')
+    plt.ylabel('mIoU')
+    plt.title('mIoU vs alpha')
+    plt.legend()
+    plt.savefig('results/mIoU.png')
+
+    #plot mAP
+    plt.figure()
+    plt.scatter(list(dict.keys()), [x[1] for x in dict.values()], label='mAP')
+    plt.xlabel('alpha')
+    plt.ylabel('mAP')
+    plt.title('mAP vs alpha')
+    plt.legend()
+    plt.savefig('results/mAP.png')
+
+    #create a table with pandas and save it as a csv file
+    df = pd.DataFrame.from_dict(dict, orient='index', columns=['mIoU', 'mAP'])
+    df.to_csv('results/task1_2.csv')
+    
+def filter_boxes(boxes, max_aspect_ratio,nms_threshold):
+   
+    # Convert frame_bbox to a NumPy array and extract the boxes and confidence scores
+    #boxes = np.array([box for box in boxes if len(box) != 0])
+    scores = np.ones(len(boxes))
+
+    # Filter boxes based on aspect ratio if the length of boxes is greater than 0
+    print(f"the lengthi of boxes is {len(boxes)}")
+    filtered_boxes = []
+
+    for box in boxes:
+        if len(box) == 0:
+            aspect_ratio = 0
+            filtered_boxes.append([])
+        else:
+            aspect_ratio = (box[3] - box[1]) / (box[2] - box[0])
+            if aspect_ratio > max_aspect_ratio:
+                filtered_boxes.append([])
+            else:   
+                filtered_boxes.append(box)
+                
+        
+        
+    # Apply NMS on the filtered boxes
+    nms_indices = cv2.dnn.NMSBoxes(filtered_boxes, scores, 0.0, nms_threshold)
+    print(nms_indices)
+
+    
+
+    return boxes
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
