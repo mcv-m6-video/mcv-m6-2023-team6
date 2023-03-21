@@ -83,7 +83,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
     
     # Save GIF
     if cfg['save']:
-        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif[:200])
-        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}.gif', foreground_gif_boxes[:200])
+        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif[:200])
+        imageio.mimsave(f'{path_results}/denoised_foreground_alpha{model.alpha}_rho_{model.p}.gif', foreground_gif_boxes[:200])
 
     return mAP,mIoU

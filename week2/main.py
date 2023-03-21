@@ -5,7 +5,7 @@ import yaml
 
 from models import Gaussian, AdaptiveGaussian, SOTA
 from utils.rendering import rendering_video
-from utils.util import visualizeTask1_2
+from utils.util import visualizeTask1_2, visualizeTask2
 
 TOTAL_FRAMES_VIDEO = 2141
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -19,10 +19,14 @@ def main(cfg):
 
     path = os.path.dirname(os.path.abspath(__file__))
     alpha_list = cfg["alphas"]
-    alphas = {}
+    rho_list = cfg["rhos"]
+
+    dic = {}
+
 
     for alpha in alpha_list:
-
+        
+        
         if cfg["run_mode"] == "Gaussian":
             print("Gaussian Function")
             print("----------------------------------------")
@@ -30,8 +34,21 @@ def main(cfg):
                             checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
 
         elif cfg["run_mode"] == "AdaptativeGaussian":
-            model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], alpha=float(alpha),
-                                    colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
+            dic[alpha] = {}
+            for rho in rho_list:
+                print("Adaptative Gaussian Function")
+                print("----------------------------------------")
+                model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=float(rho), alpha=float(alpha),
+                                        colorspace=cfg['colorspace'], checkpoint=f"{cfg['colorspace']}_{cfg['percentatge']}")
+                
+                map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+                dic[alpha][rho] = [map,iou]
+                
+                print("Done for rho = ", rho)
+                print("----------------------------------------")
+
+            print("Done for all rhos")
+            print("----------------------------------------")
 
         elif cfg["run_mode"] == "SOTA":
             model = SOTA(cfg['paths']['video_path'], frames_modelling, p=cfg["rho"], checkpoint=None, n_jobs=-1,
@@ -39,19 +56,21 @@ def main(cfg):
         else:
             raise ValueError("Invalid run mode")
 
-        map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
-
+        if cfg["run_mode"] != "AdaptativeGaussian":
+            map,iou = rendering_video(cfg, model, frames_modelling, f'./results/{cfg["run_mode"]}/',cfg['paths']['annotations_path'])
+            dic[alpha] = [map,iou]
         
+            
 
         print("Done for alpha = ", alpha)
         print("----------------------------------------")
 
         #add alpha to dictand save its map and iou
-        alphas[alpha] = [map,iou]
-    
+        
     print("Done for all alphas")
-    print(alphas)
-    visualizeTask1_2(alphas)
+    print(dic)
+    #visualizeTask1_2(dic)
+    visualizeTask2(dic)
     print("----------------------------------------")
 
 if __name__ == "__main__":
@@ -66,7 +85,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
     parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
     parser.add_argument("-a", "--alpha", default=1, nargs="+", type=float, help="Alpha Thresholding")
-    parser.add_argument("--rho", default=0.05, type=float, help="Rho Thresholding")
+    parser.add_argument("--rho", default=0.05, nargs="+",type=float, help="Rho Thresholding")
     parser.add_argument("--colorspace", default="gray", type=str, help="Colorspace to use (gray, rgb, hsv, yuv)")
 
     args = parser.parse_args()
@@ -85,7 +104,7 @@ if __name__ == "__main__":
     config["percentatge"] = args.percentatge
     config["sota_method"] = args.sota_method
     config["alphas"] = args.alpha
-    config["rho"] = args.rho
+    config["rhos"] = args.rho
     config["colorspace"] = args.colorspace
 
     main(config)
