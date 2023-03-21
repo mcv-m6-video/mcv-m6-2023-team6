@@ -138,6 +138,8 @@ def plot_task1():
     pixel_values = []
     mean_values = []
     std_values = []
+    # create a list of frames
+    frames_list = [i for i in range(total_frames)]
     # Loop through each frame
     for i in range(total_frames):
         # Read the frame
@@ -154,14 +156,15 @@ def plot_task1():
             # Write the frame to the video
             out.write(frame)
             # get one pixel value
-            pixel = frame[500, 500]
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            pixel = frame_gray[500,500]
             pixel_values.append(pixel)
-            mean_values.append(np.mean(pixel_values))
-            std_values.append(np.std(pixel_values))
+            mean_values.append(np.mean(pixel_values, axis=0))
+            std_values.append(np.std(pixel_values, axis=0))
 
-            mean.set_data(i, np.mean(pixel_values))
-            std.set_data(i, np.std(pixel_values))
-            value.set_data(i, pixel)
+            mean.set_data(frames_list[:i], mean_values[:i])
+            std.set_data(frames_list[:i], std_values[:i])
+            value.set_data(frames_list[:i], pixel_values[:i])
             fig.canvas.draw()
             image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
             image = image.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
