@@ -31,3 +31,13 @@ class SOTA(BaseModel):
 
         return foreground,I
     
+    def model_background(self):
+        frame = self.cap.read()
+        counter = 1
+        while frame is not None and counter < self.num_frames:
+            frame = self.cap.read()
+            counter += 1
+        print("Background modeled!")
+        return counter
+
+    

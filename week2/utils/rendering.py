@@ -10,8 +10,8 @@ TOTAL_FRAMES_VIDEO = 2141
 def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save=True,
                     display=False):
     
-    if cfg['run_mode'] != 'SOTA':
-        model.model_background()
+
+    model.model_background()
 
     foreground_gif = []
     foreground_gif_boxes = []
@@ -109,6 +109,7 @@ def rendering_video(cfg, model, frames_modelling, path_results, ai_gt_path, save
         elif cfg['run_mode'] == 'SOTA':
             imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}.gif', foreground_gif[:200])
             imageio.mimsave(f'{path_results}/SOTA_{cfg["sota_method"]}_boxes.gif', foreground_gif_boxes[:200])
+
 
     return mAP,mIoU
 
