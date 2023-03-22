@@ -132,7 +132,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--save", default=True, type=bool, help="Save the video or not")
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
     parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
-    parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, ViBE")
+    parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, KNN, GMG)")
     parser.add_argument("-a", "--alpha", default=5, nargs="+", type=float, help="Alpha Thresholding")
     parser.add_argument("--rho", default=0.05, nargs="+",type=float, help="Rho Thresholding")
     parser.add_argument("-c", "--colorspaces", nargs='+', default="gray", type=str, help="Colorspace to use (gray, RGB, YCRCB, HSV, YUV)")
