@@ -6,7 +6,7 @@
 # OUTPUT: ./results/task_2_AdaptiveGaussian/
 # {5.0: {0.05: [0.5030393154694073, 0.2718995737835347]}}
 
-# python main.py -r task_3 -m SOTA -p 0.25 -c gray -s MOG2 -a 0
+# python main.py -r task_3 -m SOTA -p 0.25 -c gray -e MOG2 -a 0
 # OUTPUT: ./results/task_3_SOTA/
 # {0.0: [0.7081791718896054, 0.3892347646742538]}
 

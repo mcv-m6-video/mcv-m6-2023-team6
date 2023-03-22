@@ -15,7 +15,9 @@ class SOTA(BaseModel):
         elif method == 'LSBP':
             self.method = cv2.bgsegm.createBackgroundSubtractorLSBP()
         elif method == "knn":
-            self.method = cv2.createBackgroundSubtractorKNN()  
+            self.method = cv2.createBackgroundSubtractorKNN() 
+        elif method == "GMG":
+            self.method = cv2.bgsegm.createBackgroundSubtractorGMG() 
         else:
             raise Exception('Invalid method')
     
@@ -27,7 +29,11 @@ class SOTA(BaseModel):
             return None
 
         I = cv2.cvtColor(I, self.colorspace_conversion)
+
         foreground = self.method.apply(I)
+
+        #for MOG2, remove shadows
+        foreground[foreground == 127] = 0
 
         return foreground,I
     
