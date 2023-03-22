@@ -24,7 +24,7 @@ Arguments:\
 ```a --alpha```: alpha values \
 ```-rho```: rho values \
 ```-c --colorspaces```: [gray, RGB, YCRCB, HSV, YUV]\
--```g --grid```: show the grid or not
+```-g --grid```: show the grid or not
 
 #### Gaussian modeling
 
