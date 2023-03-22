@@ -209,17 +209,20 @@ def visualizeTask2(dict, output_path):
     # extract the alpha, rho, and value data from the results dictionary
     alphas = []
     rhos = []
-    values = []
+    valuesMAP = []
+    valuesIoU = []
     for key, value in dict.items():
         for key2, value2 in value.items():
-            alphas.append(key)
-            rhos.append(key2)
-            values.append(value2)
+            alphas.append(float(key))
+            rhos.append(float(key2))
+            valuesMAP.append(float(value2[0]))
+            valuesIoU.append(float(value2[1]))
+
 
     # create a 3D scatter plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(alphas, rhos, values[0])
+    ax.scatter(alphas, rhos, valuesMAP)
 
     # set axis labels and title
     ax.set_xlabel('alpha')
@@ -232,7 +235,7 @@ def visualizeTask2(dict, output_path):
     # create a 3D scatter plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(alphas, rhos, values[1])
+    ax.scatter(alphas, rhos, valuesIoU)
 
     # set axis labels and title
     ax.set_xlabel('alpha')
@@ -241,6 +244,36 @@ def visualizeTask2(dict, output_path):
     ax.set_title('Grid Search Results for the IoU')
     plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
 
+
+    fig = plt.figure(figsize=(20, 10))
+    ax1 = fig.add_subplot(1, 2, 1, projection='3d')
+    ax2 = fig.add_subplot(1, 2, 2, projection='3d')
+
+    X = np.array(alphas).reshape(-1, len(set(rhos)))
+    Y = np.array(rhos).reshape(-1, len(set(rhos)))
+    Z1 = np.array(valuesMAP).reshape(X.shape)
+    Z2 = np.array(valuesIoU).reshape(X.shape)
+
+    ax1.plot_surface(X, Y, Z1, cmap='coolwarm')
+    ax2.plot_surface(X, Y, Z2, cmap='coolwarm')
+
+    # set axis labels and titles
+    ax1.set_xlabel('alpha')
+    ax1.set_ylabel('rho')
+    ax1.set_zlabel('mAP')
+    ax1.set_title('mAP')
+
+    ax2.set_xlabel('alpha')
+    ax2.set_ylabel('rho')
+    ax2.set_zlabel('IoU')
+    ax2.set_title('IoU')
+    #add colorbar
+    fig.colorbar(ax1.plot_surface(X, Y, Z1, cmap='coolwarm'), ax=ax1)
+    fig.colorbar(ax2.plot_surface(X, Y, Z2, cmap='coolwarm'), ax=ax2)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(ouput_path_grid,'task2_surfaces.png'))
+
     #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
     # save the dictionary of dictionaries as a csv file
     df = pd.DataFrame()
@@ -248,8 +281,8 @@ def visualizeTask2(dict, output_path):
     #append columns
     df['alpha'] = alphas
     df['rho'] = rhos
-    df['mAP'] = values[0]
-    df['IoU'] = values[1]
+    df['mAP'] = valuesMAP
+    df['IoU'] = valuesIoU
     df = df[['alpha', 'rho', 'mAP', 'IoU']]
 
     df.to_csv(os.path.join(ouput_path_grid,'task2.csv'))
