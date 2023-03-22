@@ -20,10 +20,19 @@ class Gaussian(BaseModel):
         self.base = os.path.join(os.getcwd(), "checkpoints", "GaussianModel")
 
     def compute_parameters(self):
-        self.mean = np.mean(self.images, axis=-1, dtype=np.float32)
-        print("Mean computed successfully.")
-        self.std = np.std(self.images, axis=-1, dtype=np.float32)
-        print("Standard deviation computed successfully.")
+        # Compute the mean and std of the images using self.ch_used channels [0,1,2] means that we keep the 3 channels, [0] means that we keep only the first channel
+        if self.colorspace == 'gray':
+            self.mean = np.mean(self.images, axis=-1, dtype=np.float32)
+            print("Mean computed successfully.")
+            self.std = np.std(self.images, axis=-1, dtype=np.float32)
+            print("Standard deviation computed successfully.")
+        else:
+            self.mean = np.mean(self.images[:,:,self.ch_used,:], axis=-1, dtype=np.float32)
+            print("Mean computed successfully.")
+            self.std = np.std(self.images[:,:,self.ch_used,:], axis=-1, dtype=np.float32)
+            print("Standard deviation computed successfully.")
+    
+        
 
         if self.colorspace == 'gray':
             #cv2.imwrite("./results/Gaussian/mean.png", self.mean)
@@ -31,7 +40,7 @@ class Gaussian(BaseModel):
             # Plot the heatmap of the standard deviation without showing it
             plt.imshow(self.std, cmap='hot')
             plt.colorbar()
-            #plt.savefig("./results/Gaussian/std_heatmap.png")
+            plt.savefig("./results/task_1_Gaussian/std_heatmap.png")
             
 
 
@@ -61,7 +70,12 @@ class Gaussian(BaseModel):
             return None
 
         I = cv2.cvtColor(I, self.colorspace_conversion)
-        abs_diff = np.abs(I - self.mean)
+        # Only keep the channels self.ch_used = [0,1,2] means that we keep the 3 channels
+        if self.colorspace == 'gray':
+            abs_diff = np.abs(I - self.mean)
+        else:
+            abs_diff = np.abs(I[:, :, self.ch_used] - self.mean)
+
         foreground = ne.evaluate("abs_diff >= alpha * (std + 2)",
                                  local_dict={"abs_diff": abs_diff, "std": self.std, "alpha": self.alpha})
         return foreground.astype(np.uint8) * 255, I
@@ -72,8 +86,8 @@ class Gaussian(BaseModel):
 
         np.save(f"{self.base}/{self.checkpoint}/mean.npy", self.mean)
         np.save(f"{self.base}/{self.checkpoint}/std.npy", self.std)
-        cv2.imwrite(f"{self.base}/{self.checkpoint}/mean.png", self.mean)
-        cv2.imwrite(f"{self.base}/{self.checkpoint}/std.png", self.std)
+        # cv2.imwrite(f"{self.base}/{self.checkpoint}/mean.png", self.mean)
+        # cv2.imwrite(f"{self.base}/{self.checkpoint}/std.png", self.std)
 
         assert (np.load(f"{self.base}/{self.checkpoint}/mean.npy") == self.mean).all()
         assert (np.load(f"{self.base}/{self.checkpoint}/std.npy") == self.std).all()

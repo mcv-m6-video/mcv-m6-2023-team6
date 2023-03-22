@@ -16,22 +16,32 @@ class BaseModel:  # Base class for the models
         self.channels = 3
         self.images = None
 
+        self.used = {}
         if colorspace == 'gray':
             self.colorspace_conversion = cv2.COLOR_BGR2GRAY
             self.channels = 1
+            self.ch_used = [0]
 
         elif colorspace == 'RGB':
             self.colorspace_conversion = cv2.COLOR_BGR2RGB
             self.channels = 3
+            self.ch_used = [0,1,2]
 
         elif colorspace == 'YCRCB':
             self.colorspace_conversion = cv2.COLOR_BGR2YCrCb
+            self.channels = 3
+            self.ch_used = [1,2]
 
         elif colorspace == 'HSV':
             self.colorspace_conversion = cv2.COLOR_BGR2HSV
+            self.channels = 3
+            self.ch_used = [1]
 
         elif colorspace == 'YUV':
             self.colorspace_conversion = cv2.COLOR_BGR2YUV
+            self.channels = 3
+            self.ch_used = [1,2]
+
 
         else:
             raise Exception('Invalid Colorspace')
@@ -67,12 +77,10 @@ class BaseModel:  # Base class for the models
         with tqdm(total=self.num_frames) as pbar:
             # self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.num_frames - 1)
             for i in range(self.num_frames):
-
                 success, frame = self.cap.read()
                 frame = cv2.cvtColor(frame, self.colorspace_conversion)
                 # Save frame to visualize
-                cv2.imwrite(f"./Results/frame_{i}.png", frame)
-
+                # cv2.imwrite(f"./Results/frame_{i}.png", frame)
                 if not success:
                     break
                 self.__add_image(frame, i)

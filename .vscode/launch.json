@@ -1,0 +1,17 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["-m", "Gaussian", "-r", "task_4" ,"-p", "0.25", "-c", "YCRCB", "YUV", "-g", "True", "-a", "5", "--config", "/home/guillem/mcv-m6-2023-team6/week2/configs/config.yml"]
+        }
+    ]
+}

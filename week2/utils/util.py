@@ -133,7 +133,7 @@ def findBBOX(mask):
     minW = 100#120
     maxW =1920/2# 1920--> width frame
 
-    if mask.shape[-1] == 3:
+    if len(mask.shape) > 2:
         # Sum over the channels to create a single channel mask
         mask = mask.sum(axis=-1)
         # Binarize to put 255 on the pixels that are not black
