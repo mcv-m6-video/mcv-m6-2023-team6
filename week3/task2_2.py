@@ -40,13 +40,8 @@ def traking(display):
         dets = discard_overlaps(dets)
 
         total_frames += 1
-
-        if display:
-            fn = current_path + f'/../../dataset/AICity_data/train/S03/c010/frames/{frame_id}.jpg'
-            im = io.imread(fn)
-
-
-
+        fn = current_path + f'/../../dataset/AICity_data/train/S03/c010/frames/{frame_id}.jpg'
+        im = io.imread(fn)
         start_time = time.time()
         dets = np.array(dets)
         trackers = mot_tracker.update(dets)
@@ -56,13 +51,11 @@ def traking(display):
         out.append(trackers)
 
         for d in trackers:
-            if display:
-                d = d.astype(np.uint32)
-                cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]), (0, 255, 0), 2)
-        # fig.canvas.draw()
-        #canvas = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
-        # canvas = canvas.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
-        # images.append(canvas)
+            d = d.astype(np.uint32)
+            cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]), (0, 255, 0), 2)
+
+        if display:
+            cv2.imshow('frame', im)
         video_out.write(im)
 
 
@@ -71,4 +64,4 @@ def traking(display):
 
 
 if __name__ == "__main__":
-    traking(display=True)
+    traking(display=False)
