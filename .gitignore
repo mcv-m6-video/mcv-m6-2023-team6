@@ -12,12 +12,20 @@ dataset/
 *.err
 *.out
 *.jpg
+*.pth
+*.json
+*.csv
+*.lock
+*.txt
+*last_checkpoint
+*events.out*
 # *.png
 *.pkl
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+./week3/Results/
 
 # C extensions
 *.so
