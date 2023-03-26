@@ -29,9 +29,8 @@ def traking(display):
     out = []
 
     if display:
-        plt.ion()  # for iterative display
-        fig, ax = plt.subplots(1, 2, figsize=(20, 20))
-        fig.show()
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        video_out = cv2.VideoWriter("./output/" + "video.mp4", fourcc, 10, (1920, 1080))
 
     mot_tracker = Sort()  # create instance of the SORT tracker
 
@@ -45,10 +44,6 @@ def traking(display):
         if display:
             fn = current_path + f'/../../dataset/AICity_data/train/S03/c010/frames/{frame_id}.jpg'
             im = io.imread(fn)
-            ax[0].axis('off')
-            ax[0].set_title('Tracked Targets')
-            ax[0].imshow(im)
-            # fig.canvas.draw()
 
 
 
@@ -63,23 +58,15 @@ def traking(display):
         for d in trackers:
             if display:
                 d = d.astype(np.uint32)
-                ax[1].add_patch(patches.Rectangle((d[0], d[1]), d[2] - d[0], d[3] - d[1], fill=False, lw=3,
-                                                  ec=colours[d[4] % 32, :]))
-                ax[1].set_adjustable('box')
-
+                cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]), (0, 255, 0), 2)
         # fig.canvas.draw()
         #canvas = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
         # canvas = canvas.reshape(fig.canvas.get_width_height(physical=True)[::-1] + (3,))
         # images.append(canvas)
-        plt.savefig(f'./output/{frame_id}.jpg')
+        video_out.write(im)
 
 
-    # imageio.mimsave("./output" + 'iou.gif', images)
-
-        # cv2.imwrite(f'./output/{frame_id}.jpg', fig.canvas.buffer_rgba())
-
-
-
+    video_out.release()
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
 
 
