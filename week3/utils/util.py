@@ -1,5 +1,4 @@
 import itertools
-import copy
 
 def load_from_txt(path, threshold):
     """
@@ -34,7 +33,7 @@ def load_from_txt(path, threshold):
     return detections
 
 # INTERSECTION OVER UNION
-def iou(box1, box2, threshold=0.8):
+def iou(box1, box2, threshold=0.9):
     if len(box1) > 4:
         box1 = box1[:4]
     """Return iou for a single a pair of boxes"""
@@ -64,7 +63,7 @@ def iou(box1, box2, threshold=0.8):
 
 
 
-def discard_overlaps(frame_boxes,threshold=0.7):
+def discard_overlaps(frame_boxes,threshold=0.9):
     discard = []
     for i in range(len(frame_boxes)):
         boxA = [frame_boxes[i][1],frame_boxes[i][2],frame_boxes[i][3],frame_boxes[i][4]]
