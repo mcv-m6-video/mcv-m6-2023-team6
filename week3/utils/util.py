@@ -34,7 +34,7 @@ def load_from_txt(path, threshold):
     return detections
 
 # INTERSECTION OVER UNION
-def iou(box1, box2, threshold=0.9):
+def iou(box1, box2, threshold=0.8):
     if len(box1) > 4:
         box1 = box1[:4]
     """Return iou for a single a pair of boxes"""
@@ -64,23 +64,23 @@ def iou(box1, box2, threshold=0.9):
 
 
 
-def discard_overlaps(frame_boxes,threshold=0.9):
+def discard_overlaps(frame_boxes,threshold=0.7):
     discard = []
-    boxes = copy.deepcopy(frame_boxes)
-    for i in range(len(boxes)):
-        boxA = [boxes[i][1],boxes[i][2],boxes[i][3],boxes[i][4]]
-        for j in range(len(boxes)):
-            boxB = [boxes[j][1],boxes[j][2],boxes[j][3],boxes[j][4]]
+    for i in range(len(frame_boxes)):
+        boxA = [frame_boxes[i][1],frame_boxes[i][2],frame_boxes[i][3],frame_boxes[i][4]]
+        for j in range(len(frame_boxes)):
+            boxB = [frame_boxes[j][1],frame_boxes[j][2],frame_boxes[j][3],frame_boxes[j][4]]
             if i == j:
                 continue
             elif any(j in sublist for sublist in discard):
                 continue
             else:
-                if iou(boxA,boxB,threshold) == True:
+                _,score = iou(boxA,boxB,threshold)
+                if score == True:
                     discard.append([i,j])
 
     discard.sort(key=lambda x: x[1], reverse=True)
     for d in discard:
-        del boxes[d[1]]
+        del frame_boxes[d[1]]
 
     return frame_boxes
