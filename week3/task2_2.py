@@ -74,7 +74,6 @@ def traking(display):
     video_out.release()
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
 
-
     # save trackers to data frame, not out
     # save to csv
     df_list = []
@@ -85,10 +84,10 @@ def traking(display):
             bb_left = track[0]
             bb_top = track[1]
             df_list.append(pd.DataFrame({'frame': int(frame_id), 'id': track[4], 'bb_left': bb_left, 'bb_top': bb_top,
-                                         'bb_width': width, 'bb_height': height, 'conf': 0.5}, index=[0]))
+                                         'bb_width': width, 'bb_height': height, 'conf': 0.5, "x": -1, "y": -1,
+                                         "z": -1}, index=[0]))
     df = pd.concat(df_list, ignore_index=True)
     df.to_csv('task2_2.csv', index=False)
-
 
 
 if __name__ == "__main__":
