@@ -3,6 +3,7 @@ from __future__ import print_function
 import imageio
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import pandas as pd
 from IPython import display as dp
 import numpy as np
 from skimage import io
@@ -16,7 +17,7 @@ from tqdm import tqdm
 
 
 def traking(display):
-    images = []
+    images = {}
     current_path = os.path.dirname(os.path.abspath(__file__))
     fileDetections = os.path.join(current_path, "../../dataset/AICity_data/train/S03/c010/det/det_mask_rcnn.txt")
 
@@ -27,7 +28,6 @@ def traking(display):
     total_frames = 0
     out = []
 
-    
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_out = cv2.VideoWriter("./output_task2_2/" + "task2_2.mp4", fourcc, 10, (1920, 1080))
 
@@ -36,7 +36,7 @@ def traking(display):
 
     for frame_id in tqdm(frame_boxes):  # all frames in the sequence
 
-        dets = frame_boxes[frame_id] # each box is [frame,x1, y1, x2, y2, conf]
+        dets = frame_boxes[frame_id]  # each box is [frame,x1, y1, x2, y2, conf]
         dets = discard_overlaps(dets)
         # from each box we extract only the x1, y1, x2, y2
         dets = [[d[1], d[2], d[3], d[4]] for d in dets]
@@ -52,6 +52,7 @@ def traking(display):
         total_time += cycle_time
 
         out.append(trackers)
+        images[frame_id] = trackers
 
         for d in trackers:
             d = d.astype(np.uint32)
@@ -60,20 +61,34 @@ def traking(display):
                 # generate a new random color for this tracker
                 tracker_colors[tracker_id] = np.random.rand(3)
             color = tracker_colors[tracker_id]
-            #color array to tuple
-            color = (int(color[0]*255), int(color[1]*255), int(color[2]*255))
-            
-            cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]),color,2)
+            # color array to tuple
+            color = (int(color[0] * 255), int(color[1] * 255), int(color[2] * 255))
+
+            cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]), color, 2)
             cv2.putText(im, str(tracker_id), (d[0], d[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
 
         if display:
             cv2.imshow('frame', im)
         video_out.write(im)
 
-
     video_out.release()
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
-    print(out)
+
+
+    # save trackers to data frame, not out
+    # save to csv
+    df_list = []
+    for frame_id in images:
+        for track in images[frame_id]:
+            width = track[2] - track[0]
+            height = track[3] - track[1]
+            bb_left = track[0]
+            bb_top = track[1]
+            df_list.append(pd.DataFrame({'frame': int(frame_id), 'id': track[4], 'bb_left': bb_left, 'bb_top': bb_top,
+                                         'bb_width': width, 'bb_height': height, 'conf': 0.5}, index=[0]))
+    df = pd.concat(df_list, ignore_index=True)
+    df.to_csv('task2_2.csv', index=False)
+
 
 
 if __name__ == "__main__":

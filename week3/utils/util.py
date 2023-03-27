@@ -108,4 +108,4 @@ def write_to_csv_file(filename, data):
                 else:
                     ob_id = object_data[6]
                 # Write the object data to the CSV file
-                writer.writerow([frame_number, ob_id, left, top, width, height, conf, -1, -1, -1])
+                writer.writerow([frame, ob_id, left, top, width, height, conf, -1, -1, -1])
