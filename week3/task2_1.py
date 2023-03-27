@@ -1,7 +1,7 @@
 from utils.util import load_from_txt,discard_overlaps,iou,write_to_csv_file
 import cv2
 import numpy as np
-import imageio as io
+from skimage import io
 from tqdm import tqdm
 import time
 import copy
@@ -22,7 +22,7 @@ def track_memory(tracked_objects):
 
 def video(det_boxes):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./output_task2_1/" + "task2_1.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./Results/Task_2_1/" + "faster_RCNN.mp4", fourcc, 10, (1920, 1080))
     tracker_colors = {}
 
     for frame_id in det_boxes:
@@ -38,7 +38,7 @@ def video(det_boxes):
             color = (int(color[0]*255),int(color[1]*255), int(color[2]*255))
 
             cv2.rectangle(im, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])),color,2)
-            cv2.putText(im, str(track_id), (frame_boxes[1], frame_boxes[2]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+            cv2.putText(im, str(track_id), (int(box[1]), int(box[2])), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
 
         video_out.write(im)
     video_out.release()
@@ -60,7 +60,7 @@ def max_iou_tracking(path):
         frame_boxes = discard_overlaps(boxes)
 
         # FIRST FRAME, WE INITIALIZE THE OBJECTS ID
-        if frame_id == 0:
+        if not tracked_objects:
             for j in range(len(frame_boxes)):
                 # We add the tracking object ID at the end of the list  [[frame,x1, y1, x2, y2, conf, track_id]]
                 frame_boxes[j].append(track_id)
@@ -139,6 +139,6 @@ def max_iou_tracking(path):
 
 if __name__ == "__main__":
 
-    tracking_boxes = max_iou_tracking(os.path.join(current_path, "../../dataset/AICity_data/train/S03/c010/det/det_mask_rcnn.txt"))
+    tracking_boxes = max_iou_tracking(os.path.join(current_path, "./Results/Task1_5/faster_RCNN/A/bbox_faster_RCNN_A.txt"))
     video(tracking_boxes)
-    #write_to_csv_file("task_2_1.csv",tracking_boxes)
+    write_to_csv_file("./Results/Task_2_1/task_2_1_fasterRCNN.csv",tracking_boxes)
