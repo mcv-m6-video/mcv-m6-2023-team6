@@ -30,14 +30,14 @@ def video(det_boxes):
         im = io.imread(fn)
         frame_boxes = det_boxes[frame_id]
 
-        for j in range(len(frame_boxes)):
-            track_id = frame_boxes[j][-1]
+        for box in det_boxes[frame_id]:
+            track_id = box[-1]
             if track_id not in tracker_colors:
                 tracker_colors[track_id] = np.random.rand(3)
             color = tracker_colors[track_id]
             color = (int(color[0]*255),int(color[1]*255), int(color[2]*255))
 
-            cv2.rectangle(im, (frame_boxes[j][1], frame_boxes[j][1]), (frame_boxes[j][1],frame_boxes[j][1]),color,2)
+            cv2.rectangle(im, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])),color,2)
             cv2.putText(im, str(track_id), (frame_boxes[1], frame_boxes[2]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
 
         video_out.write(im)
