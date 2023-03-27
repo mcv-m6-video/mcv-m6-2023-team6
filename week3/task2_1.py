@@ -2,7 +2,7 @@ from utils.util import load_from_txt,discard_overlaps,iou,write_to_csv_file
 import cv2
 import numpy as np
 import imageio as io
-import tqdm
+from tqdm import tqdm
 import time
 import copy
 import os
@@ -37,7 +37,7 @@ def video(det_boxes):
             color = tracker_colors[track_id]
             color = (int(color[0]*255),int(color[1]*255), int(color[2]*255))
 
-            cv2.rectangle(im, (frame_boxes[1], frame_boxes[2]), (frame_boxes[3], frame_boxes[4]),color,2)
+            cv2.rectangle(im, (frame_boxes[j][1], frame_boxes[j][1]), (frame_boxes[j][1],frame_boxes[j][1]),color,2)
             cv2.putText(im, str(track_id), (frame_boxes[1], frame_boxes[2]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
 
         video_out.write(im)
