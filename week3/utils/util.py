@@ -2,6 +2,7 @@ import itertools
 import csv
 from collections import defaultdict
 import xmltodict
+import json
 
 def load_from_xml(path):
     """
@@ -77,6 +78,41 @@ def load_from_txt(path, threshold):
     detections = {k: list(v) for k, v in detections}
 
     return detections
+
+
+def load_from_json(path):
+    """
+    :param path: path file
+
+    :return: list = [[frame,x1, y1, x2, y2, conf]]
+    """
+    # Format of the json results:
+    # [{"image_id": 535, "category_id": 0, "bbox": [1287.4693603515625, 149.95562744140625, 249.6556396484375, 118.50900268554688], "score": 0.999832034111023}, {"image_id": 535, "category_id": 0, "bbox": [1175.3563232421875, 80.76919555664062, 76.1966552734375, 92.26856994628906], "score": 0.9997095465660095}
+    with open(path) as f:
+        json_data = json.load(f)
+
+    detections = []
+    for d in json_data:
+        frame = d["image_id"]
+        detections.append(
+            [
+                frame,
+                d["bbox"][0],
+                d["bbox"][1],
+                d["bbox"][0] + d["bbox"][2],
+                d["bbox"][1] + d["bbox"][3],
+                d["score"],
+            ]
+        )
+    
+    """Group the detected boxes by frame_id as a dictionary"""
+    detections.sort(key=lambda x: x[0])
+    detections = itertools.groupby(detections, key=lambda x: x[0])
+    detections = {k: list(v) for k, v in detections}
+
+    return detections
+    
+
 
 # INTERSECTION OVER UNION
 def iou(box1, box2, threshold=0.9):

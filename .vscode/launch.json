@@ -11,7 +11,6 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["-m", "Gaussian", "-r", "task_4" ,"-p", "0.25", "-c", "YCRCB", "YUV", "-g", "True", "-a", "5", "--config", "/home/guillem/mcv-m6-2023-team6/week2/configs/config.yml"]
-        }
+            }
     ]
 }
