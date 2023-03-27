@@ -87,6 +87,8 @@ def traking(display):
                                          'bb_width': width, 'bb_height': height, 'conf': 0.5, "x": -1, "y": -1,
                                          "z": -1}, index=[0]))
     df = pd.concat(df_list, ignore_index=True)
+    df['frame'] = df['frame'] + 1
+    df = df.sort_values(by=['id'])
     df.to_csv('task_2_2.csv', index=False)
 
 
