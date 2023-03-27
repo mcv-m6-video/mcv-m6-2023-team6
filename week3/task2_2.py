@@ -31,7 +31,7 @@ def traking(display):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_out = cv2.VideoWriter("./output_task2_2/" + "task2_2.mp4", fourcc, 10, (1920, 1080))
 
-    mot_tracker = Sort()  # create instance of the SORT tracker
+    mot_tracker = Sort(max_age=10, min_hits=3, iou_threshold=0.3) # create instance of the SORT tracker
     tracker_colors = {}
 
     for frame_id in tqdm(frame_boxes):  # all frames in the sequence
@@ -87,7 +87,7 @@ def traking(display):
                                          'bb_width': width, 'bb_height': height, 'conf': 0.5, "x": -1, "y": -1,
                                          "z": -1}, index=[0]))
     df = pd.concat(df_list, ignore_index=True)
-    df.to_csv('task2_2.csv', index=False)
+    df.to_csv('task_2_2.csv', index=False)
 
 
 if __name__ == "__main__":
