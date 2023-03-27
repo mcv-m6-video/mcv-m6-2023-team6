@@ -1,5 +1,50 @@
 import itertools
 import csv
+from collections import defaultdict
+import xmltodict
+
+def load_from_xml(path):
+    """
+
+    :param path: path file
+
+    :return: list = [[frame,x1, y1, x2, y2,confidence=-1,track_id]]
+    """
+
+    with open(path) as f:
+        tracks = xmltodict.parse(f.read())["annotations"]["track"]
+
+    gt = []
+    num_iter = 0
+    confidence = -1
+    for track in tracks:
+        track_id = track["@id"]
+        label = track["@label"]
+        boxes = track["box"]
+        for box in boxes:
+            if label == "car" :
+                frame = int(box["@frame"])
+                frame = frame
+                gt.append(
+                    [   frame,
+                        float(box["@xtl"]),
+                        float(box["@ytl"]),
+                        float(box["@xbr"]),
+                        float(box["@ybr"]),
+                        confidence,
+                        track_id
+                    ]
+                )
+                num_iter += 1
+
+            else:
+                continue
+
+    gt.sort(key=lambda x: x[0])
+    gt = itertools.groupby(gt, key=lambda x: x[0])
+    gt = {k: list(v) for k, v in gt}
+
+    return gt
 
 def load_from_txt(path, threshold):
     """
@@ -109,3 +154,11 @@ def write_to_csv_file(filename, data):
                     ob_id = object_data[6]
                 # Write the object data to the CSV file
                 writer.writerow([frame, ob_id, left, top, width, height, conf, -1, -1, -1])
+
+
+
+
+""" gt_path = 'C:/Users/AnaHarris/Documents/MASTER/M6/project/dataset/AICity_data/ai_challenge_s03_c010-full_annotation.xml'
+gt_tracks = load_from_xml(gt_path)
+
+write_to_csv_file('week3/gt_tracks.csv',gt_tracks)  """
