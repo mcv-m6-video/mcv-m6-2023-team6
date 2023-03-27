@@ -79,6 +79,68 @@ def load_from_txt(path, threshold):
 
     return detections
 
+def load_from_txt_rendering(path):
+    """
+    :param path: path file
+
+    :return: list = [[frame,x1, y1, x2, y2, conf]]
+    """
+    frame_list = []
+    with open(path) as f:
+        lines = f.readlines()
+
+    for l in lines:
+        ll = l.split(",")
+        frame = f"f_{int(ll[0]) - 1}"
+        frame_list.append(
+            [
+                frame,
+                float(ll[2]),
+                float(ll[3]),
+                float(ll[2]) + float(ll[4]),
+                float(ll[3]) + float(ll[5]),
+                ll[6],
+            ]
+        )
+
+    return frame_list
+
+
+def load_from_xml_rendering(path):
+    """
+
+    :param path: path file
+
+    :return: dict[frame_num] = [[x1, y1, x2, y2]]
+    """
+
+    with open(path) as f:
+        tracks = xmltodict.parse(f.read())["annotations"]["track"]
+
+    gt = defaultdict(list)
+    num_iter = 0
+    for track in tracks:
+        label = track["@label"]
+        boxes = track["box"]
+        for box in boxes:
+            if label == "car":
+                frame = int(box["@frame"])
+                frame = f"f_{frame}"
+                gt[frame].append(
+                    [
+                        float(box["@xtl"]),
+                        float(box["@ytl"]),
+                        float(box["@xbr"]),
+                        float(box["@ybr"]),
+                    ]
+                )
+                num_iter += 1
+
+            else:
+                continue
+
+    return gt, num_iter
+
 
 def load_from_json(path):
     """

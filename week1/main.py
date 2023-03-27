@@ -12,7 +12,7 @@ def main(cfg):
     os.makedirs(f"runs/{cfg['run_name']}/", exist_ok=True)
     print(f"Run Name: {cfg['run_name']}")
 
-    gt_boxes, total = load_from_xml(cfg["paths"]["annotations_path"])
+    gt_boxes, total = load_from_xml_rendering(cfg["paths"]["annotations_path"])
     gt = [gt_boxes, total]
 
     if cfg["noisy"]:
@@ -27,7 +27,7 @@ def main(cfg):
 
     else:
         print(f"Run Mode: {cfg['run_mode']}")
-        predicted_boxes = load_from_txt(cfg["detections"][args.run_mode])
+        predicted_boxes = load_from_txt_rendering(cfg["detections"][args.run_mode])
 
     rendering_video(
         f"runs/{cfg['run_name']}/",

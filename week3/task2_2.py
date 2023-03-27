@@ -16,10 +16,10 @@ import matplotlib
 from tqdm import tqdm
 
 
-def traking(display):
+def traking(current_path, folder_det,network,display):
     images = {}
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    fileDetections = os.path.join(current_path, "../../dataset/AICity_data/train/S03/c010/det/det_mask_rcnn.txt")
+    
+    fileDetections = os.path.join(folder_det)
 
     colours = np.random.rand(100, 3)  # used only for display
     frame_boxes = load_from_txt(fileDetections, threshold=0.5)  # load detections
@@ -29,7 +29,7 @@ def traking(display):
     out = []
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./output_task2_2/" + "task2_2.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./Results/Task_2_2/" + f"task2_2_{network}.mp4", fourcc, 10, (1920, 1080))
 
     mot_tracker = Sort(max_age=10, min_hits=3, iou_threshold=0.3) # create instance of the SORT tracker
     tracker_colors = {}
@@ -86,9 +86,16 @@ def traking(display):
             df_list.append(pd.DataFrame({'frame': int(frame_id), 'id': track[4], 'bb_left': bb_left, 'bb_top': bb_top,
                                          'bb_width': width, 'bb_height': height, 'conf': 0.5, "x": -1, "y": -1,
                                          "z": -1}, index=[0]))
+    #format output for the evaluation 
     df = pd.concat(df_list, ignore_index=True)
-    df.to_csv('task_2_2.csv', index=False)
+    df = df.sort_values(by=['id'])
+    df['frame'] = df['frame'] + 1
+
+    df.to_csv(f'./Results/Task_2_2/task_2_2_{network}.csv', index=False)
 
 
 if __name__ == "__main__":
-    traking(display=False)
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    network = "retinaNet"
+    #network = "faster_RCNN"
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,display=False)

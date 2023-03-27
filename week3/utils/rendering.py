@@ -12,7 +12,7 @@ import sys
 
 sys.path.append("../week3")
 
-from util import load_from_xml, load_from_txt
+from util import load_from_xml_rendering, load_from_txt_rendering
 from metrics import (
     mean_AP_Pascal_VOC,
     mean_IoU_nonrestricted,
@@ -49,8 +49,12 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     mIOU, mIOU_frame = mean_IoU_nonrestricted_2(gt_boxes, predicted_boxes)
     # Get the frame_id list
     frames_id = list(mIOU_frame.keys())
-    # Sort the frames list
+    # Sort the frames list and get the frame list from f_536 to f_2140
     frames_id.sort(key=lambda x: int(x.split('_')[1]))
+    frames_id = frames_id[frames_id.index("f_536") : frames_id.index("f_2139") + 1]
+
+
+
     frames_num = [int(frame.split('_')[1]) for frame in frames_id]
     # Get the IoU score list
     iou_scores = [np.mean(mIOU_frame[frame]) for frame in frames_id]
@@ -151,24 +155,26 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
 if __name__ == "__main__":
 
     output_path = '/ghome/group03/mcv-m6-2023-team6/week3/Results/Video_IoU/'
-    annotations_xml = '../dataset/ai_challenge_s03_c010-full_annotation.xml'
-    predicted_json = '/ghome/group03/mcv-m6-2023-team6/week3/Results/Task_1_1/retinaNet/coco_instances_results.json'
-    video_capture = '../dataset/AICity_data/train/S03/c010/vdo.avi'
+    annotations_xml = '/ghome/group03/dataset/ai_challenge_s03_c010-full_annotation.xml'
+    video_path = '/ghome/group03/dataset/AICity_data/train/S03/c010/vdo.avi'
+    detection_path = '/ghome/group03/mcv-m6-2023-team6/week3/Results/Task1_5/retinaNet/A/bbox_retinaNet_A.txt'
 
     # If output_path does not exist, create it
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    gt_boxes, total = load_from_xml(annotations_xml)
+    gt_boxes, total = load_from_xml_rendering(annotations_xml)
     gt = [gt_boxes, total]
 
-    predicted_boxes = load_from_txt(cfg["detections"][args.run_mode])
+    predicted_boxes = load_from_txt_rendering(detection_path)
     
-        rendering_video(
-            output_path,
-            gt,
-            predicted_boxes,
-            cfg["paths"]["video_path"],
-            save=cfg["save"],
-            display=cfg["display"],
-        )
+    rendering_video(
+        output_path,
+        gt,
+        predicted_boxes,
+        video_path,
+        save=True,
+        display=False,
+    )
+
+

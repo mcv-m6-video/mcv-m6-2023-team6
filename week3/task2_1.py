@@ -6,6 +6,7 @@ from tqdm import tqdm
 import time
 import copy
 import os
+import argparse
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,9 +21,9 @@ def track_memory(tracked_objects):
     for idx in delete:
         del tracked_objects[idx]
 
-def video(det_boxes):
+def video(det_boxes,method):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./Results/Task_2_1/" + "faster_RCNN.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./Results/Task_2_1/" + f"{method}.mp4", fourcc, 10, (1920, 1080))
     tracker_colors = {}
 
     for frame_id in det_boxes:
@@ -43,16 +44,18 @@ def video(det_boxes):
         video_out.write(im)
     video_out.release()
 
-def max_iou_tracking(path):
+def max_iou_tracking(path,conf_threshold):
     total_time = 0.0
     total_frames = 0
 
-    det_boxes = load_from_txt(path,threshold=0.5)
+    det_boxes = load_from_txt(path,threshold=conf_threshold)
 
     track_id = 0
     tracked_objects = {}
     memory = 5
-    for frame_id in tqdm(det_boxes):
+    for f_id in tqdm(det_boxes):
+        
+        frame_id = f_id +1 
         total_frames += 1
         start_time = time.time()
         # REMOVE OVERLAPPING BOUNDING BOXES
@@ -139,6 +142,23 @@ def max_iou_tracking(path):
 
 if __name__ == "__main__":
 
-    tracking_boxes = max_iou_tracking(os.path.join(current_path, "./Results/Task1_5/faster_RCNN/A/bbox_faster_RCNN_A.txt"))
-    video(tracking_boxes)
-    write_to_csv_file("./Results/Task_2_1/task_2_1_fasterRCNN.csv",tracking_boxes)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--method", required=True, type=str, help="faster_RCNN")
+    parser.add_argument("-c", "--confidence", default=0.5, type=str, help="confidence threshold")
+    
+    args = parser.parse_args()
+    
+    conf_threshold = args.c
+    method = args.m
+    
+
+    tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),conf_threshold)
+    video(tracking_boxes,method)
+    write_to_csv_file("./Results/Task_2_1/task_2_1_{method}.csv",tracking_boxes)
+    
+    
+    
+    
+    
+    
+    
