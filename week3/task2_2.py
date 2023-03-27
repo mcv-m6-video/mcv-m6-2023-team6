@@ -56,6 +56,7 @@ def traking(display):
                 d = d.astype(np.uint32)
                 ax[1].add_patch(patches.Rectangle((d[0],d[1]),d[2]-d[0],d[3]-d[1],fill=False,lw=3,ec=colours[d[4]%32,:]))
                 ax[1].set_adjustable('box-forced')
+            
 
 
     print("Total Tracking took: %.3f for %d frames or %.1f FPS"%(total_time,total_frames,total_frames/total_time))

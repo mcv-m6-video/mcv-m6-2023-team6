@@ -19,6 +19,7 @@ dataset/
 *.txt
 *last_checkpoint
 *events.out*
+*sort*
 # *.png
 *.pkl
 # Byte-compiled / optimized / DLL files
