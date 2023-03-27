@@ -1,4 +1,5 @@
 import itertools
+import csv
 
 def load_from_txt(path, threshold):
     """
@@ -83,3 +84,28 @@ def discard_overlaps(frame_boxes,threshold=0.9):
         del frame_boxes[d[1]]
 
     return frame_boxes
+
+
+def write_to_csv_file(filename, data):
+    # Open a new CSV file to write the tracker data
+    with open(filename, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+
+        # Write the header row to the CSV file
+        writer.writerow(['frame', 'id', 'bb_left', 'bb_top', 'bb_width', 'bb_height', 'conf', 'x', 'y', 'z'])
+
+        # Loop through each frame in the dictionary and write the object data to the CSV file
+        for frame_number, object_list in data.items():
+            for object_data in object_list:
+                frame = object_data[0]
+                left = object_data[1]
+                top = object_data[2]
+                width = object_data[3] - object_data[1]
+                height = object_data[4] - object_data[2]
+                conf = object_data[5]
+                if len(object_data) < 7:
+                    ob_id = -1
+                else:
+                    ob_id = object_data[6]
+                # Write the object data to the CSV file
+                writer.writerow([frame_number, ob_id, left, top, width, height, conf, -1, -1, -1])
