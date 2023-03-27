@@ -22,7 +22,7 @@ def track_memory(tracked_objects):
 
 def video(det_boxes):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./output_task2_2/" + "task2_2.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./output_task2_1/" + "task2_1.mp4", fourcc, 10, (1920, 1080))
     tracker_colors = {}
 
     for frame_id in det_boxes:
