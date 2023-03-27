@@ -5,6 +5,7 @@ matplotlib
 notebook
 numexpr
 opencv-contrib-python>=4.7.0.72
+scikit-image
 
 
 # --------- python --------- #
