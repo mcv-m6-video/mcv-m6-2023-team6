@@ -23,12 +23,32 @@ conda activate m6
 # python task1_3.py --task Task1_4 --network mask_RCNN --save_vis True --strategy C_2
 # python task1_3.py --task Task1_4 --network mask_RCNN --save_vis True --strategy C_3
 # python task1_3.py --task Task1_4 --network mask_RCNN --save_vis True --strategy C_4
-python task1_3.py --task Task1_3 --network retinaNet --save_vis True --strategy A
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy B_2
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy B_3
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy B_4
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy C_1
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy C_2
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy C_3
-python task1_3.py --task Task1_4 --network retinaNet --save_vis True --strategy C_4
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy A
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy B_2
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy B_3
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy B_4
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy C_1
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy C_2
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy C_3
+# python task1_3.py --task Task1_4_sweep --network retinaNet --save_vis True --strategy C_4
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.0001
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.0005
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.001
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.005
+python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.01
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.0001
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.0005
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.001
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.005
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.01
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy A --lr 0.0001
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy A --lr 0.0005
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy A --lr 0.001
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy A --lr 0.005
+python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy A --lr 0.01
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy B_4 --lr 0.0001
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy B_4 --lr 0.0005
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy B_4 --lr 0.001
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy B_4 --lr 0.005
+# python task1_3.py --task sweep_Task1_4 --network faster_RCNN --save_vis True --strategy B_4 --lr 0.01
 

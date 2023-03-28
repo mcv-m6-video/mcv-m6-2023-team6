@@ -78,6 +78,23 @@ if __name__ == '__main__':
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/retinanet_R_101_FPN_3x.yaml")
         cfg.MODEL.RETINANET.SCORE_THRESH_TEST = 0.5
         cfg.MODEL.RETINANET.NMS_THRESH_TEST = 0.4
+    elif args.network == 'cascade_RCNN':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/cascade_rcnn_R_101_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/cascade_rcnn_R_101_FPN_3x.yaml")
+    elif args.network == 'sparse_RCNN':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/sparse_rcnn_R_50_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/sparse_rcnn_R_50_FPN_3x.yaml")
+    elif args.network == 'centerNet':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/CenterNet-ResNet50-FPN-MaskRCNN-3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/CenterNet-ResNet50-FPN-MaskRCNN-3x.yaml")
+    elif args.network == 'efficientDet':
+        cfg.merge_from_file(model_zoo.get_config_file("Misc/efficientdet_d7_coco_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("Misc/efficientdet_d7_coco_3x.yaml")
+    else:
+        raise ValueError('Network not implemented')
+        
+
+    
     # elif args.network == 'SSD512':
     #     cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/ssd512_coco17_tpu-8.yaml"))
     #     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/ssd512_coco17_tpu-8.yaml")
@@ -88,9 +105,7 @@ if __name__ == '__main__':
     #     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/yolov5s.yaml")
     #     cfg.MODEL.YOLOV5.SCORE_THRESH_TEST = 0.5
     #     cfg.MODEL.YOLOV5.NMS_THRESH_TEST = 0.4
-    else:
-        print('Network not found')
-        exit()
+
 
     
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model

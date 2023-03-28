@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # --------------------------------- ARGS --------------------------------- #
     parser = argparse.ArgumentParser(description='Task 1_5: Generate bounding boxes')
     parser.add_argument('--task', type=str, default='Task1_5', help='Task to perform')
-    parser.add_argument('--network',  type=str, default='retinaNet', help='Network to use: faster_RCNN or mask_RCNN')
-    parser.add_argument('--json_path', type=str, default='/ghome/group03/mcv-m6-2023-team6/week3/Results/Task1_3/retinaNet/A/coco_instances_results.json', help='Path to the json file')
+    parser.add_argument('--network',  type=str, default='faster_RCNN_pretrained', help='Network to use: faster_RCNN or mask_RCNN')
+    parser.add_argument('--json_path', type=str, default='/ghome/group03/mcv-m6-2023-team6/week3/Results/Task_1_1/faster_RCNN/coco_instances_results.json', help='Path to the json file')
     parser.add_argument("--save_vis", type=bool, default=False, help="Save visualizations")
     parser.add_argument("--strategy", type=str, default='A', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
     args = parser.parse_args()
@@ -53,7 +53,11 @@ if __name__ == '__main__':
             w = bbox[2]
             h = bbox[3]
 
-            f.write(f'{image_id}, -1, {x}, {y}, {bbox[2]}, {bbox[3]}, {conf}, -1, -1, -1\n')
+            if category_id == 2:
+                print(image_id)
+                print(category_id)
+                print(conf)
+                f.write(f'{image_id}, -1, {x}, {y}, {bbox[2]}, {bbox[3]}, {conf}, -1, -1, -1\n')
         
 
 

@@ -16,20 +16,20 @@ import matplotlib
 from tqdm import tqdm
 
 
-def traking(current_path, folder_det,network,display):
+def traking(current_path, folder_det,network,thr, display):
     images = {}
     
     fileDetections = os.path.join(folder_det)
 
     colours = np.random.rand(100, 3)  # used only for display
-    frame_boxes = load_from_txt(fileDetections, threshold=0.5)  # load detections
+    frame_boxes = load_from_txt(fileDetections, threshold=thr)  # load detections
 
     total_time = 0.0
     total_frames = 0
     out = []
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./Results/Task_2_2/" + f"task2_2_{network}.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./Results/Task_2_2/" + f"task2_2_{network}_thr{int(thr*100)}.mp4", fourcc, 10, (1920, 1080))
 
     mot_tracker = Sort(max_age=10, min_hits=3, iou_threshold=0.3) # create instance of the SORT tracker
     tracker_colors = {}
@@ -91,11 +91,19 @@ def traking(current_path, folder_det,network,display):
     df = df.sort_values(by=['id'])
     df['frame'] = df['frame'] + 1
 
-    df.to_csv(f'./Results/Task_2_2/task_2_2_{network}.csv', index=False)
+    df.to_csv(f'./Results/Task_2_2/task_2_2_{network}_thr{int(thr*100)}.csv', index=False)
 
 
 if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
+    network = "faster_RCNN"
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)
+
     network = "retinaNet"
-    #network = "faster_RCNN"
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)

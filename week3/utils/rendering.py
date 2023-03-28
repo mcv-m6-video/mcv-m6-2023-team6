@@ -93,9 +93,11 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
         fig.show()
     fig.canvas.draw()
 
+    
     # Loop through each frame
     for i, frame_id in enumerate(frames_id):
-        # Read the frame
+        # Read the frame from the video starting at frame 536
+        video_capture.set(cv2.CAP_PROP_POS_FRAMES, frames_num[i])
         ret, frame = video_capture.read()
         if ret:
             # Convert the frame to RGB

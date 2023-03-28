@@ -122,6 +122,12 @@ def create_splits(total_frames, strategy):
         random.shuffle(list_total)
         train = list_total[:int(total_frames*0.25)]
         val = list_total[int(total_frames*0.25):]
+    elif strategy == 'D':
+        random.seed(6)
+        list_total = list(range(total_frames))
+        random.shuffle(list_total)
+        train = list_total[:int(total_frames*0.9)]
+        val = list_total[int(total_frames*0.9):]
 
     # Create a subset : 10% of the val set
     random.seed(5)
@@ -209,6 +215,118 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
         dataset_dicts.append(record)
 
     return dataset_dicts
+
+
+def get_CityAI_dicts_annot(subset, pretrained=True, strategy="D"):
+    images = "/ghome/group03/dataset/AICity_data/train/S03/c010/frames"
+    annotations = "/ghome/group03/dataset/ai_challenge_s03_c010-full_annotation.xml"
+    gt_bb = parse_xml_bb(annotations)
+
+    total_frames = len(os.listdir(images))
+
+    train, val, val_subset = create_splits(total_frames, strategy)
+    if subset == "train":
+        list_frames = train
+    elif subset == "val":
+        list_frames = val
+    elif subset == "val_subset":
+        list_frames = val
+    else:
+        raise ValueError("Subset must be train, val or val_subset")
+
+
+    if pretrained:
+        class_id = 2
+    else:
+        class_id = 0
+
+    dataset_dicts = []
+ 
+    for seq_id in list_frames:
+            
+        record = {}
+
+        filename = os.path.join(images, str(seq_id) + ".jpg"	)
+
+        # plot the image cv2
+        im = cv2.imread(filename)  # Llegeix be les imatges
+
+        record["file_name"] = filename
+        record["image_id"] = seq_id
+        record["height"] = 1080
+        record["width"] = 1920
+
+        objs = []
+        gt = gt_bb[f'f_{seq_id}']
+
+        for obj_0 in gt:
+            bb = obj_0['bbox']
+
+            # Draw the bounding box in the image
+            cv2.rectangle(im, (int(bb[0]), int(bb[1])), (int(bb[2]), int(bb[3])), (0, 255, 0), 2)
+ 
+            obj = {
+                "bbox": list(map(int, bb)),
+                "bbox_mode": BoxMode.XYXY_ABS,
+                "category_id": class_id,  # 2 is car category , and all bb detected from get_bb are cars
+                "segmentation": [],
+            }
+            objs.append(obj)
+
+        record["annotations"] = objs
+
+        dataset_dicts.append(record)
+
+    return dataset_dicts
+
+
+def get_CityAI_dicts_annot_test():
+    images = "/ghome/group03/dataset/AICity_data/AICity_data_S05_C010/validation/S05/c010/frames"
+
+    total_frames = len(os.listdir(images))
+
+    list_frames = list(range(0, 4072))
+
+    dataset_dicts = []
+ 
+    for seq_id in list_frames:
+            
+        record = {}
+
+        filename = os.path.join(images, str(seq_id) + ".jpg"	)
+
+        # plot the image cv2
+        im = cv2.imread(filename)  # Llegeix be les imatges
+        height, width, channels = im.shape
+
+        record["file_name"] = filename
+        record["image_id"] = seq_id
+        record["height"] = height
+        record["width"] = width
+
+        # objs = []
+        # gt = gt_bb[f'f_{seq_id}']
+
+        # for obj_0 in gt:
+        #     bb = obj_0['bbox']
+
+        #     # Draw the bounding box in the image
+        #     cv2.rectangle(im, (int(bb[0]), int(bb[1])), (int(bb[2]), int(bb[3])), (0, 255, 0), 2)
+ 
+        #     obj = {
+        #         "bbox": list(map(int, bb)),
+        #         "bbox_mode": BoxMode.XYXY_ABS,
+        #         "category_id": class_id,  # 2 is car category , and all bb detected from get_bb are cars
+        #         "segmentation": [],
+        #     }
+        #     objs.append(obj)
+
+        # record["annotations"] = objs
+
+        dataset_dicts.append(record)
+
+    return dataset_dicts
+
 
 
 # if __name__ == "__main__":

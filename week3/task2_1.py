@@ -8,6 +8,7 @@ import copy
 import os
 import argparse
 
+
 current_path = os.path.dirname(os.path.abspath(__file__))
 
 def track_memory(tracked_objects):
@@ -44,7 +45,7 @@ def video(det_boxes,method):
         video_out.write(im)
     video_out.release()
 
-def max_iou_tracking(path,conf_threshold):
+def max_iou_tracking(path,conf_threshold,method):
     total_time = 0.0
     total_frames = 0
 
@@ -53,14 +54,16 @@ def max_iou_tracking(path,conf_threshold):
     track_id = 0
     tracked_objects = {}
     memory = 5
-    for f_id in tqdm(det_boxes):
+    corrected_csv = {}
+    for frame_id in tqdm(det_boxes):
         
-        frame_id = f_id +1 
+        
         total_frames += 1
         start_time = time.time()
         # REMOVE OVERLAPPING BOUNDING BOXES
         boxes = det_boxes[frame_id]
         frame_boxes = discard_overlaps(boxes)
+
 
         # FIRST FRAME, WE INITIALIZE THE OBJECTS ID
         if not tracked_objects:
@@ -74,6 +77,7 @@ def max_iou_tracking(path,conf_threshold):
         
             # FRAME N+1 WE COMPARE TO OBJECTS IN FRAME N
             for i in range(len(frame_boxes)):
+                frame_boxes[i][0] = frame_id
                 best_iou = 0
                 track_id_best = 0
                 boxA = [frame_boxes[i][1],frame_boxes[i][2],frame_boxes[i][3],frame_boxes[i][4]]
@@ -138,23 +142,33 @@ def max_iou_tracking(path,conf_threshold):
         total_time += cycle_time
 
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
-    return det_boxes
+    
+    #video(det_boxes,method)
+    
+    for frame_number, object_list in det_boxes.items():
+      f_id = frame_number + 1
+      for obj in object_list:
+        obj[0] = f_id
+        
+      corrected_csv[f_id] = object_list
+      
+    
+    return corrected_csv
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-m", "--method", required=True, type=str, help="faster_RCNN")
-    parser.add_argument("-c", "--confidence", default=0.5, type=str, help="confidence threshold")
+    parser.add_argument("-m", "--method", required=True, type=str, help="faster_RCNN or retinaNet")
+    parser.add_argument("-c", "--confidence", default=0.5, type=float, help="confidence threshold")
     
     args = parser.parse_args()
     
-    conf_threshold = args.c
-    method = args.m
+    conf_threshold = args.confidence
+    method = args.method
     
 
-    tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),conf_threshold)
-    video(tracking_boxes,method)
-    write_to_csv_file("./Results/Task_2_1/task_2_1_{method}.csv",tracking_boxes)
+    tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),conf_threshold,method)
+    write_to_csv_file(f"./Results/Task_2_1/task_2_1_{method}.csv",tracking_boxes)
     
     
     

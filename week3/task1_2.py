@@ -23,7 +23,7 @@ from detectron2.data import MetadataCatalog,DatasetCatalog,build_detection_test_
 from detectron2.engine import DefaultPredictor,  DefaultTrainer, HookBase
 from detectron2.utils.visualizer import Visualizer
 from detectron2.utils import comm
-from CityAI_dataset import get_CityAI_dicts
+from CityAI_dataset import get_CityAI_dicts_annot
 from detectron2.evaluation import COCOEvaluator, DatasetEvaluators, inference_on_dataset
 
 # import some common detectron2 utilities
@@ -93,27 +93,22 @@ class ValidationLoss(HookBase):
                         self.trainer.model.state_dict()
                     )  # saving the best weights
 
-
-
-
-
 if __name__ == '__main__':
 
     
     # --------------------------------- ARGS --------------------------------- #
-    parser = argparse.ArgumentParser(description='Task 1_3: Fine-tuning')
-    parser.add_argument('--task', type=str, default='Task_1_3', help='Task to perform: task_1_3')
-    parser.add_argument('--network',  type=str, default='faster_RCNN', help='Network to use: faster_RCNN or mask_RCNN')
+    parser = argparse.ArgumentParser(description='Task 1_2: Annotation')
+    parser.add_argument('--task', type=str, default='Task1_2', help='Task to perform: task_1_3')
+    parser.add_argument('--network',  type=str, default='retinaNet', help='Network to use: faster_RCNN or mask_RCNN')
     parser.add_argument("--save_vis", type=bool, default=False, help="Save visualizations")
-    parser.add_argument("--strategy", type=str, default='A', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
-    parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
+    parser.add_argument("--strategy", type=str, default='D', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
     args = parser.parse_args()
 
     # --------------------------------- W&B --------------------------------- #
     run = wandb.init(sync_tensorboard=True,
                settings=wandb.Settings(start_method="thread", console="off"), 
                project = "M6_W3")
-    wandb.run.name = args.task + '_' + args.network + '_' + args.strategy + '_' + str(args.lr)
+    wandb.run.name = args.task + '_' + args.network + '_' + args.strategy
 
     # --------------------------------- OUTPUT --------------------------------- #
     # now = dt.now()
@@ -121,15 +116,15 @@ if __name__ == '__main__':
 
     # output_path = os.path.join(current_path, f'Results/Task_1_4/{args.network}/{dt_string}')
 
-    output_path = os.path.join(current_path, f'Results/{args.task}/{args.network}/{args.strategy}/{args.lr}')
+    output_path = os.path.join(current_path, f'Results/{args.task}/{args.network}/{args.strategy}')
 
     os.makedirs(output_path, exist_ok=True)
 
     # --------------------------------- DATASET --------------------------------- #
 
     classes = ['car']
-    for subset in ["train", "val", "val_subset"]:
-        DatasetCatalog.register(f"CityAI_{subset}",lambda subset=subset: get_CityAI_dicts(subset, pretrained=False, strategy=args.strategy))
+    for subset in ["train", "val"]:
+        DatasetCatalog.register(f"CityAI_{subset}",lambda subset=subset: get_CityAI_dicts_annot(subset, pretrained=False, strategy=args.strategy))
         MetadataCatalog.get(f"CityAI_{subset}").set(thing_classes=classes)
     
     metadata = MetadataCatalog.get("CityAI_train")
@@ -159,7 +154,7 @@ if __name__ == '__main__':
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128   # faster, and good enough for this toy dataset
 
     # Solver
-    cfg.SOLVER.BASE_LR = args.lr
+    cfg.SOLVER.BASE_LR = 0.001
     cfg.SOLVER.MAX_ITER = 3000
     cfg.SOLVER.STEPS = (1000,2000,2500)
     cfg.SOLVER.GAMMA = 0.5
@@ -175,7 +170,7 @@ if __name__ == '__main__':
 
     # Dataset
     cfg.DATASETS.TRAIN = ("CityAI_train",)
-    cfg.DATASETS.TEST = ("CityAI_val_subset",)
+    cfg.DATASETS.TEST = ("CityAI_val",)
     cfg.OUTPUT_DIR = output_path
 
     # Dataloader
@@ -211,7 +206,7 @@ if __name__ == '__main__':
 
 
     # --------------------------------- INFERENCE --------------------------------- #
-    dataset_dicts = get_CityAI_dicts("val", pretrained=False, strategy=args.strategy)
+    dataset_dicts = get_CityAI_dicts_annot("val", pretrained=False, strategy=args.strategy)
 
     for i,d in enumerate(dataset_dicts):
         im = cv2.imread(d["file_name"])
