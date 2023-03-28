@@ -16,7 +16,7 @@ import matplotlib
 from tqdm import tqdm
 
 
-def traking(current_path, folder_det,network,thr, display):
+def tracking(current_path, folder_det,network,thr, display):
     images = {}
     
     fileDetections = os.path.join(folder_det)
@@ -101,24 +101,44 @@ def traking(current_path, folder_det,network,thr, display):
 if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
     """network = "faster_RCNN"
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.6, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.65, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.7, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)
 
     network = "retinaNet"
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)"""
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.6, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.65, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.7, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)"""
+
+    """network = "faster_RCNN"
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.6, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.65, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.7, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.75, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.8, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.85, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.9, display=False)
+    
+    network = "retinaNet"
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.6, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.65, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.7, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.75, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.8, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.85, display=False)
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.9, display=False)"""
+    
+
 
     network = "faster_RCNN"
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.6, display=False)
-    #( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.65, display=False)
-   # traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.7, display=False)
-
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
     network = "retinaNet"
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.6, display=False)
-    #traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.65, display=False)
-    #traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.7, display=False)
- 
+    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)

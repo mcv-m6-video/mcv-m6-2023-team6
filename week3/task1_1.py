@@ -78,18 +78,23 @@ if __name__ == '__main__':
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/retinanet_R_101_FPN_3x.yaml")
         cfg.MODEL.RETINANET.SCORE_THRESH_TEST = 0.5
         cfg.MODEL.RETINANET.NMS_THRESH_TEST = 0.4
-    elif args.network == 'cascade_RCNN':
-        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/cascade_rcnn_R_101_FPN_3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/cascade_rcnn_R_101_FPN_3x.yaml")
-    elif args.network == 'sparse_RCNN':
-        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/sparse_rcnn_R_50_FPN_3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/sparse_rcnn_R_50_FPN_3x.yaml")
-    elif args.network == 'centerNet':
-        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/CenterNet-ResNet50-FPN-MaskRCNN-3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/CenterNet-ResNet50-FPN-MaskRCNN-3x.yaml")
-    elif args.network == 'efficientDet':
-        cfg.merge_from_file(model_zoo.get_config_file("Misc/efficientdet_d7_coco_3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("Misc/efficientdet_d7_coco_3x.yaml")
+    elif args.network == 'faster_RCNN_R50':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
+    elif args.network == 'mask_RCNN_R50':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+    elif args.network == 'retinaNet_R50':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/retinanet_R_50_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/retinanet_R_50_FPN_3x.yaml")
+        cfg.MODEL.RETINANET.SCORE_THRESH_TEST = 0.5
+        cfg.MODEL.RETINANET.NMS_THRESH_TEST = 0.4
+    elif args.network == 'faster_RCNN_R101':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")
+    elif args.network == 'mask_RCNN_R101':
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"))
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml")
     else:
         raise ValueError('Network not implemented')
         

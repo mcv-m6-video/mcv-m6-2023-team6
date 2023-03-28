@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
     # Solver
     cfg.SOLVER.BASE_LR = args.lr
-    cfg.SOLVER.MAX_ITER = 3000
+    cfg.SOLVER.MAX_ITER = 1500
     cfg.SOLVER.STEPS = (1000,2000,2500)
     cfg.SOLVER.GAMMA = 0.5
     cfg.SOLVER.IMS_PER_BATCH = 2
@@ -207,32 +207,31 @@ if __name__ == '__main__':
     print(results)
 
     df = pd.DataFrame(results['bbox'], index=[0])
-    df.to_csv(output_path + 'results.csv', index=False)
+    df.to_csv(output_path + '/results.csv', index=False)
 
 
     # --------------------------------- INFERENCE --------------------------------- #
     dataset_dicts = get_CityAI_dicts("val", pretrained=False, strategy=args.strategy)
 
     for i,d in enumerate(dataset_dicts):
-        im = cv2.imread(d["file_name"])
-        outputs = predictor(im)
+        num = d["file_name"].split('/')[-1].split('.')[0]
+        if num>870 & num<950:
+            im = cv2.imread(d["file_name"])
+            outputs = predictor(im)
 
-        instances = outputs["instances"].to("cpu")
-        car_instances = instances[instances.pred_classes == 0]
+            instances = outputs["instances"].to("cpu")
+            car_instances = instances[instances.pred_classes == 0]
 
-        v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
-        out = v.draw_instance_predictions(car_instances)
+            v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
+            out = v.draw_instance_predictions(car_instances)
 
-        if args.save_vis:
-            cv2.imwrite(output_path + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
+            if args.save_vis:
+                cv2.imwrite(output_path + '/' + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
 
-        print("Processed image: " + d["file_name"].split('/')[-1])
+            print("Processed image: " + d["file_name"].split('/')[-1])
 
-        if i == 10:
-            break
 
-    
-    wandb.finish()
+
 
 
 
