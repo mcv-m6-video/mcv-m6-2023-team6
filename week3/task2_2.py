@@ -11,7 +11,7 @@ import os
 import time
 import cv2
 from sort.sort import *
-from utils.util import load_from_txt, discard_overlaps
+from utils.util import load_from_txt, discard_overlaps, filter_boxes
 import matplotlib
 from tqdm import tqdm
 
@@ -38,6 +38,8 @@ def traking(current_path, folder_det,network,thr, display):
 
         dets = frame_boxes[frame_id]  # each box is [frame,x1, y1, x2, y2, conf]
         dets = discard_overlaps(dets)
+        dets = filter_boxes(dets,r=1.25,y=230)
+
         # from each box we extract only the x1, y1, x2, y2
         dets = [[d[1], d[2], d[3], d[4]] for d in dets]
 
@@ -66,6 +68,8 @@ def traking(current_path, folder_det,network,thr, display):
 
             cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]), color, 2)
             cv2.putText(im, str(tracker_id), (d[0], d[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+        
+        im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
 
         if display:
             cv2.imshow('frame', im)
@@ -96,7 +100,7 @@ def traking(current_path, folder_det,network,thr, display):
 
 if __name__ == "__main__":
     current_path = os.path.dirname(os.path.abspath(__file__))
-    network = "faster_RCNN"
+    """network = "faster_RCNN"
     traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
     traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
     traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
@@ -106,4 +110,15 @@ if __name__ == "__main__":
     traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.75, display=False)
     traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.8, display=False)
     traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
-    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)"""
+
+    network = "faster_RCNN"
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.6, display=False)
+    #( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.65, display=False)
+   # traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.7, display=False)
+
+    network = "retinaNet"
+    traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.6, display=False)
+    #traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.65, display=False)
+    #traking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.7, display=False)
+ 

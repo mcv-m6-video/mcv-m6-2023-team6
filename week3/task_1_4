@@ -35,7 +35,7 @@ conda activate m6
 # python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.0005
 # python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.001
 # python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.005
-python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.01
+# python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy A --lr 0.01
 # python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.0001
 # python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.0005
 # python task1_3.py --task sweep_Task1_4 --network retinaNet --save_vis True --strategy B_4 --lr 0.001

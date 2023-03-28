@@ -30,7 +30,8 @@ def video(det_boxes,method):
     for frame_id in det_boxes:
         fn = current_path + f'/../../dataset/AICity_data/train/S03/c010/frames/{frame_id}.jpg'
         im = io.imread(fn)
-        frame_boxes = det_boxes[frame_id]
+         = det_boxes[frame_id]
+        
 
         for box in det_boxes[frame_id]:
             track_id = box[-1]
@@ -41,11 +42,12 @@ def video(det_boxes,method):
 
             cv2.rectangle(im, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])),color,2)
             cv2.putText(im, str(track_id), (int(box[1]), int(box[2])), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-
+        
+        im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         video_out.write(im)
     video_out.release()
 
-def max_iou_tracking(path,conf_threshold,method):
+def max_iou_tracking(path,method,conf_threshold=0.5,iou_threshold=0.5):
     total_time = 0.0
     total_frames = 0
 
@@ -56,8 +58,6 @@ def max_iou_tracking(path,conf_threshold,method):
     memory = 5
     corrected_csv = {}
     for frame_id in tqdm(det_boxes):
-        
-        
         total_frames += 1
         start_time = time.time()
         # REMOVE OVERLAPPING BOUNDING BOXES
@@ -86,7 +86,7 @@ def max_iou_tracking(path,conf_threshold,method):
                     id,boxB = data
                     iou_score,_ = iou(boxA,boxB['bbox'])
 
-                    if iou_score > best_iou and iou_score > 0.5:
+                    if iou_score > best_iou and iou_score >= iou_threshold:
                         best_iou = iou_score
                         track_id_best = id
 
@@ -143,7 +143,7 @@ def max_iou_tracking(path,conf_threshold,method):
 
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
     
-    #video(det_boxes,method)
+    video(det_boxes,method)
     
     for frame_number, object_list in det_boxes.items():
       f_id = frame_number + 1
@@ -159,17 +159,27 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--method", required=True, type=str, help="faster_RCNN or retinaNet")
-    parser.add_argument("-c", "--confidence", default=0.5, type=float, help="confidence threshold")
+    parser.add_argument("-c", "--confidence", default=None, type=list, help="confidence threshold")
+    parser.add_argument("-t", "--iou_threshold", default=None, type=list, help="iou threshold")
     
     args = parser.parse_args()
     
-    conf_threshold = args.confidence
+    grid_conf = args.confidence
+    grid_iou = args.iou_threshold
     method = args.method
     
-
-    tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),conf_threshold,method)
-    write_to_csv_file(f"./Results/Task_2_1/task_2_1_{method}.csv",tracking_boxes)
+    if grid_conf:
+      for c in grid_conf:
+        tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),method,conf_threshold=c)
+        write_to_csv_file(f"./Results/Task_2_1/task_2_1_{method}_thr{str(c)[-2:]}.csv",tracking_boxes)
     
+    elif grid_iou:
+      for t in grid_iou:
+        tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),method,iou_threshold=t)
+        write_to_csv_file(f"./Results/Task_2_1/task_2_1_{method}_thr{str(t)[-2:]}.csv",tracking_boxes)
+    else:
+      tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),method)
+      write_to_csv_file(f"./Results/Task_2_1/task_2_1_{method}_iou{str(t)[-2:]}.csv",tracking_boxes)
     
     
     

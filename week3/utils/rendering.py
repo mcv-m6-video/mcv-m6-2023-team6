@@ -83,7 +83,7 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     # Set the y label
     ax.set_ylabel('IoU score')
     # Set the x axis range
-    ax.set_xlim(0, frames_num[-1])
+    ax.set_xlim(frames_num[0], frames_num[-1])
     # Set the y axis range
     ax.set_ylim(0, 1)
     # Create a line
@@ -96,6 +96,8 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
     
     # Loop through each frame
     for i, frame_id in enumerate(frames_id):
+        if i == 0:
+            continue
         # Read the frame from the video starting at frame 536
         video_capture.set(cv2.CAP_PROP_POS_FRAMES, frames_num[i])
         ret, frame = video_capture.read()
@@ -106,6 +108,8 @@ def rendering_video(path, annotations, predicted_boxes, video_capture, save=True
             for box in gt_boxes[frame_id]:
                 cv2.rectangle(frame, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
             # Draw the predicted boxes
+            
+            # for box in predicted_boxes_group[frame_id]:
             for box in predicted_boxes_group[frame_id]:
                 cv2.rectangle(frame, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])), (0, 0, 255), 2)
             # Draw the IoU score

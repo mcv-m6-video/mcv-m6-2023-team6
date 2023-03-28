@@ -252,11 +252,22 @@ def write_to_csv_file(filename, data):
                     ob_id = object_data[6]
                 # Write the object data to the CSV file
                 writer.writerow([frame, ob_id, left, top, width, height, conf, -1, -1, -1])
+                
+                
+                
+def filter_boxes(frame_boxes,r=1.25,y=230):
+    discard = []
+    for i in range(len(frame_boxes)):
+        h = frame_boxes[i][4] -  frame_boxes[i][2]
+        w =  frame_boxes[i][3] -  frame_boxes[i][1]
+        if ( frame_boxes[i][2] + h > y) and (h/w > r):
+            discard.append(i)
+            
+    discard.sort(reverse=True)
+    for d in discard:
+        del frame_boxes[d]
+
+    return frame_boxes
+        
 
 
-
-
-""" gt_path = 'C:/Users/AnaHarris/Documents/MASTER/M6/project/dataset/AICity_data/ai_challenge_s03_c010-full_annotation.xml'
-gt_tracks = load_from_xml(gt_path)
-
-write_to_csv_file('week3/gt_tracks.csv',gt_tracks)  """

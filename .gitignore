@@ -83,6 +83,9 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+.TrackEval/
+.TrackEval2_1/
+.TrackEval2_2/
 
 
 # Flask stuff:

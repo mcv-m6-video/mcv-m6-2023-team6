@@ -143,24 +143,6 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
 
     total_frames = len(os.listdir(images))
 
-    # if subset == "train":
-    #     # create a list of the first 25% of the frames
-    #     start = 0
-    #     end = int(total_frames*0.25)
-        
-    # elif subset == "val":
-    #     # create a list of the last 75% of the frames
-    #     start = int(total_frames*0.25) + 1
-    #     end = total_frames
-
-    # elif subset == "val_subset":
-    #     # Pick 10% of the validation set
-    #     start = int(total_frames*0.25) + 1
-    #     end = int(total_frames*0.35)
-
-    # else:
-    #     raise ValueError("Subset must be train, val or val_subset")
-
     train, val, val_subset = create_splits(total_frames, strategy)
     if subset == "train":
         list_frames = train
@@ -304,24 +286,6 @@ def get_CityAI_dicts_annot_test():
         record["height"] = height
         record["width"] = width
 
-        # objs = []
-        # gt = gt_bb[f'f_{seq_id}']
-
-        # for obj_0 in gt:
-        #     bb = obj_0['bbox']
-
-        #     # Draw the bounding box in the image
-        #     cv2.rectangle(im, (int(bb[0]), int(bb[1])), (int(bb[2]), int(bb[3])), (0, 255, 0), 2)
- 
-        #     obj = {
-        #         "bbox": list(map(int, bb)),
-        #         "bbox_mode": BoxMode.XYXY_ABS,
-        #         "category_id": class_id,  # 2 is car category , and all bb detected from get_bb are cars
-        #         "segmentation": [],
-        #     }
-        #     objs.append(obj)
-
-        # record["annotations"] = objs
 
         dataset_dicts.append(record)
 
@@ -329,15 +293,15 @@ def get_CityAI_dicts_annot_test():
 
 
 
-# if __name__ == "__main__":
-#     frames = 10
-#     strategies = ["A","B_2", "B_3", "B_4", "C_1", "C_2", "C_3", "C_4"]
-#     for strat in strategies:
-#         train, val, val_subset = create_splits(frames, strategy=strat)
-#         print(f"Strategy {strat}")
-#         print(f"Train: {train}")
-#         print(f"Val: {val}")
-#         print(f"Val subset: {val_subset}")
-#         print("")
+if __name__ == "__main__":
+    # frames = 10
+    # strategies = ["A","B_2", "B_3", "B_4", "C_1", "C_2", "C_3", "C_4"]
+    # for strat in strategies:
+    #     train, val, val_subset = create_splits(frames, strategy=strat)
+    #     print(f"Strategy {strat}")
+    #     print(f"Train: {train}")
+    #     print(f"Val: {val}")
+    #     print(f"Val subset: {val_subset}")
+    #     print("")
 
-
+    a = get_CityAI_dicts('val')

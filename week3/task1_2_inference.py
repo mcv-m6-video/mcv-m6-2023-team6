@@ -105,11 +105,6 @@ if __name__ == '__main__':
     parser.add_argument("--strategy", type=str, default='D', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
     args = parser.parse_args()
 
-    # --------------------------------- W&B --------------------------------- #
-    run = wandb.init(sync_tensorboard=True,
-               settings=wandb.Settings(start_method="thread", console="off"), 
-               project = "M6_W3")
-    wandb.run.name = args.task + '_' + args.network + '_' + args.strategy
 
     # --------------------------------- OUTPUT --------------------------------- #
     # now = dt.now()
@@ -124,11 +119,13 @@ if __name__ == '__main__':
     # --------------------------------- DATASET --------------------------------- #
 
     classes = ['car']
-    for subset in ["train", "val"]:
-        DatasetCatalog.register(f"CityAI_{subset}",lambda subset=subset: get_CityAI_dicts_annot(subset, pretrained=False, strategy=args.strategy))
-        MetadataCatalog.get(f"CityAI_{subset}").set(thing_classes=classes)
-    
-    metadata = MetadataCatalog.get("CityAI_train")
+    # for subset in ["train", "val"]:
+    #     DatasetCatalog.register(f"CityAI_{subset}",lambda subset=subset: get_CityAI_dicts_annot(subset, pretrained=False, strategy=args.strategy))
+    #     MetadataCatalog.get(f"CityAI_{subset}").set(thing_classes=classes)
+
+    DatasetCatalog.register("CityAI_test", lambda: get_CityAI_dicts_annot_test())
+    MetadataCatalog.get("CityAI_test").set(thing_classes=classes)
+    # metadata = MetadataCatalog.get("CityAI_train")
 
     # --------------------------------- MODEL --------------------------------- #
     cfg = get_cfg()
@@ -138,51 +135,49 @@ if __name__ == '__main__':
     
     if args.network == 'faster_RCNN':
         cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")
+        # cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")
     elif args.network == 'mask_RCNN':
         cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml")
+        # cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml")
     elif args.network == 'retinaNet':
         cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/retinanet_R_101_FPN_3x.yaml"))
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/retinanet_R_101_FPN_3x.yaml")
+        # cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/retinanet_R_101_FPN_3x.yaml")
     else:
         print('Network not found')
         exit()
 
     # --------------------------------- CONFIG --------------------------------- #
     # Model
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (car)
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128   # faster, and good enough for this toy dataset
+    # cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (car)
+    # cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128   # faster, and good enough for this toy dataset
 
-    # Solver
-    cfg.SOLVER.BASE_LR = 0.001
-    cfg.SOLVER.MAX_ITER = 3000
-    cfg.SOLVER.STEPS = (1000,2000,2500)
-    cfg.SOLVER.GAMMA = 0.5
-    cfg.SOLVER.IMS_PER_BATCH = 2
-    cfg.SOLVER.CHECKPOINT_PERIOD = 100
+    # # Solver
+    # cfg.SOLVER.BASE_LR = 0.001
+    # cfg.SOLVER.MAX_ITER = 3000
+    # cfg.SOLVER.STEPS = (1000,2000,2500)
+    # cfg.SOLVER.GAMMA = 0.5
+    # cfg.SOLVER.IMS_PER_BATCH = 2
+    # cfg.SOLVER.CHECKPOINT_PERIOD = 100
 
-    # Test
-    cfg.TEST.EVAL_PERIOD = 100
+    # # Test
+    # cfg.TEST.EVAL_PERIOD = 100
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
     cfg.MODEL.ROI_HEADS.NMS_THRESH_TEST = 0.4
     cfg.MODEL.RETINANET.SCORE_THRESH_TEST = 0.5
     cfg.MODEL.RETINANET.NMS_THRESH_TEST = 0.4
 
     # Dataset
-    cfg.DATASETS.TRAIN = ("CityAI_train",)
-    cfg.DATASETS.TEST = ("CityAI_val",)
     cfg.OUTPUT_DIR = output_path
 
     # Dataloader
-    cfg.DATALOADER.NUM_WORKERS = 4
+    # cfg.DATALOADER.NUM_WORKERS = 4
 
    
     # --------------------------------- TRAINING --------------------------------- #
-    trainer = MyTrainer(cfg)
-    trainer.resume_or_load(resume=False)
-    val_loss = ValidationLoss(cfg)
-    trainer.register_hooks([val_loss])
+    # trainer = MyTrainer(cfg)
+    # trainer.resume_or_load(resume=False)
+    # val_loss = ValidationLoss(cfg)
+    # trainer.register_hooks([val_loss])
 
     # start = dt.now()
     # trainer.train()
@@ -191,42 +186,42 @@ if __name__ == '__main__':
 
     # --------------------------------- EVALUATION --------------------------------- #
 
-    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-    cfg.DATASETS.TEST = ("CityAI_val",)
+    cfg.MODEL.WEIGHTS = args.model_path
+    cfg.DATASETS.TEST = ("CityAI_test",)
 
     predictor = DefaultPredictor(cfg)
-
-    evaluator = MyEvaluator("CityAI_val", cfg, False, output_dir=output_path)
-    val_loader = build_detection_test_loader(cfg, "CityAI_val")
-
-    results = inference_on_dataset(predictor.model, val_loader, evaluator)
-    print(results)
-
-    df = pd.DataFrame(results['bbox'], index=[0])
-    df.to_csv(output_path + 'results.csv', index=False)
 
 
     # --------------------------------- INFERENCE --------------------------------- #
     dataset_dicts = get_CityAI_dicts_annot_test()
 
-    for i,d in enumerate(dataset_dicts):
-        im = cv2.imread(d["file_name"])
-        outputs = predictor(im)
+    with open(os.path.join(output_path, 'results_annot_wh.txt'), 'w') as f:
+        for i,d in enumerate(dataset_dicts):
+            im = cv2.imread(d["file_name"])
+            outputs = predictor(im)
 
-        instances = outputs["instances"].to("cpu")
-        car_instances = instances[instances.pred_classes == 0]
+            instances = outputs["instances"].to("cpu")
+            car_instances = instances[instances.pred_classes == 0]
 
-        v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
-        out = v.draw_instance_predictions(car_instances)
+            v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TEST[0]), scale=1.2)
+            out = v.draw_instance_predictions(car_instances)
 
-        if args.save_vis:
-            cv2.imwrite(output_path + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
+            # Write the bbox in a .txt file with format frame, -1, x,y,w,h, conf, -1,-1,-1
+            for j in range(len(car_instances.pred_boxes)):
+                x1, y1, x2, y2 = car_instances.pred_boxes[j].tensor[0].numpy()
+                w = x2 - x1
+                h = y2 - y1
+                conf = car_instances.scores[j].numpy()
+                f.write(f'{d["file_name"].split("/")[-1].split(".")[0]}, -1, {x1},{y2},{w},{h}, {conf}, -1,-1,-1\n')
 
-        print("Processed image: " + d["file_name"].split('/')[-1])
 
-        if i == 10:
-            break
+            if args.save_vis:
+                cv2.imwrite(output_path + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
+
+            print("Processed image: " + d["file_name"].split('/')[-1])
+
+            # if i == 10:
+            #     break
 
     
-    wandb.finish()
 
