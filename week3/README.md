@@ -22,7 +22,7 @@ For save visualitzations ```--save_vis True```
 ###  Task 1.1 
 
 ```
-python task_1_1.py --network faster_RCNN_R101
+python task_1_1.py --network <network_to_use>
 ```
 ###  Task 1.2
 
