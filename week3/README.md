@@ -26,13 +26,7 @@ For save visualitzations ```--save_vis True```
 ```
 python task_1_1.py --network faster_RCNN_R101
 ```
-###  Task 1.2 
-```
-python task1_2.py --task Task1_2 --network <network_to_use> --save_vis <True/False> --strategy <strategy_to_use>
-```
-```
-python task1_2.py --task Task1_2_inference --network <network_to_use> --model_path <path_to_model> --save_vis <True/False> --strategy <strategy_to_use>
-```
+
 ### Task 1.3 
 
 ```
