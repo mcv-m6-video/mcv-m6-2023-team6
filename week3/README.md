@@ -24,6 +24,9 @@ For save visualitzations ```--save_vis True```
 ```
 python task_1_1.py --network faster_RCNN_R101
 ```
+###  Task 1.2
+
+For annotations you can access here: [Annotations](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3/Results/Task_1_2_CVAT)
 
 ### Task 1.3 & Task 1.4
 
@@ -83,6 +86,5 @@ And then run MOT17 benchmark by default:
 python run_motchallenge.py --DO_PREPROC False --METRICS HOTA Identity TrackMAP
 ```
 
-For annotations you can access here: [Annotations](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3/Results/Task_1_2_CVAT)
 
 
