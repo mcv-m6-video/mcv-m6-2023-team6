@@ -55,6 +55,7 @@ where:
 | Strategy C  3	| 0.88	| 0.96
 | Strategy C  4	| 0.88	| 0.88
 | Mean	| 0.87	| 0.90
+<center>
 
 
 ##  Task 2: Object tracking
