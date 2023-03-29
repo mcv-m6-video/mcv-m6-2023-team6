@@ -66,6 +66,23 @@ where
 python task2_2.py
 ```
 
-For annotations you can access here: [Annotations](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3/Results/task1_2_CVAT)
+##  Task 2.3: EvalTrack
+
+First of all, if you want this repository with submodules, you can clone it with the following command:
+
+``` 
+git clone --recurse-submodules -j8 git://github.com/mcv-m6-video/mcv-m6-2023-team6.git
+```
+
+To eval: Put your results in MOT 1.1 Format:
+```
+<frame>, <id>, <bb_left>, <bb_top>, <bb_width>, <bb_height>, <conf>, <x>, <y>, <z>
+````
+And then run:
+```
+python run_motchallenge.py --DO_PREPROC False --METRICS HOTA Identity TrackMAP
+```
+
+For annotations you can access here: [Annotations](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3/Results/Task_1_2_CVAT)
 
 
