@@ -120,38 +120,40 @@ if __name__ == '__main__':
     predictor = DefaultPredictor(cfg)
 
     # Evaluator
-    evaluator = MyEvaluator("CityAI_val", cfg, False, output_dir=output_path)
+    # evaluator = MyEvaluator("CityAI_val", cfg, False, output_dir=output_path)
 
-    # Evaluate the model
-    val_loader = build_detection_test_loader(cfg, "CityAI_val")
+    # # Evaluate the model
+    # val_loader = build_detection_test_loader(cfg, "CityAI_val")
     
-    # Print inference results on terminal and on .csv file
-    results = inference_on_dataset(predictor.model, val_loader, evaluator)
-    print(results)
+    # # Print inference results on terminal and on .csv file
+    # results = inference_on_dataset(predictor.model, val_loader, evaluator)
+    # print(results)
 
-    # Results has it format: OrderedDict([('bbox', {'AP': 36.01825017229739, 'AP50': 47.08669319247479, 'AP75': 44.17784895893762, 'APs': nan, 'APm': 20.90227500636576, 'APl': 89.35432654725776, 'AP-person': nan, 'AP-bicycle': nan, 'AP-car': 36.01825017229739, 'AP-motorcycle': nan, 'AP-bus': nan, 'AP-truck': nan, 'AP-traffic light': nan, 'AP-stop sign': nan, 'AP-parking meter': nan, 'AP-bench': nan, 'AP-bird': nan, 'AP-cat': nan, 'AP-dog': nan, 'AP-horse': nan, 'AP-sheep': nan, 'AP-cow': nan, 'AP-elephant': nan, 'AP-bear': nan, 'AP-zebra': nan, 'AP-giraffe': nan, 'AP-backpack': nan, 'AP-umbrella': nan, 'AP-handbag': nan, 'AP-tie': nan, 'AP-suitcase': nan, 'AP-frisbee': nan, 'AP-skis': nan, 'AP-snowboard': nan, 'AP-sports ball': nan, 'AP-kite': nan, 'AP-baseball bat': nan, 'AP-baseball glove': nan, 'AP-skateboard': nan, 'AP-surfboard': nan, 'AP-tennis racket': nan, 'AP-bottle': nan, 'AP-wine glass': nan, 'AP-cup': nan, 'AP-fork': nan, 'AP-knife': nan, 'AP-spoon': nan, 'AP-bowl': nan, 'AP-banana': nan, 'AP-apple': nan, 'AP-sandwich': nan, 'AP-orange': nan, 'AP-broccoli': nan, 'AP-carrot': nan, 'AP-hot dog': nan, 'AP-pizza': nan, 'AP-donut': nan, 'AP-cake': nan, 'AP-chair': nan, 'AP-couch': nan, 'AP-potted plant': nan, 'AP-bed': nan, 'AP-dining table': nan, 'AP-toilet': nan, 'AP-tv': nan, 'AP-laptop': nan, 'AP-mouse': nan, 'AP-remote': nan, 'AP-keyboard': nan, 'AP-cell phone': nan, 'AP-microwave': nan, 'AP-oven': nan, 'AP-toaster': nan, 'AP-sink': nan, 'AP-refrigerator': nan, 'AP-book': nan, 'AP-clock': nan, 'AP-vase': nan, 'AP-scissors': nan, 'AP-teddy bear': nan, 'AP-hair drier': nan, 'AP-toothbrush': nan})])
-    df = pd.DataFrame(results['bbox'], index=[0])
-    # Delete the object columns
-    df = df.drop(df.filter(regex='AP-').columns, axis=1)
-    df.to_csv(output_path + 'results.csv', index=False)
-    # print(inference_on_dataset(predictor.model, val_loader, evaluator))
+    # # Results has it format: OrderedDict([('bbox', {'AP': 36.01825017229739, 'AP50': 47.08669319247479, 'AP75': 44.17784895893762, 'APs': nan, 'APm': 20.90227500636576, 'APl': 89.35432654725776, 'AP-person': nan, 'AP-bicycle': nan, 'AP-car': 36.01825017229739, 'AP-motorcycle': nan, 'AP-bus': nan, 'AP-truck': nan, 'AP-traffic light': nan, 'AP-stop sign': nan, 'AP-parking meter': nan, 'AP-bench': nan, 'AP-bird': nan, 'AP-cat': nan, 'AP-dog': nan, 'AP-horse': nan, 'AP-sheep': nan, 'AP-cow': nan, 'AP-elephant': nan, 'AP-bear': nan, 'AP-zebra': nan, 'AP-giraffe': nan, 'AP-backpack': nan, 'AP-umbrella': nan, 'AP-handbag': nan, 'AP-tie': nan, 'AP-suitcase': nan, 'AP-frisbee': nan, 'AP-skis': nan, 'AP-snowboard': nan, 'AP-sports ball': nan, 'AP-kite': nan, 'AP-baseball bat': nan, 'AP-baseball glove': nan, 'AP-skateboard': nan, 'AP-surfboard': nan, 'AP-tennis racket': nan, 'AP-bottle': nan, 'AP-wine glass': nan, 'AP-cup': nan, 'AP-fork': nan, 'AP-knife': nan, 'AP-spoon': nan, 'AP-bowl': nan, 'AP-banana': nan, 'AP-apple': nan, 'AP-sandwich': nan, 'AP-orange': nan, 'AP-broccoli': nan, 'AP-carrot': nan, 'AP-hot dog': nan, 'AP-pizza': nan, 'AP-donut': nan, 'AP-cake': nan, 'AP-chair': nan, 'AP-couch': nan, 'AP-potted plant': nan, 'AP-bed': nan, 'AP-dining table': nan, 'AP-toilet': nan, 'AP-tv': nan, 'AP-laptop': nan, 'AP-mouse': nan, 'AP-remote': nan, 'AP-keyboard': nan, 'AP-cell phone': nan, 'AP-microwave': nan, 'AP-oven': nan, 'AP-toaster': nan, 'AP-sink': nan, 'AP-refrigerator': nan, 'AP-book': nan, 'AP-clock': nan, 'AP-vase': nan, 'AP-scissors': nan, 'AP-teddy bear': nan, 'AP-hair drier': nan, 'AP-toothbrush': nan})])
+    # df = pd.DataFrame(results['bbox'], index=[0])
+    # # Delete the object columns
+    # df = df.drop(df.filter(regex='AP-').columns, axis=1)
+    # df.to_csv(output_path + 'results.csv', index=False)
+    # # print(inference_on_dataset(predictor.model, val_loader, evaluator))
 
 
     # --------------------------------- INFERENCE --------------------------------- #
     for i,d in enumerate(dataset_dicts):
-        im = cv2.imread(d["file_name"])
-        outputs = predictor(im)
+        num = d["file_name"].split('/')[-1].split('.')[0]
+        if num>1000 and num<1500:
+            im = cv2.imread(d["file_name"])
+            outputs = predictor(im)
 
-        instances = outputs["instances"].to("cpu")
-        car_instances = instances[instances.pred_classes == 2]
+            instances = outputs["instances"].to("cpu")
+            car_instances = instances[instances.pred_classes == 2]
 
-        v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
-        out = v.draw_instance_predictions(car_instances)
+            v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
+            out = v.draw_instance_predictions(car_instances)
 
-        if args.save_vis:
-            cv2.imwrite(output_path + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
+            if args.save_vis:
+                cv2.imwrite(output_path + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
 
-        print("Processed image: " + d["file_name"].split('/')[-1])
+            print("Processed image: " + d["file_name"].split('/')[-1])
 
-        if i == 10:
-            break
+        
+        print("Done!") 

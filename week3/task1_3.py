@@ -104,7 +104,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Task 1_3: Fine-tuning')
     parser.add_argument('--task', type=str, default='Task_1_3', help='Task to perform: task_1_3')
     parser.add_argument('--network',  type=str, default='faster_RCNN', help='Network to use: faster_RCNN or mask_RCNN')
-    parser.add_argument("--save_vis", type=bool, default=False, help="Save visualizations")
+    parser.add_argument("--save_vis", type=bool, default=True, help="Save visualizations")
     parser.add_argument("--strategy", type=str, default='A', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
     parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
     args = parser.parse_args()
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     cfg.SOLVER.CHECKPOINT_PERIOD = 100
 
     # Test
-    cfg.TEST.EVAL_PERIOD = 100
+    cfg.TEST.EVAL_PERIOD = 1000
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
     cfg.MODEL.ROI_HEADS.NMS_THRESH_TEST = 0.4
     cfg.MODEL.RETINANET.SCORE_THRESH_TEST = 0.5

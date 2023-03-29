@@ -1,4 +1,4 @@
-from utils.util import load_from_txt,discard_overlaps,iou,write_to_csv_file,filter_boxes
+from utils.util import load_from_txt,discard_overlaps,iou,filter_boxes
 import cv2
 import numpy as np
 from skimage import io
@@ -7,6 +7,7 @@ import time
 import copy
 import os
 import argparse
+import pandas as pd
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -22,9 +23,9 @@ def track_memory(tracked_objects):
     for idx in delete:
         del tracked_objects[idx]
 
-def video(det_boxes,method):
+def video(det_boxes,method,c):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./Results/Task_2_1/" + f"{method}.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./Results/Task_2_1/" + f"{method}_{c}.mp4", fourcc, 10, (1920, 1080))
     tracker_colors = {}
 
     for frame_id in det_boxes:
@@ -145,17 +146,8 @@ def max_iou_tracking(path,method,conf_threshold=0.5,iou_threshold=0.5):
 
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
     
-    #video(det_boxes,method)
     
-    for frame_number, object_list in det_boxes.items():
-      f_id = frame_number + 1
-      for obj in object_list:
-        obj[0] = f_id
-        
-      corrected_csv[f_id] = object_list
-      
-    
-    return corrected_csv
+    return det_boxes
 
 if __name__ == "__main__":
 
@@ -170,9 +162,36 @@ if __name__ == "__main__":
     method = args.method
     
     for c in grid_conf:
-      tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_A.txt"),method,conf_threshold=float(c))
-      write_to_csv_file(f"./Results/Task_2_1/task_2_1_{method}_thr{str(c)[-2:]}.csv",tracking_boxes)
+      tracking_boxes = max_iou_tracking(os.path.join(current_path, f"./Results/Task1_5/{method}/A/bbox_{method}_video_A.txt"),method,conf_threshold=float(c))
+      video(tracking_boxes,method,int(c*100))
+      """# save trackers to data frame, not out
+      # save to csv
+      df_list = []
+      for frame_id in tracking_boxes:
+          for track in tracking_boxes[frame_id]:
+              width = track[3] - track[1]
+              height = track[4] - track[2]
+              bb_left = track[1]
+              bb_top = track[2]
+              df_list.append(pd.DataFrame({'frame': int(frame_id), 'id': track[-1], 'bb_left': bb_left, 'bb_top': bb_top,
+                                           'bb_width': width, 'bb_height': height, 'conf': track[-2], "x": -1, "y": -1,
+                                           "z": -1}, index=[0]))
+      #format output for the evaluation 
+      df = pd.concat(df_list, ignore_index=True)
+      df = df.sort_values(by=['id'])
+      df['frame'] = df['frame'] + 1
     
+      if method == 'faster_RCNN':
+      
+          with open(f'./Results/Task_1_2/MOT_17_22_{int(c*100)}f.txt', 'a') as f:
+              text = df.to_string(header=False, index=False)
+              f.write(text)
+    
+      else:
+
+          with open(f'./Results/Task_1_2/MOT_17_22_{int(c*100)}r.txt', 'a') as f:
+              text = df.to_string(header=False, index=False)
+              f.write(text)"""
   
     
     
