@@ -63,7 +63,7 @@ where:
 python task2_1.py -m <network to use>
 ```
 where
-- method: "faster_RCNN or retinaNet"
+- m: "faster_RCNN or retinaNet"
 
 ###  Task 2.2: Tracking with Kalman filter
 
