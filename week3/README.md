@@ -27,7 +27,7 @@ For save visualitzations ```--save_vis True```
 python task_1_1.py --network faster_RCNN_R101
 ```
 
-### Task 1.3 
+### Task 1.3 & Task 1.4
 
 ```
 python main.py --task Task1_3 --network <network_to_use> --save_vis <True/False> --strategy <strategy_to_use> --lr <learning_rate>
@@ -59,7 +59,7 @@ python task2_2.py
 For annotations you can access here: [Annotations](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3/Results/task1_2_CVAT)
 
 
-#### Some results of Task 1.2
+#### Some results of Task 1.4
 | Split	| Faster R-CNN | RetinaNet |
 | ------------- | ------------- | ------------- |
 | Strategy A  1	| 0.85	| 0.92
