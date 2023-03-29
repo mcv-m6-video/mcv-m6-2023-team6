@@ -43,6 +43,7 @@ where:
 - strategy: The strategy to use for object tracking. It can be one of A, B_2, B_3, B_4, C_1, C_2, C_3, C_4.  
   
 #### Some results of Task 1.4
+<center>
 | Split	| Faster R-CNN | RetinaNet |
 | ------------- | ------------- | ------------- |
 | Strategy A  1	| 0.85	| 0.92
