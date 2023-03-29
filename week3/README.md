@@ -18,11 +18,6 @@ To execute the code, specify the desired network architecture using the "args.ne
 - "faster_RCNN"
 - "mask_RCNN"
 - "retinaNet"
-- "faster_RCNN_R50"
-- "mask_RCNN_R50"
-- "retinaNet_R50"
-- "faster_RCNN_R101"
-- "mask_RCNN_R101"
 
 For save visualitzations ```--save_vis True```
 
