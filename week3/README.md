@@ -58,9 +58,11 @@ where:
 
 ##  Task 2: Object tracking
 
+##  Task 2.1: Tracking by overlap
 ```
 python task2_1.py -m <network to use>
 ```
+##  Task 2.2: Tracking with Kalman filter
 where
 - method: "faster_RCNN or retinaNet"
 
