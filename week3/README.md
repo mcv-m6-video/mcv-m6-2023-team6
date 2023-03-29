@@ -68,3 +68,16 @@ python task2_2.py
 ```
 
 For annotations you can access here: [Annotations](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3/Results/task1_2_CVAT)
+
+
+| Split	| Faster R-CNN | RetinaNet |
+| ------------- | ------------- | ------------- |
+| Strategy A  1	| 0.85	| 0.92
+| Strategy B  2	| 0.84	| 0.84
+| Strategy B  3	| 0.86	| 0.88
+| Strategy B  4	| 0.87	| 0.88
+| Strategy C  1	| 0.87	| 0.97
+| Strategy C  2	| 0.88	| 0.88
+| Strategy C  3	| 0.88	| 0.96
+| Strategy C  4	| 0.88	| 0.88
+| Mean	| 0.87	| 0.90
