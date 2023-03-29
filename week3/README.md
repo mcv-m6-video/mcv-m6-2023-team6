@@ -78,7 +78,7 @@ To eval: Put your results in MOT 1.1 Format:
 ```
 <frame>, <id>, <bb_left>, <bb_top>, <bb_width>, <bb_height>, <conf>, <x>, <y>, <z>
 ````
-And then run:
+And then run MOT17 benchmark by default:
 ```
 python run_motchallenge.py --DO_PREPROC False --METRICS HOTA Identity TrackMAP
 ```
