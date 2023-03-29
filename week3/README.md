@@ -1,8 +1,6 @@
 # Week 3
 
-## Goal:
-
-Object Detection and tracking
+## Goal: Object Detection and tracking
 
 Welcome to the Object Detection and Tracking using Overlap and Kalman Filter repository! This project aims to implement a computer vision technique for detecting and tracking objects in a video. Specifically, we utilize some networks to detect the objects in each frame and then apply overlap or the Kalman filter to track their movement over time.
 
