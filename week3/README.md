@@ -62,10 +62,10 @@ where:
 ```
 python task2_1.py -m <network to use>
 ```
-###  Task 2.2: Tracking with Kalman filter
 where
 - method: "faster_RCNN or retinaNet"
 
+###  Task 2.2: Tracking with Kalman filter
 
 ```
 python task2_2.py
