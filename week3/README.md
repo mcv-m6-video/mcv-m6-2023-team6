@@ -58,11 +58,11 @@ where:
 
 ##  Task 2: Object tracking
 
-##  Task 2.1: Tracking by overlap
+###  Task 2.1: Tracking by overlap
 ```
 python task2_1.py -m <network to use>
 ```
-##  Task 2.2: Tracking with Kalman filter
+###  Task 2.2: Tracking with Kalman filter
 where
 - method: "faster_RCNN or retinaNet"
 
@@ -71,7 +71,7 @@ where
 python task2_2.py
 ```
 
-##  Task 2.3: EvalTrack
+###  Task 2.3: EvalTrack
 
 First of all, if you want this repository with submodules, you can clone it with the following command:
 
