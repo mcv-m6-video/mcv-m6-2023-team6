@@ -28,6 +28,11 @@ __pycache__/
 *$py.class
 ./week3/Results/
 
+./week4/pyflow
+./week4/MaskFlowNet
+./week4/perceiver-io
+./week4/RAFT
+
 # C extensions
 *.so
 
@@ -214,3 +219,4 @@ fabric.properties
 .DS_Store
 
 .sort/
+MaskFlownet/
