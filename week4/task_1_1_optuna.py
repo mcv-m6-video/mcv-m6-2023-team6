@@ -7,6 +7,7 @@ from tqdm import tqdm
 from itertools import product
 import sys, os,  argparse, time
 import pandas as pd
+import optuna
 
 def estimate_block_flow(block_size, distance_type, blocks_pos, ref_img, curr_img):
 
@@ -73,6 +74,43 @@ def estimate_flow(motion_type, N, P,step, distance_type, ref_img, curr_img):
     return flow
 
 
+def objective(trial):
+
+    # define the range of values for the hyperparameters to search
+    block_size = trial.suggest_categorical('block_size', args.block_size)
+    search_area = trial.suggest_categorical('search_area', args.search_area)
+    step_size = trial.suggest_categorical('step_size', args.step_size)
+    motion_type = trial.suggest_categorical('motion_type', args.motion_type)
+    distance_type = trial.suggest_categorical('distance_type', args.distance_type)
+
+    
+    img_10 = np.array(Image.open(os.path.join(args.frames_path, '000045_10.png')))
+    img_11 = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
+
+    results = []
+
+    
+    if motion_type == 'forward':
+        ref_image = img_10
+        curr_image = img_11
+
+    elif motion_type == 'backward':
+        ref_image = img_11
+        curr_image = img_10
+
+    else:
+        raise ValueError("Invalid motion type. Possible: 'forward' or 'backward'")
+
+    start = time.time()
+    flow = estimate_flow(motion_type, block_size, search_area, step_size, distance_type, ref_image, curr_image)
+    end = time.time()
+    flow_gt = flow_read(os.path.join(args.gt_path, '000045_10.png'))
+    msen, pepn = compute_errors(flow, flow_gt, threshold=3, save_path='./Results/Task1_1/')
+
+       
+
+###########################################
+
 
 if __name__ == '__main__':
 
@@ -110,28 +148,7 @@ if __name__ == '__main__':
 
     results = []
 
-    # perform grid using the multiple combinations of the parameters using product show progress in tqdm
-    for motion_type, N, P, step, distance_type in product(args.motion_type, args.block_size, args.search_area, args.step_size, args.distance_type):
-        print('Estimating flow for motion_type: {}, N: {}, P: {}, step_size: {}, distance_type: {}'.format(motion_type, N, P,step, distance_type))
-
-        if motion_type == 'forward':
-            ref_image = img_10
-            curr_image = img_11
-
-        elif motion_type == 'backward':
-            ref_image = img_11
-            curr_image = img_10
-
-        else:
-            raise ValueError("Invalid motion type. Possible: 'forward' or 'backward'")
-
-        start = time.time()
-        flow = estimate_flow(motion_type, N, P, step, distance_type, ref_image, curr_image)
-        end = time.time()
-        flow_gt = flow_read(os.path.join(args.gt_path, '000045_10.png'))
- 
-        msen, pepn = compute_errors(flow, flow_gt, threshold=3, save_path='./Results/Task1_1/')
-
+    """
         #visualize_flow
         if args.visualize:
             opticalFlow_arrows(img_10, flow_gt, flow, save_path='./Results/Task1_1/')
@@ -147,4 +164,26 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.dirname(args.results_path)):
         os.makedirs(os.path.dirname(args.results_path))
 
-    df.to_csv(args.results_path, index=False)
+    df.to_csv(args.results_path, index=False)"""
+
+    
+
+    # random, grid search all of you want sampler https://optuna.readthedocs.io/en/stable/reference/samplers/index.html
+    sampler = TPESampler(seed=42)
+    gc.collect()
+    try:
+        study = optuna.load_study(study_name="OPTICALFLOW", storage="sqlite:///bbdd.db")
+    except:
+        study = optuna.create_study(
+            study_name="OPTICALFLOW",
+            direction="minimize",
+            sampler=sampler,
+            storage="sqlite:///bbdd.db",
+        )
+        study.optimize(objective, n_trials=100, n_jobs=8, gc_after_trial=True)
+
+    df = study.trials_dataframe()
+    df.to_csv("opticalFlow_grid.csv")
+    trial = study.best_trial
+
+    gc.collect()
