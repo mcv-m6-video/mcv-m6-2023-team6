@@ -1,7 +1,5 @@
 import gc
-
 from optuna.samplers import TPESampler
-
 from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
 from PIL import Image
 import multiprocessing as mp
@@ -111,6 +109,11 @@ def objective(trial):
     flow_gt = flow_read(os.path.join(args.gt_path, '000045_10.png'))
     msen, pepn = compute_errors(flow, flow_gt, threshold=3, save_path='./Results/Task1_1/')
 
+    print('MSEN: ', msen)
+    print('PEPN: ', pepn)
+    print('Time: ', end - start)
+    return msen, pepn
+
        
 
 ###########################################
@@ -120,18 +123,18 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--block_size', type=int, nargs='+', default=[32],
+    parser.add_argument('--block_size', type=int, nargs='+', default=[2, 4, 8, 16, 32, 64, 128],
                         help='size of the square blocks in which the image is divided (N)')
 
-    parser.add_argument('--search_area', type=int, nargs='+', default=[32],
+    parser.add_argument('--search_area', type=int, nargs='+', default=[2, 4, 8, 16, 32, 64, 128],
                         help='number of pixels in every direction to define the search area (P)')
     
-    parser.add_argument('--step_size', type=int, nargs='+', default=[32])
+    parser.add_argument('--step_size', type=int, nargs='+', default=[2, 4, 8, 16, 32, 64, 128])
 
-    parser.add_argument('--motion_type', type=str, nargs='+', default=['forward'],
+    parser.add_argument('--motion_type', type=str, nargs='+', default=['forward', 'backward'],
                         help='motion type to use: forward or backward')
 
-    parser.add_argument('--distance_type', type=str, nargs='+', default=['NCC'],
+    parser.add_argument('--distance_type', type=str, nargs='+', default=['NCC', 'SAD', 'SSD'],
                         help='distance metric to compare the blocks: SAD, SSD, NCC')
 
     parser.add_argument('--gt_path', type=str, default= "/ghome/group03/dataset/OpticalFlow/data_stereo_flow/",
@@ -180,7 +183,7 @@ if __name__ == '__main__':
     except:
         study = optuna.create_study(
             study_name="OPTICALFLOW",
-            direction="minimize",
+            direction=["minimize", "minimize"],
             sampler=sampler,
             storage="sqlite:///bbdd.db",
         )
@@ -188,6 +191,12 @@ if __name__ == '__main__':
 
     df = study.trials_dataframe()
     df.to_csv("opticalFlow_grid.csv")
-    trial = study.best_trial
+    print(f"Number of trials on the Pareto front: {len(study.best_trials)}")
+
+    trial_with_highest_accuracy = max(study.best_trials, key=lambda t: t.values[1])
+    print(f"Trial with highest accuracy: ")
+    print(f"\tnumber: {trial_with_highest_accuracy.number}")
+    print(f"\tparams: {trial_with_highest_accuracy.params}")
+    print(f"\tvalues: {trial_with_highest_accuracy.values}")
 
     gc.collect()
