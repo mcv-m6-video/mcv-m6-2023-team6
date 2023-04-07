@@ -183,20 +183,20 @@ if __name__ == '__main__':
     except:
         study = optuna.create_study(
             study_name="OPTICALFLOW",
-            direction=["minimize", "minimize"],
+            directions=["minimize", "minimize"],
             sampler=sampler,
             storage="sqlite:///bbdd.db",
         )
-        study.optimize(objective, n_trials=100, n_jobs=8, gc_after_trial=True)
+        study.optimize(objective, n_trials=100, n_jobs=10, gc_after_trial=True)
 
     df = study.trials_dataframe()
     df.to_csv("opticalFlow_grid.csv")
     print(f"Number of trials on the Pareto front: {len(study.best_trials)}")
 
-    trial_with_highest_accuracy = max(study.best_trials, key=lambda t: t.values[1])
+    trial_with_lowest_error = max(study.best_trials, key=lambda t: t.values[1])
     print(f"Trial with highest accuracy: ")
-    print(f"\tnumber: {trial_with_highest_accuracy.number}")
-    print(f"\tparams: {trial_with_highest_accuracy.params}")
-    print(f"\tvalues: {trial_with_highest_accuracy.values}")
+    print(f"\tnumber: {trial_with_lowest_error.number}")
+    print(f"\tparams: {trial_with_lowest_error.params}")
+    print(f"\tvalues: {trial_with_lowest_error.values}")
 
     gc.collect()
