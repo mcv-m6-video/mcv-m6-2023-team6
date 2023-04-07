@@ -10,46 +10,27 @@ import pandas as pd
 
 from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
 
+# PYFLOW
 # Clone Repo
-# 
-import pyflow.pyflow as pyflow
+# https://github.com/wonderworks-software/PyFlow.git
+# Set path to pyflow in utils/pyflow.py
+from utils.pyflow import flow_pyflow
 
 
+# MASKFLOWNET
 # Clone Repo
 # https://github.com/microsoft/MaskFlownet
 # Set path to MaskFlownet in utils/maskflow.py
 from utils.maskflow import maskflownet
 
 
+# RAFT
+# Clone Repo
+# https://github.com/princeton-vl/RAFT
+# run ./download_models.sh to download pretrained models
+# Set path to RAFT in utils/RAFT.py
+from utils.RAFT import flow_raft
 
-# sys.path.append("RAFT")
-# from demo import flow_raft
-
-
-
-def flow_pyflow(img_prev, img_next, colType=0):
-    img_prev = img_prev.astype(float) / 255.
-    img_next = img_next.astype(float) / 255.
-
-    # Flow Options:
-    alpha = 0.012
-    ratio = 0.75
-    minWidth = 20
-    nOuterFPIterations = 7
-    nInnerFPIterations = 1
-    nSORIterations = 30
-    colType = colType  # 0 or default:RGB, 1:GRAY (but pass gray image with shape (h,w,1))
-    
-    if colType == 0:
-        img_prev = np.expand_dims(img_prev, axis=2)
-        img_next = np.expand_dims(img_next, axis=2)
-
-    u, v, _ = pyflow.coarse2fine_flow(
-        img_prev, img_next, alpha, ratio, minWidth, nOuterFPIterations, nInnerFPIterations,
-        nSORIterations, colType)
-    flow = np.concatenate((u[..., None], v[..., None]), axis=2)
-
-    return flow
 
 
 def flow_LK(img_prev, img_next, colType=0):
@@ -82,7 +63,7 @@ estimate_flow = {
     'pyflow': flow_pyflow,
     'LK': flow_LK,
     'maskflownet': maskflownet,
-    # 'raft': raft
+    'RAFT': flow_raft
 }
 
 
@@ -117,7 +98,7 @@ if __name__ == '__main__':
     img_11 = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
 
     # methods = ['pyflow', 'LK']
-    methods = ['pyflow','LK', 'maskflownet']
+    methods = ['pyflow','LK', 'maskflownet','RAFT']
     
     results = []
     

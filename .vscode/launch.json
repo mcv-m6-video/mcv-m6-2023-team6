@@ -10,7 +10,10 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true,
+            "justMyCode": true
+            // "args": [
+            //     "--model=/ghome/group03/mcv-m6-2023-team6/week4/RAFT/models/raft-things.pth",
+            //     "--path=/ghome/group03/dataset/OpticalFlow/frames/colored_0"]
             }
     ]
 }

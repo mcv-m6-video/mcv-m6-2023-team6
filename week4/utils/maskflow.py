@@ -7,7 +7,7 @@ repoRoot = '/ghome/group03/mcv-m6-2023-team6/week4/MaskFlownet'
 # to CUDA\vX.Y\bin
 #os.environ['PATH'] = r'path\to\your\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin' + ';' + os.environ['PATH']
 
-# SET PYTHONPATH
+# SET REPO PATH
 sys.path.append(repoRoot)
 
 import argparse
@@ -123,7 +123,7 @@ def predict_video_flow(video_filename, batch_size, resize=None):
 
 
 
-def maskflownet(image1, image2, colType=None, flow_filepath=None, cfg='MaskFlownet.yaml', device='0', checkp='8caNov12'):
+def maskflownet(image1, image2, colType=None, flow_filepath=None, cfg='MaskFlownet.yaml', device='0', checkp='8caNov12'): #5adNov03 8caNov12
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--flow_filepath', type=str, help='destination filepath of the flow image/video', default=flow_filepath)
