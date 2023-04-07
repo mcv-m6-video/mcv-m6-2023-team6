@@ -32,6 +32,7 @@ __pycache__/
 ./week4/MaskFlowNet
 ./week4/perceiver-io
 ./week4/RAFT
+./week4/TrackEval
 
 # C extensions
 *.so
