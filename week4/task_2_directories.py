@@ -3,7 +3,7 @@ sys.path.insert(0,'week3')
 
 import os
 
-def createFolders(seq_names,gts_folder, results_folder):
+def createFolders(seq_names,seq_lengths,gts_folder):
 
     # Create folders GT
     if not os.path.exists('TrackEval/data/gt/mot_challenge/MOT17-train'):
@@ -17,7 +17,7 @@ def createFolders(seq_names,gts_folder, results_folder):
         os.makedirs('TrackEval/data/trackers/mot_challenge/MOT17-train/MPNTrack/data')
     
     
-    for seq in seq_names:
+    for seq,i in enumerate(seq_names):
         if not os.path.exists('TrackEval/data/gt/mot_challenge/MOT17-train/'+seq):
             os.makedirs('TrackEval/data/gt/mot_challenge/MOT17-train/'+seq)
         if not os.path.exists('TrackEval/data/gt/mot_challenge/MOT17-train/'+seq+'/gt'):
@@ -27,13 +27,17 @@ def createFolders(seq_names,gts_folder, results_folder):
         with open(os.path.join(gts_folder, seq + ".txt"), "r") as f:
             with open('TrackEval/data/gt/mot_challenge/MOT17-train/'+seq+'/gt/gt.txt', "w+") as f1:
                 for line in f:
-                    f1.write(line) 
+                    line = line.split(',')
+                    line[0] = str(int(line[0]) + 1)
+                    line = ','.join(line)
+                    f1.write(line)
+         
         with open('TrackEval/data/gt/mot_challenge/MOT17-train/'+seq+'/seqinfo.ini', "w+") as f2:
             f2.write('[Sequence]\n')
             f2.write('name = '+seq + '\n')
             f2.write('imDir = img1\n')
             f2.write('frameRate = 10\n')
-            f2.write('seqLength = 2141\n')
+            f2.write('seqLength = '+str(seq_lengths[i])+'\n')
             f2.write('imWidth = 1920\n')
             f2.write('imHeight = 1080\n')
             f2.write('imExt = .jpg\n')
@@ -43,7 +47,7 @@ def createFolders(seq_names,gts_folder, results_folder):
             f3.write(seq + '\n')
         
 if __name__ == "__main__":
-    seq_names = ['c10', 'c11', 'c12', 'c13', 'c14', 'c15']
+    seq_names = ['c010', 'c011', 'c012', 'c013', 'c014', 'c015']
+    seq_lengths = [2141, 2141, 2141, 2141, 2141, 2141]
     gts_folder = 'GT/'
-    results_folder = 'Results/Task_1_3/'
-    createFolders(seq_names,gts_folder, results_folder)
+    createFolders(seq_names,seq_lengths, gts_folder)

@@ -10,4 +10,4 @@ conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job
 
 python task_2_directories.py
-python run_mot_challenge.py --DO_PREPROC False --METRICS HOTA Identity
+python TrackEval/scripts/run_mot_challenge.py --DO_PREPROC False --METRICS HOTA Identity
