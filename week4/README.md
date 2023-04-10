@@ -1,6 +1,7 @@
 # Week 4
 
 ### Task 1: Optical Flow
+![Alt Text](path/to/gif/file.gif)
 
 #### Task 1.1: Block Matching
    + Exhauastive search (SSD, SAD)
