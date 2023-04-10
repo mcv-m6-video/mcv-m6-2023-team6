@@ -18,6 +18,7 @@ import glob
 import numpy as np
 import torch
 from PIL import Image
+import time
 
 from core.raft import RAFT
 from core.utils.utils import InputPadder
@@ -56,10 +57,12 @@ def flow_raft(image1, image2, model='/ghome/group03/mcv-m6-2023-team6/week4/RAFT
         padder = InputPadder(image1.shape)
         image1, image2 = padder.pad(image1, image2)
 
+        start = time.time()
         flow_low, flow_up = model(image1, image2, iters=20, test_mode=True)
         
         # Resize flow_up to original image1 size
         flow_up = torch.nn.functional.interpolate(flow_up, size=shape[:2], mode='bilinear', align_corners=True)
+        end = time.time()
         
-    return flow_up.cpu().numpy().squeeze().transpose(1,2,0)
+    return flow_up.cpu().numpy().squeeze().transpose(1,2,0), end-start
 

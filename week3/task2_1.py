@@ -23,7 +23,7 @@ def track_memory(tracked_objects):
     for idx in delete:
         del tracked_objects[idx]
 
-def video(det_boxes,method,c):
+def video(det_boxes,method,c=None):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_out = cv2.VideoWriter("./Results/Task_2_1/" + f"{method}_{c}.mp4", fourcc, 10, (1920, 1080))
     tracker_colors = {}

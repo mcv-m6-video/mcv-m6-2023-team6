@@ -8,6 +8,7 @@ import numpy as np
 
 import pandas as pd
 
+
 from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
 
 # PYFLOW
@@ -32,6 +33,18 @@ from utils.maskflow import maskflownet
 from utils.RAFT import flow_raft
 
 
+# # LiteFlowNet
+# # CLone Repo
+# # https://github.com/sniklaus/pytorch-liteflownet
+# pip install cupy-cuda12x
+from utils.liteflownet_pytorch import flow_liteflownet
+
+# # Deq-Flow
+# ## CLone Repo
+# # Add path sys
+from utils.deq_flow_ import flow_deqflow
+
+
 
 def flow_LK(img_prev, img_next, colType=0):
 
@@ -48,7 +61,10 @@ def flow_LK(img_prev, img_next, colType=0):
     height, width = img_prev.shape[:2]
     p0 = np.array([[x, y] for y in range(height) for x in range(width)], dtype=np.float32).reshape((-1, 1, 2))
 
+    start = time.time()
     p1, st, err = cv2.calcOpticalFlowPyrLK(img_prev, img_next, p0, None, **lk_params)
+    end = time.time() 
+    
     p0 = p0.reshape((height, width, 2))
     p1 = p1.reshape((height, width, 2))
     st = st.reshape((height, width))
@@ -56,14 +72,16 @@ def flow_LK(img_prev, img_next, colType=0):
     flow = p1 - p0
     flow[st == 0] = 0
 
-    return flow
+    return flow, end-start
 
 
 estimate_flow = {
     'pyflow': flow_pyflow,
     'LK': flow_LK,
     'maskflownet': maskflownet,
-    'RAFT': flow_raft
+    'RAFT': flow_raft,
+    'liteflownet': flow_liteflownet,
+    'deqflow': flow_deqflow
 }
 
 
@@ -97,8 +115,9 @@ if __name__ == '__main__':
     img_10 = np.array(Image.open(os.path.join(args.frames_path, '000045_10.png')))
     img_11 = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
 
-    # methods = ['pyflow', 'LK']
-    methods = ['pyflow','LK', 'maskflownet','RAFT']
+
+    methods = ['pyflow','LK', 'maskflownet','RAFT', 'liteflownet']
+    # methods = ['deqflow']
     
     results = []
     
@@ -109,9 +128,7 @@ if __name__ == '__main__':
         print('.................Estimating flow for method: {}....................'.format(method))
         output_path_method = os.path.join(output_path, method)
         
-        start = time.time()
-        flow = estimate_flow[method](img_10, img_11, colType=1)
-        end = time.time()
+        flow, runtime = estimate_flow[method](img_10, img_11, colType=1)
         
         msen, pepn = compute_errors(flow, flow_gt, threshold=3, save_path=output_path_method+'/')
 
@@ -120,7 +137,7 @@ if __name__ == '__main__':
             opticalFlow_arrows(img_10, flow_gt, flow, save_path=output_path_method+'/')
             HSVOpticalFlow2(flow, save_path=output_path_method+'/')
 
-        results.append([method, msen, pepn, end-start])
+        results.append([method, msen, pepn, runtime])
 
     df = pd.DataFrame(results, columns=['method' , 'msen', 'pepn', 'runtime'])
 

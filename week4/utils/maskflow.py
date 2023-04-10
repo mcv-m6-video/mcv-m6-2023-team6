@@ -11,6 +11,7 @@ repoRoot = '/ghome/group03/mcv-m6-2023-team6/week4/MaskFlownet'
 sys.path.append(repoRoot)
 
 import argparse
+import time
 import yaml
 import numpy as np
 import mxnet as mx
@@ -157,7 +158,9 @@ def maskflownet(image1, image2, colType=None, flow_filepath=None, cfg='MaskFlown
         # Convert image1 from PIL to cv2 image
         image1 = cv2.cvtColor(image1, cv2.COLOR_RGB2BGR)
         image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
+        start = time.time()
         flow, occ_mask, warped = predict_image_pair_flow(image1, image2, pipe)
+        end = time.time()
         if flow_filepath is not None:
             cv2.imwrite(args.flow_filepath, flow_vis.flow_to_color(flow, convert_to_bgr=False))
     else:
@@ -167,4 +170,4 @@ def maskflownet(image1, image2, colType=None, flow_filepath=None, cfg='MaskFlown
         flow_video_clip.write_videofile(args.flow_filepath, threads=args.threads, logger=None) #export the video
 
     
-    return flow 
+    return flow , end-start

@@ -1,6 +1,7 @@
 import os
 import sys
 import numpy as np
+import time
 
 # ======== PLEASE MODIFY ========
 # where is the repo
@@ -32,9 +33,11 @@ def flow_pyflow(img_prev, img_next, colType=0):
         img_prev = np.expand_dims(img_prev, axis=2)
         img_next = np.expand_dims(img_next, axis=2)
 
+    start = time.time()
     u, v, _ = pyflow.coarse2fine_flow(
         img_prev, img_next, alpha, ratio, minWidth, nOuterFPIterations, nInnerFPIterations,
         nSORIterations, colType)
     flow = np.concatenate((u[..., None], v[..., None]), axis=2)
+    end = time.time()
 
-    return flow
+    return flow, end - start

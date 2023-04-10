@@ -1,62 +1,137 @@
 import sys
 from tqdm import tqdm
 
-sys.path.insert(0,'week3')
 
 import os
+import cv2
 import numpy as np
 from PIL import Image
-from task_1_2 import flow_pyflow,flow_LK
-from utils.maskflow import maskflownet
-from utils.utils_trackeval import save_txt
 import pandas as pd
 import argparse
 import time
 import copy
-from week3.utils.util import load_from_txt,discard_overlaps,filter_boxes,iou
-from week3.task2_1 import track_memory
-from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
 
-def max_iou_tracking(path,method,conf_threshold=0.5,iou_threshold=0.5):
+# from utils.pyflow import flow_pyflow
+from utils.util import load_from_txt,discard_overlaps,filter_boxes,iou,save_txt
+from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
+from utils.maskflow import maskflownet
+from utils.RAFT import flow_raft
+import pickle
+from utils.RAFT import flow_raft
+from utils.liteflownet_pytorch import flow_liteflownet
+
+
+def flow_LK(img_prev, img_next, colType=0):
+
+    if colType == 1:
+        img_prev = cv2.cvtColor(img_prev, cv2.COLOR_BGR2GRAY)
+        img_next = cv2.cvtColor(img_next, cv2.COLOR_BGR2GRAY)
+
+    # Parameters for lucas kanade optical flow
+    lk_params = dict(winSize=(15, 15),
+                     maxLevel=2,
+                     criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
+
+    # Take all pixels
+    height, width = img_prev.shape[:2]
+    p0 = np.array([[x, y] for y in range(height) for x in range(width)], dtype=np.float32).reshape((-1, 1, 2))
+
+    p1, st, err = cv2.calcOpticalFlowPyrLK(img_prev, img_next, p0, None, **lk_params)
+    p0 = p0.reshape((height, width, 2))
+    p1 = p1.reshape((height, width, 2))
+    st = st.reshape((height, width))
+
+    flow = p1 - p0
+    flow[st == 0] = 0
+
+    return flow
+    
+estimate_flow = {
+    'pyflow': flow_pyflow,
+    'LK': flow_LK,
+    'maskflownet': maskflownet,
+    'RAFT': flow_raft,
+    'liteflownet': flow_liteflownet
+    
+}
+
+def track_memory(tracked_objects):
+    delete = []
+    for idx in tracked_objects:
+        if tracked_objects[idx]['memory'] != tracked_objects[idx]['frame']:
+            if tracked_objects[idx]['memory'] <= 5:
+                delete.append(idx)
+ 
+
+    for idx in delete:
+        del tracked_objects[idx]
+        
+        
+def max_iou_tracking(path,method,frames_path,conf_threshold=0.6,iou_threshold=0.5):
     total_time = 0.0
     total_frames = 0
 
     det_boxes = load_from_txt(path,threshold=conf_threshold)
+    delta_t = 1/fps
+    
 
     track_id = 0
     tracked_objects = {}
     memory = 5
-    corrected_csv = {}
+
     for frame_id in tqdm(det_boxes):
-        
         total_frames += 1
         start_time = time.time()
-        # REMOVE OVERLAPPING BOUNDING BOXES 
+        # REMOVE OVERLAPPING BOUNDING BOXES
         boxes = det_boxes[frame_id]
         boxes = discard_overlaps(boxes)
         frame_boxes = filter_boxes(boxes)
-
-
         # FIRST FRAME, WE INITIALIZE THE OBJECTS ID
+        
         if not tracked_objects:
             for j in range(len(frame_boxes)):
                 # We add the tracking object ID at the end of the list  [[frame,x1, y1, x2, y2, conf, track_id]]
                 frame_boxes[j].append(track_id)
+            
                 tracked_objects[f'{track_id}'] = {'bbox':[frame_boxes[j][1],frame_boxes[j][2],frame_boxes[j][3],frame_boxes[j][4]],'frame':frame_id,'memory':0, 'iou':0}
-                track_id += 1           
-                
+                track_id += 1             
         else:
-        
             # FRAME N+1 WE COMPARE TO OBJECTS IN FRAME N
+            current_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id}.jpg')))
+            previous_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id-1}.jpg')))
+            
+            
+            flow = estimate_flow[method](previous_frame,current_frame,colType=1)
+
+            for data in previous_tracked_objects.items():
+                id,boxB = data
+                boxB = np.array(boxB['bbox'])
+
+                # Optical flow estimation for each object
+                flow_boxB = flow[int(boxB[1]):int(boxB[3])+1,int(boxB[0]):int(boxB[2])+1]
+                flow_boxB = np.mean(flow_boxB,axis=(0,1))
+                
+                displacement = delta_t * flow_boxB
+
+                # UPDATE step: we add to the previous object position the motion estimated (from optical flow estimation)
+                new_bbox_B = [boxB[0] + displacement[0],
+                              boxB[1] + displacement[1],
+                              boxB[2] + displacement[0],
+                              boxB[3] + displacement[1]]
+            
+                previous_tracked_objects[id]['new_bbox'] = new_bbox_B
+    
+
             for i in range(len(frame_boxes)):
                 frame_boxes[i][0] = frame_id
                 best_iou = 0
                 track_id_best = 0
                 boxA = [frame_boxes[i][1],frame_boxes[i][2],frame_boxes[i][3],frame_boxes[i][4]]
 
+
                 for data in previous_tracked_objects.items():
                     id,boxB = data
-                    iou_score,_ = iou(boxA,boxB['bbox'])
+                    iou_score,_ = iou(boxA,boxB['new_bbox'])
 
                     if iou_score > best_iou and iou_score >= iou_threshold:
                         best_iou = iou_score
@@ -107,54 +182,54 @@ def max_iou_tracking(path,method,conf_threshold=0.5,iou_threshold=0.5):
 
         if frame_id == memory:
             track_memory(tracked_objects)
-            memory = memory + frame_id 
+            memory = memory + frame_id  
+            
+        
+            
 
         previous_tracked_objects = copy.deepcopy(tracked_objects)
         cycle_time = time.time() - start_time
         total_time += cycle_time
 
     print("Total Tracking took: %.3f for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
+
     return det_boxes
 
-estimate_flow = {
-    'pyflow': flow_pyflow,
-    'LK': flow_LK,
-    'maskflownet': maskflownet,
-}
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--gt', type=str, default= "/ghome/group03/dataset/ai_challenge_s03_c010-full_annotation.xml",
+    parser.add_argument('--gt', type=str, default= "/export/home/group03/dataset/ai_challenge_s03_c010-full_annotation.xml",
                         help='ground truth xml file for object tracking')
 
-    parser.add_argument('--detections', type=str, default="/ghome/group03//export/home/group03/mcv-m6-2023-team6/week3/Results/Task1_5/faster_RCNN/A/bbox_faster_RCNN_A.txt",
+    parser.add_argument('--detections', type=str, default="/export/home/group03/mcv-m6-2023-team6/week3/Results/Task1_5/faster_RCNN/A/bbox_faster_RCNN_A.txt",
                         help='.txt file with the object detection')
 
-    parser.add_argument('--frames_path', type=str, default="/ghome/group03/dataset/AICity_data/train/S03/c010/frames/",
+    parser.add_argument('--frames_path', type=str, default="/export/home/group03/dataset/AICity_data/train/S03/c010/frames/",
                         help='path to folder containing the images to estimate the object tracking with optical flow')
 
     parser.add_argument('--results_path', type=str, default='Results/Task1_3/',
                         help='path to save results')
-    parser.add_argument('--visualize', type=bool, default=True)
+                        
 
     args = parser.parse_args()
+
     
     # Get the directory of the current file
     current_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Output path for the results
     output_path = os.path.join(current_dir, args.results_path)
-    
+
+    cap = cv2.VideoCapture(current_dir + f'/../../dataset/AICity_data/train/S03/c010/vdo.avi')
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
     # Create the output directory if it does not exist
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    methods = ['pyflow','LK', 'maskflownet']
-    
-    results = []
-    
+    methods = ['pyflow','LK', 'maskflownet','RAFT', 'liteflownet']
 
     # perform grid using the multiple combinations of the parameters using product show progress in tqdm
     for method in methods:
@@ -162,8 +237,13 @@ if __name__ == '__main__':
         output_path_method = os.path.join(output_path, method)
         
         start = time.time()
-        tracking_boxes = max_iou_tracking(args.detections,method)
-        #flow = estimate_flow[method](PREV FRAME, ACTUAL FRAME, colType=1) ESTO VA DENTRO DE LA FUNCION DE TRACKING
-        save_txt(tracking_boxes,args.results_path)
+        tracking_boxes = max_iou_tracking(args.detections,method,args.frames_path)
+        
+        with open(f'{output_path}/tracking_{method}.pkl','wb') as h:
+            pickle.dump(tracking_boxes,h,protocol=pickle.HIGHEST_PROTOCOL)
+            
+        
+        save_txt(tracking_boxes,output_path,method)
+
         end = time.time()
         

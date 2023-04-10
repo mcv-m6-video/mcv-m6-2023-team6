@@ -33,6 +33,9 @@ __pycache__/
 ./week4/perceiver-io
 ./week4/RAFT
 ./week4/TrackEval
+./week4/LiteFlowNet3
+./week4/pytorch-liteflownet
+./week4/deq-flow
 
 # C extensions
 *.so
