@@ -92,7 +92,7 @@ def compute_errors(pred_flow, gt_flow, threshold, save_path, plots=False):
     return msen, pepn
 
 
-def opticalFlow_arrows(frame, flow_gt, flow, save_path):
+def opticalFlow_arrows(frame, flow_gt, flow, save_path,name):
     """Compute the optical flow arrows diagram.
     Args:
         frame: image.
@@ -173,8 +173,9 @@ def opticalFlow_arrows(frame, flow_gt, flow, save_path):
         os.makedirs(save_path)
     
     #save the plot
-    plt.savefig(save_path + 'optical_flow_arrows.png')
+    plt.savefig(save_path + 'OF_arrows_'+name+'.png')
 
+    plt.close(fig)
 
 
 """def HSVOpticalFlow(flow, title, save_path):
@@ -223,7 +224,7 @@ def opticalFlow_arrows(frame, flow_gt, flow, save_path):
     plt.savefig(save_path + 'optical_flow_hsv.png')"""
 
 
-def HSVOpticalFlow2(flow, save_path):
+def HSVOpticalFlow2(flow, save_path,name):
     "version of opticalflow cv2 optical flow example changing S and V for better visualization"
     magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
@@ -252,4 +253,7 @@ def HSVOpticalFlow2(flow, save_path):
         os.makedirs(save_path)
     
     #save the plot
-    plt.savefig(save_path + 'optical_flow_hsv.png')
+    plt.savefig(save_path + 'OF_hsv_'+name+'.png')
+
+    #close the plot
+    plt.close(fig)

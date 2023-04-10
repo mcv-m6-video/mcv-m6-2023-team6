@@ -52,7 +52,7 @@ def estimate_block_flow(block_size, distance_type, blocks_pos, ref_img, curr_img
     return [flow_x, flow_y]
 
 
-def estimate_flow(motion_type, N, P,step, distance_type, ref_img, curr_img):
+def estimate_flow(N, P,step, distance_type, ref_img, curr_img):
     h, w = ref_img.shape
     flow = np.zeros(shape=(h, w, 2))
 
@@ -70,9 +70,6 @@ def estimate_flow(motion_type, N, P,step, distance_type, ref_img, curr_img):
 
             flow[tly_ref:tly_ref + N, tlx_ref:tlx_ref + N, :] = estimate_block_flow(N, distance_type, blocks_pos, ref_img, curr_img)
 
-    if motion_type == 'backward':
-        flow = -flow
-
     return flow
 
 
@@ -82,29 +79,17 @@ def objective(trial):
     block_size = trial.suggest_categorical('block_size', args.block_size)
     search_area = trial.suggest_categorical('search_area', args.search_area)
     step_size = trial.suggest_categorical('step_size', args.step_size)
-    motion_type = trial.suggest_categorical('motion_type', args.motion_type)
     distance_type = trial.suggest_categorical('distance_type', args.distance_type)
 
     
-    img_10 = np.array(Image.open(os.path.join(args.frames_path, '000045_10.png')))
-    img_11 = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
+    ref_image = np.array(Image.open(os.path.join(args.frames_path, '000045_10.png')))
+    curr_image = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
 
     results = []
 
-    
-    if motion_type == 'forward':
-        ref_image = img_10
-        curr_image = img_11
-
-    elif motion_type == 'backward':
-        ref_image = img_11
-        curr_image = img_10
-
-    else:
-        raise ValueError("Invalid motion type. Possible: 'forward' or 'backward'")
 
     start = time.time()
-    flow = estimate_flow(motion_type, block_size, search_area, step_size, distance_type, ref_image, curr_image)
+    flow = estimate_flow(block_size, search_area, step_size, distance_type, ref_image, curr_image)
     end = time.time()
     flow_gt = flow_read(os.path.join(args.gt_path, '000045_10.png'))
     msen, pepn = compute_errors(flow, flow_gt, threshold=3, save_path='./Results/Task1_1/')
@@ -112,6 +97,13 @@ def objective(trial):
     print('MSEN: ', msen)
     print('PEPN: ', pepn)
     print('Time: ', end - start)
+
+
+    if args.savePlots:
+            opticalFlow_arrows(img_10, flow_gt, flow, save_path='./Results/Task1_1/', name='bs_{}_sa_{}_ss_{}_dt_{}'.format(block_size, search_area, step_size, distance_type))
+            HSVOpticalFlow2(flow, save_path='./Results/Task1_1/', name='bs_{}_sa_{}_ss_{}_dt_{}'.format(block_size, search_area, step_size, distance_type))
+
+
     return msen, pepn
 
        
@@ -129,10 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--search_area', type=int, nargs='+', default=[2, 4, 8, 16, 32, 64, 128],
                         help='number of pixels in every direction to define the search area (P)')
     
-    parser.add_argument('--step_size', type=int, nargs='+', default=[2, 4, 8, 16, 32, 64, 128])
-
-    parser.add_argument('--motion_type', type=str, nargs='+', default=['forward', 'backward'],
-                        help='motion type to use: forward or backward')
+    parser.add_argument('--step_size', type=int, nargs='+', default=[1,2, 4, 8, 16, 32])
 
     parser.add_argument('--distance_type', type=str, nargs='+', default=['NCC', 'SAD', 'SSD'],
                         help='distance metric to compare the blocks: SAD, SSD, NCC')
@@ -145,7 +134,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--results_path', type=str, default='./Results/Task1_1/task1_1_results.csv',
                         help='path to save results in a csv file')
-    parser.add_argument('--visualize', type=bool, default=False)
+    parser.add_argument('--savePlots', type=bool, default=True)
 
     args = parser.parse_args()
 
@@ -155,25 +144,6 @@ if __name__ == '__main__':
 
     results = []
 
-    """
-        #visualize_flow
-        if args.visualize:
-            opticalFlow_arrows(img_10, flow_gt, flow, save_path='./Results/Task1_1/')
-            HSVOpticalFlow2(flow, save_path='./Results/Task1_1/')
-
-        results.append([motion_type, distance_type, N, P, step, msen, pepn, end-start])
-
-    df = pd.DataFrame(results, columns=['motion_type',  'distance_type', 'block_size', 'search_area','Step_size','msen', 'pepn', 'runtime'])
-
-    print(df)
-    
-    #check if the folder exists, if not create it
-    if not os.path.exists(os.path.dirname(args.results_path)):
-        os.makedirs(os.path.dirname(args.results_path))
-
-    df.to_csv(args.results_path, index=False)"""
-
-    
 
     # random, grid search all of you want sampler https://optuna.readthedocs.io/en/stable/reference/samplers/index.html
     sampler = TPESampler(seed=42)

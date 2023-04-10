@@ -13,7 +13,7 @@ from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, optica
 
 # PYFLOW
 # Clone Repo
-# https://github.com/wonderworks-software/PyFlow.git
+# https://github.com/pathak22/pyflow
 # Set path to pyflow in utils/pyflow.py
 from utils.pyflow import flow_pyflow
 
@@ -33,14 +33,15 @@ from utils.maskflow import maskflownet
 from utils.RAFT import flow_raft
 
 
-# # LiteFlowNet
-# # CLone Repo
-# # https://github.com/sniklaus/pytorch-liteflownet
+# LiteFlowNet
+# CLone Repo
+# https://github.com/sniklaus/pytorch-liteflownet
 # pip install cupy-cuda12x
 from utils.liteflownet_pytorch import flow_liteflownet
 
 # # Deq-Flow
 # ## CLone Repo
+
 # # Add path sys
 from utils.deq_flow_ import flow_deqflow
 

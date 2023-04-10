@@ -11,49 +11,24 @@ import argparse
 import time
 import copy
 
-# from utils.pyflow import flow_pyflow
-from utils.util import load_from_txt,discard_overlaps,filter_boxes,iou,save_txt
+from utils.util import load_from_txt,discard_overlaps,filter_boxes,iou
 from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
-from utils.maskflow import maskflownet
-from utils.RAFT import flow_raft
 import pickle
-from utils.RAFT import flow_raft
-from utils.liteflownet_pytorch import flow_liteflownet
+
+from task_1_2 import *
 
 
-def flow_LK(img_prev, img_next, colType=0):
 
-    if colType == 1:
-        img_prev = cv2.cvtColor(img_prev, cv2.COLOR_BGR2GRAY)
-        img_next = cv2.cvtColor(img_next, cv2.COLOR_BGR2GRAY)
 
-    # Parameters for lucas kanade optical flow
-    lk_params = dict(winSize=(15, 15),
-                     maxLevel=2,
-                     criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
-
-    # Take all pixels
-    height, width = img_prev.shape[:2]
-    p0 = np.array([[x, y] for y in range(height) for x in range(width)], dtype=np.float32).reshape((-1, 1, 2))
-
-    p1, st, err = cv2.calcOpticalFlowPyrLK(img_prev, img_next, p0, None, **lk_params)
-    p0 = p0.reshape((height, width, 2))
-    p1 = p1.reshape((height, width, 2))
-    st = st.reshape((height, width))
-
-    flow = p1 - p0
-    flow[st == 0] = 0
-
-    return flow
     
 estimate_flow = {
-    'pyflow': flow_pyflow,
     'LK': flow_LK,
     'maskflownet': maskflownet,
     'RAFT': flow_raft,
     'liteflownet': flow_liteflownet
     
 }
+
 
 def track_memory(tracked_objects):
     delete = []
@@ -200,8 +175,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--gt', type=str, default= "/export/home/group03/dataset/ai_challenge_s03_c010-full_annotation.xml",
-                        help='ground truth xml file for object tracking')
 
     parser.add_argument('--detections', type=str, default="/export/home/group03/mcv-m6-2023-team6/week3/Results/Task1_5/faster_RCNN/A/bbox_faster_RCNN_A.txt",
                         help='.txt file with the object detection')
@@ -229,7 +202,7 @@ if __name__ == '__main__':
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    methods = ['pyflow','LK', 'maskflownet','RAFT', 'liteflownet']
+    methods = ['LK', 'maskflownet','RAFT', 'liteflownet']
 
     # perform grid using the multiple combinations of the parameters using product show progress in tqdm
     for method in methods:
@@ -242,8 +215,6 @@ if __name__ == '__main__':
         with open(f'{output_path}/tracking_{method}.pkl','wb') as h:
             pickle.dump(tracking_boxes,h,protocol=pickle.HIGHEST_PROTOCOL)
             
-        
-        save_txt(tracking_boxes,output_path,method)
 
         end = time.time()
         

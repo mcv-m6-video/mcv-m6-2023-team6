@@ -98,8 +98,8 @@ def createFolders_task1_3(seq_names, task,seq_lengths,gts_folder):
 if __name__ == "__main__":
 
     #create TrackEval for task 1.3
-    seq_names = ["MOT17_22_RAFT","MOT17_22_LK","MOT17_22_liteflownet","MOT17_22_maskflownet"] 
-    seq_lengths = [2141,2141,2141,2141]
+    seq_names = ["MOT17_22_RAFT","MOT17_22_LK","MOT17_22_liteflownet","MOT17_22_maskflownet","MOT17_22_week3"] 
+    seq_lengths = [2141,2141,2141,2141,2141]
     gts_folder = 'GT/task1_3/'
     createFolders_task1_3(seq_names,'task1_3',seq_lengths, gts_folder)#
 
