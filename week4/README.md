@@ -24,6 +24,15 @@ Follow the instructions of the original repo to create perceiver-io environment.
 ```bash
 python task_1_2_perceiver.py
 ```
+|    Method    |  MSEN  | PEPN | Runtime |
+|:------------:|:------:|:----:|:-------:|
+|  MaskFlowNet  | 0.28 | 0.76 |   1.54  |
+|   DEQ-Flow    | 0.52 | 2.31 |   2.45  |
+|  LiteFlowNet  | 0.57 | 3.26 |   0.54  |
+|     RAFT      | 0.59 | 1.43 |   1.67  |
+| Perceiver-IO  | 0.74 | 4.07 |   3.5   |
+|    PyFlow     | 0.97 | 7.99 |   7.39  |
+
 
 #### Task 1.3: Improve tracking with optical flow
 
