@@ -32,6 +32,8 @@ python task_1_2_perceiver.py
 |     RAFT      | 0.59 | 1.43 |   1.67  |
 | Perceiver-IO  | 0.74 | 4.07 |   3.5   |
 |    PyFlow     | 0.97 | 7.99 |   7.39  |
+| Lucas-Kanade  | 8.36 | 35.74|   0.12  |
+
 
 
 #### Task 1.3: Improve tracking with optical flow
