@@ -7,6 +7,6 @@
 #SBATCH -e %x_%u_%j.err # File to which STDERR will be written
 eval "$(conda shell.bash hook)"
 conda activate m6
-# commanda terminal --> sbatch --gres gpu:1 -n 10 job_2
-python task_3.py --sequences S01 --results_path Results/Task3/S01
-python task_3.py --sequences S04 --results_path Results/Task3/S04
+# commanda terminal --> sbatch --gres gpu:1 -n 10 job_3
+python task_3.py
+python task_3_1.py
