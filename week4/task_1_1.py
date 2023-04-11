@@ -78,13 +78,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--block_size', type=int, nargs='+', default=[32],
+    parser.add_argument('--block_size', type=int, nargs='+', default=[16],
                         help='size of the square blocks in which the image is divided (N)')
 
     parser.add_argument('--search_area', type=int, nargs='+', default=[32],
                         help='number of pixels in every direction to define the search area (P)')
     
-    parser.add_argument('--step_size', type=int, nargs='+', default=[32])
+    parser.add_argument('--step_size', type=int, nargs='+', default=[8])
 
     parser.add_argument('--motion_type', type=str, nargs='+', default=['forward'],
                         help='motion type to use: forward or backward')
