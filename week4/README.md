@@ -37,8 +37,18 @@ python task_1_2_perceiver.py
 
 
 
-#### Task 1.3: Improve tracking with optical flow
+#### Task 1.3: Improve Tracking with Optical Flow
+This task evaluates the combination of the Otical Flow and Tracking algorithm from Task 2.1 of [week 3](https://github.com/mcv-m6-video/mcv-m6-2023-team6/blob/main/week3/task2_1.py)
 
+```bash
+python task_1_3.py
+```
+|    Method    |  HOTA % | IDF1 % |
+|:------------:|:-------:|:------:|
+|     RAFT      | 84.27 |  87.94 |
+|  MaskFlowNet  | 84.26 |  87.91 |   
+|  LiteFlowNet  | 84.25 |  87.81 |   
+| Lucas-Kanade  | 84.22 |  87.78 |   
 
 ### Task 2: Multi Target Single Camera Tracking
 For AI City Challenge
