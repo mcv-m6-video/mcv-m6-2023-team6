@@ -6,6 +6,7 @@ import pandas as pd
 import json
 from skimage import io
 import cv2
+import pickle
 import numpy as np
 
 def load_from_xml(path):
@@ -177,5 +178,23 @@ def video(det_boxes,method):
         video_out.write(im)
     video_out.release()
     
+def write_csv(detections,out_path):
+
+    df_list = []
+    for frame_id in detections:
+        for track in detections[frame_id]:
+            width = track[3] - track[1]
+            height = track[4] - track[2]
+            bb_left = track[1]
+            bb_top = track[2]
+            df_list.append(pd.DataFrame({'frame': int(frame_id), 'id': int(track[-1]), 'bb_left': bb_left, 'bb_top': bb_top,
+                                            'bb_width': width, 'bb_height': height, 'conf': track[-2], "x": -1, "y": -1,
+                                            "z": -1}, index=[0]))
+    
+    df = pd.concat(df_list, ignore_index=True)
+    df = df.sort_values(by=['frame'])
+    df['frame'] = df['frame'] + 1
+    
+    df.to_csv(out_path, index=False)
 
         

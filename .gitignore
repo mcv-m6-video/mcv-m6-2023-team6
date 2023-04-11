@@ -8,6 +8,7 @@ dataset/
 *.gif
 ./week2/checkpoints/
 ./week2/results/Gaussian/
+./week4/Results/Task1_1/
 ./results/Gaussian/Gifs/
 *.err
 *.out
@@ -36,6 +37,7 @@ __pycache__/
 ./week4/LiteFlowNet3
 ./week4/pytorch-liteflownet
 ./week4/deq-flow
+./week4/Results/Task1_1
 
 # C extensions
 *.so

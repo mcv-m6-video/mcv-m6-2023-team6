@@ -33,16 +33,16 @@ from utils.maskflow import maskflownet
 from utils.RAFT import flow_raft
 
 
-# LiteFlowNet
+# LITEFLOWNET
 # CLone Repo
 # https://github.com/sniklaus/pytorch-liteflownet
 # pip install cupy-cuda12x
 from utils.liteflownet_pytorch import flow_liteflownet
 
-# # Deq-Flow
-# ## CLone Repo
-
-# # Add path sys
+# DEQ-FLOW
+# CLone Repo
+# https://github.com/locuslab/deq-flow
+# Add path sys
 from utils.deq_flow_ import flow_deqflow
 
 
@@ -77,12 +77,12 @@ def flow_LK(img_prev, img_next, colType=0):
 
 
 estimate_flow = {
-    'pyflow': flow_pyflow,
+    'PyFlow': flow_pyflow,
     'LK': flow_LK,
-    'maskflownet': maskflownet,
+    'MaskFlowNet': maskflownet,
     'RAFT': flow_raft,
-    'liteflownet': flow_liteflownet,
-    'deqflow': flow_deqflow
+    'LiteFlowNet': flow_liteflownet,
+    'DEQ-Flow': flow_deqflow
 }
 
 
@@ -117,8 +117,8 @@ if __name__ == '__main__':
     img_11 = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
 
 
-    methods = ['pyflow','LK', 'maskflownet','RAFT', 'liteflownet']
-    # methods = ['deqflow']
+    methods = ['PyFlow','LK', 'MaskFlowNet','RAFT', 'LiteFlowNet']
+    # methods = ['DEQ-Flow']
     
     results = []
     

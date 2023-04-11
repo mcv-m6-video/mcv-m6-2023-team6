@@ -12,13 +12,9 @@ import time
 import copy
 
 from utils.util import load_from_txt,discard_overlaps,filter_boxes,iou
-from utils.optical_flow import compute_errors,flow_read, HSVOpticalFlow2, opticalFlow_arrows
 import pickle
 
 from task_1_2 import *
-
-
-
 
     
 estimate_flow = {

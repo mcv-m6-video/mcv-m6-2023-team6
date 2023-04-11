@@ -6,6 +6,7 @@
 # conda activate perceiver-io
 
 
+
 import matplotlib.pyplot as plt
 import numpy as np
 import requests
@@ -14,7 +15,7 @@ from PIL import Image
 
 
 import os
-import sys
+
 import time 
 import argparse
 from PIL import Image
@@ -30,6 +31,8 @@ from transformers import AutoConfig
 from perceiver.data.vision.optical_flow import OpticalFlowProcessor
 
 
+
+
 def perceiver_io(img1,img2):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     # Load pretrained model configuration from the Hugging Face Hub
@@ -42,13 +45,15 @@ def perceiver_io(img1,img2):
     
     frame_pair = (img1, img2)
     
+    start = time.time()
     optical_flow = processor.process(model, image_pairs=[frame_pair], batch_size=1, device=device).numpy()[0]
+    end = time.time()
     
-    return optical_flow
+    return optical_flow, end-start
 
 
 estimate_flow = {
-    'perceiver': perceiver_io,
+    'Perceiver-IO': perceiver_io,
 }
 
 
@@ -83,7 +88,7 @@ if __name__ == '__main__':
     img_11 = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
 
   
-    methods = ['perceiver']
+    methods = ['Perceiver-IO']
     
     results = []
     
@@ -94,9 +99,8 @@ if __name__ == '__main__':
         print('.................Estimating flow for method: {}....................'.format(method))
         output_path_method = os.path.join(output_path, method)
         
-        start = time.time()
-        flow = estimate_flow[method](img_10, img_11)
-        end = time.time()
+    
+        flow, runtime = estimate_flow[method](img_10, img_11)
         
         msen, pepn = compute_errors(flow, flow_gt, threshold=3, save_path=output_path_method+'/')
 
@@ -105,7 +109,7 @@ if __name__ == '__main__':
             opticalFlow_arrows(img_10, flow_gt, flow, save_path=output_path_method+'/')
             HSVOpticalFlow2(flow, save_path=output_path_method+'/')
 
-        results.append([method, msen, pepn, end-start])
+        results.append([method, msen, pepn, runtime])
 
     df = pd.DataFrame(results, columns=['method' , 'msen', 'pepn', 'runtime'])
 

@@ -175,8 +175,6 @@ def opticalFlow_arrows(frame, flow_gt, flow, save_path,name):
     #save the plot
     plt.savefig(save_path + 'OF_arrows_'+name+'.png')
 
-    plt.close(fig)
-
 
 """def HSVOpticalFlow(flow, title, save_path):
     "version of opticalflow cv2 optical flow example"

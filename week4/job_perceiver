@@ -6,8 +6,9 @@
 #SBATCH -o %x_%u_%j.out # File to which STDOUT will be written
 #SBATCH -e %x_%u_%j.err # File to which STDERR will be written
 eval "$(conda shell.bash hook)"
-conda activate m6
-# commanda terminal --> sbatch --gres gpu:1 -n 10 job 
+conda activate perceiver-io
+# commanda terminal --> sbatch --gres gpu:1 -n 10 job_perceiver
+python task_1_2_perceiver.py
 
 
 

@@ -19,6 +19,7 @@ import cv2
 import flow_vis
 from moviepy.editor import ImageSequenceClip
 from moviepy.audio.AudioClip import AudioArrayClip
+import ffmpeg
 
 import network.config
 from network import get_pipeline
@@ -102,7 +103,7 @@ def create_video_clip_from_frames(frame_list, fps):
     return visual_clip #return the ImageSequenceClip
 
 
-def predict_video_flow(video_filename, batch_size, resize=None):
+def predict_video_flow(video_filename, batch_size, pipe, resize=None):
     cap = cv2.VideoCapture(video_filename)
     fps = cap.get(cv2.CAP_PROP_FPS)
 
@@ -124,15 +125,15 @@ def predict_video_flow(video_filename, batch_size, resize=None):
 
 
 
-def maskflownet(image1, image2, colType=None, flow_filepath=None, cfg='MaskFlownet.yaml', device='0', checkp='8caNov12'): #5adNov03 8caNov12
+def maskflownet(image1, image2, colType=None, flow_filepath=None, video_filepath=None, cfg='MaskFlownet.yaml', device='0', checkp='8caNov12'): #5adNov03 8caNov12
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--flow_filepath', type=str, help='destination filepath of the flow image/video', default=flow_filepath)
     parser.add_argument('config', type=str, nargs='?', default=cfg)
     parser.add_argument('--image_1', type=str, help='filepath of the first image', default=image1)
     parser.add_argument('--image_2', type=str, help='filepath of the second image', default=image2)
-    parser.add_argument('--video_filepath', type=str, help='filepath of the input video')
-    parser.add_argument('-g', '--gpu_device', type=str, default='', help='Specify gpu device(s)')
+    parser.add_argument('--video_filepath', type=str, help='filepath of the input video', default = video_filepath)
+    parser.add_argument('-g', '--gpu_device', type=str, default='1', help='Specify gpu device(s)')
     parser.add_argument('-c', '--checkpoint', type=str, default=checkp, 
     	help='model checkpoint to load; by default, the latest one.'
     	'You can use checkpoint:steps to load to a specific steps')
@@ -163,11 +164,18 @@ def maskflownet(image1, image2, colType=None, flow_filepath=None, cfg='MaskFlown
         end = time.time()
         if flow_filepath is not None:
             cv2.imwrite(args.flow_filepath, flow_vis.flow_to_color(flow, convert_to_bgr=False))
+        return flow , end-start
     else:
-        flow_video, fps = predict_video_flow(args.video_filepath, batch_size=args.batch)
+        flow_video, fps = predict_video_flow(args.video_filepath, batch_size=args.batch, pipe=pipe)
         flow_video_visualisations = [flow_vis.flow_to_color(flow, convert_to_bgr=False) for flow in flow_video]
         flow_video_clip = create_video_clip_from_frames(flow_video_visualisations, fps)
         flow_video_clip.write_videofile(args.flow_filepath, threads=args.threads, logger=None) #export the video
 
     
-    return flow , end-start
+    
+
+
+if __name__ == '__main__':
+    # Cut the video into desired frames
+
+    maskflownet(image1=None, image2=None, flow_filepath='/ghome/group03/mcv-m6-2023-team6/week4/Results/Task1_2/maskflownet/flow_video.mp4', video_filepath='/ghome/group03/dataset/vdo_tallat.mp4')

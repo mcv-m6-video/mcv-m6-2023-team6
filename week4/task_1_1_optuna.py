@@ -73,20 +73,22 @@ def estimate_flow(N, P,step, distance_type, ref_img, curr_img):
     return flow
 
 
-def objective(trial):
+def objective(trial,valid_combinations):
 
-    # define the range of values for the hyperparameters to search
-    block_size = trial.suggest_categorical('block_size', args.block_size)
-    search_area = trial.suggest_categorical('search_area', args.search_area)
-    step_size = trial.suggest_categorical('step_size', args.step_size)
-    distance_type = trial.suggest_categorical('distance_type', args.distance_type)
-
-    
+    valid_combination = trial.suggest_categorical('valid_combination', valid_combinations)    
     ref_image = np.array(Image.open(os.path.join(args.frames_path, '000045_10.png')))
     curr_image = np.array(Image.open(os.path.join(args.frames_path, '000045_11.png')))
 
     results = []
 
+    # Parse the valid_combination string to extract parameter values
+    valid_combination_dict = eval(valid_combination)
+    block_size = valid_combination_dict['block_size']
+    search_area = valid_combination_dict['search_area']
+    step_size = valid_combination_dict['step_size']
+    distance_type = valid_combination_dict['distance_type']
+
+    print(valid_combination_dict)
 
     start = time.time()
     flow = estimate_flow(block_size, search_area, step_size, distance_type, ref_image, curr_image)
@@ -105,8 +107,7 @@ def objective(trial):
 
 
     return msen, pepn
-
-       
+   
 
 ###########################################
 
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     parser.add_argument('--search_area', type=int, nargs='+', default=[2, 4, 8, 16, 32, 64, 128],
                         help='number of pixels in every direction to define the search area (P)')
     
-    parser.add_argument('--step_size', type=int, nargs='+', default=[1,2, 4, 8, 16, 32])
+    parser.add_argument('--step_size', type=int, nargs='+', default=[1, 2, 4, 8, 16, 32, 64, 128])
 
     parser.add_argument('--distance_type', type=str, nargs='+', default=['NCC', 'SAD', 'SSD'],
                         help='distance metric to compare the blocks: SAD, SSD, NCC')
@@ -146,6 +147,32 @@ if __name__ == '__main__':
 
 
     # random, grid search all of you want sampler https://optuna.readthedocs.io/en/stable/reference/samplers/index.html
+
+    # define the range of values for the hyperparameters to search
+    block_sizes = args.block_size
+    search_areas = args.search_area
+    step_sizes = args.step_size
+    similarities = args.distance_type
+
+    # Create a list to store all the valid combinations
+    valid_combinations = []
+
+    # Loop through all possible combinations of parameters
+    for block_size in block_sizes:
+        for search_area in search_areas:
+            for step_size in step_sizes:
+                for similarity in similarities:
+                    # Check if search_area >= block_size and step_size <= block_size
+                    if search_area >= block_size and step_size <= block_size and step_size >= block_size/2:
+                        #Create a dictionary to store the valid combination of parameters
+                        valid_combination_dict = {'block_size': block_size, 'search_area': search_area, 'step_size': step_size, 'distance_type': similarity}
+                        # Convert the dictionary to a string representation
+                        valid_combination_str = str(valid_combination_dict)
+                        # Append the valid combination to the list
+                        valid_combinations.append(valid_combination_str)
+
+    print('Number of valid combinations: ', len(valid_combinations))
+
     sampler = TPESampler(seed=42)
     gc.collect()
     try:
@@ -157,7 +184,7 @@ if __name__ == '__main__':
             sampler=sampler,
             storage="sqlite:///bbdd.db",
         )
-        study.optimize(objective, n_trials=100, n_jobs=10, gc_after_trial=True)
+        study.optimize(lambda trial: objective(trial,valid_combinations), n_trials=100, n_jobs=64, gc_after_trial=True)
 
     df = study.trials_dataframe()
     df.to_csv("opticalFlow_grid.csv")
