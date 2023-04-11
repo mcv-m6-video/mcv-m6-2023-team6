@@ -133,7 +133,7 @@ def maskflownet(image1, image2, colType=None, flow_filepath=None, video_filepath
     parser.add_argument('--image_1', type=str, help='filepath of the first image', default=image1)
     parser.add_argument('--image_2', type=str, help='filepath of the second image', default=image2)
     parser.add_argument('--video_filepath', type=str, help='filepath of the input video', default = video_filepath)
-    parser.add_argument('-g', '--gpu_device', type=str, default='1', help='Specify gpu device(s)')
+    parser.add_argument('-g', '--gpu_device', type=str, default='0', help='Specify gpu device(s)')
     parser.add_argument('-c', '--checkpoint', type=str, default=checkp, 
     	help='model checkpoint to load; by default, the latest one.'
     	'You can use checkpoint:steps to load to a specific steps')
