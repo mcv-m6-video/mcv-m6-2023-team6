@@ -3,15 +3,16 @@
 ### Goal:
 
 Background estimation
-- Model the background pixels of a video sequence using a simple statistical model to classify the background / foreground :
+
+- Model the background pixels of a video sequence using a simple statistical model to classify the background /
+  foreground :
     - Single Gaussian per pixel
     - Adaptive / Non-adaptive
 - The statistical model will be used to preliminarily classify foreground
 
 Comparison with more complex models
 
-
-### To execute the tasks, use the main.py 
+### To execute the tasks, use the main.py
 
 Arguments:\
 ```-m --run_mode``` : Gaussian, AdaptiveGaussian, SOTA\
@@ -33,16 +34,19 @@ python main.py -r task_1 -m Gaussian -p 0.25 -c gray -a 5
 ```
 
 #### Adaptive Gaussian modeling
+
 ```
 python main.py -r task_2 -m AdaptiveGaussian -p 0.25 -c gray -a 5 --rho 0.05
 ```
 
 #### SOTA modeling
+
 ```
 python main.py -r task_3 -m SOTA -p 0.25 -c gray -e MOG2 -a 0
 ```
 
-#### Color modeling 
+#### Color modeling
+
 ```
  python main.py -r task_4 -m Gaussian -p 0.25 -c RGB -a 5
 ```

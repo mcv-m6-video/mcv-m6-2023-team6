@@ -1,10 +1,9 @@
 import os
 
 import cv2
+import matplotlib.pyplot as plt
 import numexpr as ne
 import numpy as np
-import matplotlib.pyplot as plt
-
 from models.BaseModel import BaseModel
 
 
@@ -27,23 +26,18 @@ class Gaussian(BaseModel):
             self.std = np.std(self.images, axis=-1, dtype=np.float32)
             print("Standard deviation computed successfully.")
         else:
-            self.mean = np.mean(self.images[:,:,self.ch_used,:], axis=-1, dtype=np.float32)
+            self.mean = np.mean(self.images[:, :, self.ch_used, :], axis=-1, dtype=np.float32)
             print("Mean computed successfully.")
-            self.std = np.std(self.images[:,:,self.ch_used,:], axis=-1, dtype=np.float32)
+            self.std = np.std(self.images[:, :, self.ch_used, :], axis=-1, dtype=np.float32)
             print("Standard deviation computed successfully.")
-    
-        
 
         if self.colorspace == 'gray':
-            #cv2.imwrite("./results/Gaussian/mean.png", self.mean)
-            #cv2.imwrite("./results/Gaussian/std.png", self.std)
+            # cv2.imwrite("./results/Gaussian/mean.png", self.mean)
+            # cv2.imwrite("./results/Gaussian/std.png", self.std)
             # Plot the heatmap of the standard deviation without showing it
             plt.imshow(self.std, cmap='hot')
             plt.colorbar()
             plt.savefig("./results/task_1_Gaussian/std_heatmap.png")
-            
-
-
 
     """ NOT TESTED YET
     @staticmethod
@@ -63,7 +57,7 @@ class Gaussian(BaseModel):
             print("[ERROR] Background has not been modeled yet.")
             return None
 
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux )   ##################################################3
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux)  ##################################################3
 
         success, I = self.cap.read()
         if not success:
@@ -101,7 +95,6 @@ class Gaussian(BaseModel):
         self.mean = np.load(mean_path)
         self.std = np.load(std_path)
         print("Checkpoint loaded.")
-
 
     def compute_parameters_image(self, image):
         self.mean = np.mean(self.image, axis=-1, dtype=np.float32)

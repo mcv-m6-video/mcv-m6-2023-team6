@@ -209,8 +209,7 @@ def mean_AP_Pascal_VOC(gt_boxes, N_gt, predicted_boxes, iou_th):
                         fp[i] = 1
                 else:
                     fp[i] = 1
-        
-        
+
     tp = np.cumsum(tp)
     fp = np.cumsum(fp)
 

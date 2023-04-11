@@ -1,10 +1,9 @@
-import time
+import os
 
+import cv2
+import imageio
 import matplotlib.pyplot as plt
 import numpy as np
-import cv2
-import os
-import imageio
 
 """
 
@@ -88,10 +87,11 @@ def plot_iou_score(frames_id, frames_num, iou_scores, video_capture, gt_boxes, p
 
 TOTAL_FRAMES_VIDEO = 2141
 
+
 def plot_task1():
     # Get the frame_id list
     wait_time = 1
-    frames_num = int(TOTAL_FRAMES_VIDEO * 0.25) + 200 # 535
+    frames_num = int(TOTAL_FRAMES_VIDEO * 0.25) + 200  # 535
     video_capture = '../../../dataset/AICity_data/train/S03/c010/vdo.avi'
     # read actual path
     path = os.path.dirname(os.path.abspath(__file__))
@@ -191,6 +191,7 @@ def plot_task1():
     # create gif matplotlib figure
     # !convert -delay 10 -loop 0 *.png animation.gif
     imageio.mimsave(path + 'plotask1.gif', images_plot)
+
 
 if __name__ == "__main__":
     plot_task1()

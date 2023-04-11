@@ -1,6 +1,5 @@
 # Some basic setup:
 # Setup detectron2 logger
-import detectron2
 from detectron2.utils.logger import setup_logger
 
 setup_logger()
@@ -9,18 +8,16 @@ import argparse
 
 # import some common libraries
 import os
-import random
 import copy
 import pandas as pd
 import wandb
 import torch
-import numpy as np
 from datetime import datetime as dt
 
 import cv2
 from detectron2.config import get_cfg
-from detectron2.data import MetadataCatalog,DatasetCatalog,build_detection_test_loader, build_detection_train_loader
-from detectron2.engine import DefaultPredictor,  DefaultTrainer, HookBase
+from detectron2.data import MetadataCatalog, DatasetCatalog, build_detection_test_loader, build_detection_train_loader
+from detectron2.engine import DefaultPredictor, DefaultTrainer, HookBase
 from detectron2.utils.visualizer import Visualizer
 from detectron2.utils import comm
 from CityAI_dataset import get_CityAI_dicts
@@ -29,9 +26,9 @@ from detectron2.evaluation import COCOEvaluator, DatasetEvaluators, inference_on
 # import some common detectron2 utilities
 from detectron2 import model_zoo
 
-        
 # Obtain the path of the current file
 current_path = os.path.dirname(os.path.abspath(__file__))
+
 
 # Modify COCOEvaluator to compute only the AP of the bounding boxes, not the masks (we want object detection, not instance segmentation)
 class MyEvaluator(COCOEvaluator):
@@ -39,16 +36,18 @@ class MyEvaluator(COCOEvaluator):
         super().__init__(dataset_name, cfg, distributed, output_dir)
         self._tasks = ("bbox",)
 
+
 class MyTrainer(DefaultTrainer):
     @classmethod
     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
         if output_folder is None:
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
         coco_evaluator = COCOEvaluator(dataset_name, output_dir=output_folder)
-        
+
         evaluator_list = [coco_evaluator]
-        
+
         return DatasetEvaluators(evaluator_list)
+
 
 class ValidationLoss(HookBase):
     def __init__(self, cfg):
@@ -94,16 +93,12 @@ class ValidationLoss(HookBase):
                     )  # saving the best weights
 
 
-
-
-
 if __name__ == '__main__':
 
-    
     # --------------------------------- ARGS --------------------------------- #
     parser = argparse.ArgumentParser(description='Task 1_3: Fine-tuning')
     parser.add_argument('--task', type=str, default='Task_1_3', help='Task to perform: task_1_3')
-    parser.add_argument('--network',  type=str, default='faster_RCNN', help='Network to use: faster_RCNN or mask_RCNN')
+    parser.add_argument('--network', type=str, default='faster_RCNN', help='Network to use: faster_RCNN or mask_RCNN')
     parser.add_argument("--save_vis", type=bool, default=True, help="Save visualizations")
     parser.add_argument("--strategy", type=str, default='A', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
     parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
@@ -111,8 +106,8 @@ if __name__ == '__main__':
 
     # --------------------------------- W&B --------------------------------- #
     run = wandb.init(sync_tensorboard=True,
-               settings=wandb.Settings(start_method="thread", console="off"), 
-               project = "M6_W3")
+                     settings=wandb.Settings(start_method="thread", console="off"),
+                     project="M6_W3")
     wandb.run.name = args.task + '_' + args.network + '_' + args.strategy + '_' + str(args.lr)
 
     # --------------------------------- OUTPUT --------------------------------- #
@@ -129,9 +124,10 @@ if __name__ == '__main__':
 
     classes = ['car']
     for subset in ["train", "val", "val_subset"]:
-        DatasetCatalog.register(f"CityAI_{subset}",lambda subset=subset: get_CityAI_dicts(subset, pretrained=False, strategy=args.strategy))
+        DatasetCatalog.register(f"CityAI_{subset}", lambda subset=subset: get_CityAI_dicts(subset, pretrained=False,
+                                                                                           strategy=args.strategy))
         MetadataCatalog.get(f"CityAI_{subset}").set(thing_classes=classes)
-    
+
     metadata = MetadataCatalog.get("CityAI_train")
 
     # --------------------------------- MODEL --------------------------------- #
@@ -139,7 +135,7 @@ if __name__ == '__main__':
     # Write the cfg in a .txt file
     with open(os.path.join(output_path, 'config.txt'), 'w') as f:
         f.write(str(cfg))
-    
+
     if args.network == 'faster_RCNN':
         cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")
@@ -156,12 +152,12 @@ if __name__ == '__main__':
     # --------------------------------- CONFIG --------------------------------- #
     # Model
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (car)
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128   # faster, and good enough for this toy dataset
+    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128  # faster, and good enough for this toy dataset
 
     # Solver
     cfg.SOLVER.BASE_LR = args.lr
     cfg.SOLVER.MAX_ITER = 1500
-    cfg.SOLVER.STEPS = (1000,2000,2500)
+    cfg.SOLVER.STEPS = (1000, 2000, 2500)
     cfg.SOLVER.GAMMA = 0.5
     cfg.SOLVER.IMS_PER_BATCH = 2
     cfg.SOLVER.CHECKPOINT_PERIOD = 100
@@ -181,7 +177,6 @@ if __name__ == '__main__':
     # Dataloader
     cfg.DATALOADER.NUM_WORKERS = 4
 
-   
     # --------------------------------- TRAINING --------------------------------- #
     trainer = MyTrainer(cfg)
     trainer.resume_or_load(resume=False)
@@ -191,7 +186,7 @@ if __name__ == '__main__':
     start = dt.now()
     trainer.train()
     end = dt.now()
-    print('Training time: ', end-start)
+    print('Training time: ', end - start)
 
     # --------------------------------- EVALUATION --------------------------------- #
 
@@ -209,13 +204,12 @@ if __name__ == '__main__':
     df = pd.DataFrame(results['bbox'], index=[0])
     df.to_csv(output_path + '/results.csv', index=False)
 
-
     # --------------------------------- INFERENCE --------------------------------- #
     dataset_dicts = get_CityAI_dicts("val", pretrained=False, strategy=args.strategy)
 
-    for i,d in enumerate(dataset_dicts):
+    for i, d in enumerate(dataset_dicts):
         num = d["file_name"].split('/')[-1].split('.')[0]
-        if num>870 & num<950:
+        if num > 870 & num < 950:
             im = cv2.imread(d["file_name"])
             outputs = predictor(im)
 
@@ -229,9 +223,3 @@ if __name__ == '__main__':
                 cv2.imwrite(output_path + '/' + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
 
             print("Processed image: " + d["file_name"].split('/')[-1])
-
-
-
-
-
-

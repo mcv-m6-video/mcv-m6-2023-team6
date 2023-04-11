@@ -1,24 +1,16 @@
 from __future__ import print_function
 
-import imageio
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import pandas as pd
-from IPython import display as dp
-import numpy as np
-from skimage import io
-import os
-import time
 import cv2
-from sort.sort import *
-from utils.util import load_from_txt, discard_overlaps, filter_boxes
-import matplotlib
+import pandas as pd
 from tqdm import tqdm
 
+from sort.sort import *
+from utils.util import load_from_txt, discard_overlaps, filter_boxes
 
-def tracking(current_path, folder_det,network,thr, display):
+
+def tracking(current_path, folder_det, network, thr, display):
     images = {}
-    
+
     fileDetections = os.path.join(folder_det)
 
     colours = np.random.rand(100, 3)  # used only for display
@@ -29,16 +21,17 @@ def tracking(current_path, folder_det,network,thr, display):
     out = []
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter("./Results/Task_2_2/" + f"task2_2_{network}_thr{int(thr*100)}.mp4", fourcc, 10, (1920, 1080))
+    video_out = cv2.VideoWriter("./Results/Task_2_2/" + f"task2_2_{network}_thr{int(thr * 100)}.mp4", fourcc, 10,
+                                (1920, 1080))
 
-    mot_tracker = Sort(max_age=10, min_hits=3, iou_threshold=0.3) # create instance of the SORT tracker
+    mot_tracker = Sort(max_age=10, min_hits=3, iou_threshold=0.3)  # create instance of the SORT tracker
     tracker_colors = {}
 
     for frame_id in tqdm(frame_boxes):  # all frames in the sequence
 
         dets = frame_boxes[frame_id]  # each box is [frame,x1, y1, x2, y2, conf]
         dets = discard_overlaps(dets)
-        dets = filter_boxes(dets,r=1.25,y=230)
+        dets = filter_boxes(dets, r=1.25, y=230)
 
         # from each box we extract only the x1, y1, x2, y2
         dets = [[d[1], d[2], d[3], d[4]] for d in dets]
@@ -68,7 +61,7 @@ def tracking(current_path, folder_det,network,thr, display):
 
             cv2.rectangle(im, (d[0], d[1]), (d[2], d[3]), color, 2)
             cv2.putText(im, str(tracker_id), (d[0], d[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-        
+
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
 
         if display:
@@ -90,12 +83,12 @@ def tracking(current_path, folder_det,network,thr, display):
             df_list.append(pd.DataFrame({'frame': int(frame_id), 'id': track[4], 'bb_left': bb_left, 'bb_top': bb_top,
                                          'bb_width': width, 'bb_height': height, 'conf': 0.5, "x": -1, "y": -1,
                                          "z": -1}, index=[0]))
-    #format output for the evaluation 
+    # format output for the evaluation
     df = pd.concat(df_list, ignore_index=True)
     df = df.sort_values(by=['id'])
     df['frame'] = df['frame'] + 1
 
-    df.to_csv(f'./Results/Task_2_2/task_2_2_{network}_thr{int(thr*100)}.csv', index=False)
+    df.to_csv(f'./Results/Task_2_2/task_2_2_{network}_thr{int(thr * 100)}.csv', index=False)
 
 
 if __name__ == "__main__":
@@ -118,6 +111,6 @@ if __name__ == "__main__":
     tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.85, display=False)
     tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_A.txt",network,thr = 0.9, display=False)"""
 
-
     network = "faster_RCNN"
-    tracking( current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt",network,thr = 0.75, display=False)
+    tracking(current_path, f"./Results/Task1_5/{network}/A/bbox_{network}_video_A.txt", network, thr=0.75,
+             display=False)

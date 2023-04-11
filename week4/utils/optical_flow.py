@@ -2,12 +2,12 @@
 # Sequences 45 and 157 (image_0) from the KITTI dataset.
 # Only 1 estimation / sequence (2 frames!)
 # Check the KITTI website for code to read results (dense motion vectors)
+import os
+
 import cv2
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-import time
 
 
 def flow_read(filename):
@@ -80,19 +80,17 @@ def compute_errors(pred_flow, gt_flow, threshold, save_path, plots=False):
         plt.legend(loc='upper right')
         plt.show()
 
-        
-        #create otput folder if it does not exist
+        # create otput folder if it does not exist
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        
-        #save the plot
-        plt.savefig(save_path + 'error_histogram.png')
 
+        # save the plot
+        plt.savefig(save_path + 'error_histogram.png')
 
     return msen, pepn
 
 
-def opticalFlow_arrows(frame, flow_gt, flow, save_path,name):
+def opticalFlow_arrows(frame, flow_gt, flow, save_path, name):
     """Compute the optical flow arrows diagram.
     Args:
         frame: image.
@@ -166,14 +164,14 @@ def opticalFlow_arrows(frame, flow_gt, flow, save_path,name):
     ax[1].set_axis_off()
     fig.suptitle("GT vs Predicted Optical Flow")
     fig.colorbar(im0, ax=ax.ravel().tolist())
-    #plt.show()
+    # plt.show()
 
-    #create otput folder if it does not exist
+    # create otput folder if it does not exist
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    
-    #save the plot
-    plt.savefig(save_path + 'OF_arrows_'+name+'.png')
+
+    # save the plot
+    plt.savefig(save_path + 'OF_arrows_' + name + '.png')
 
 
 """def HSVOpticalFlow(flow, title, save_path):
@@ -222,7 +220,7 @@ def opticalFlow_arrows(frame, flow_gt, flow, save_path,name):
     plt.savefig(save_path + 'optical_flow_hsv.png')"""
 
 
-def HSVOpticalFlow2(flow, save_path,name):
+def HSVOpticalFlow2(flow, save_path, name):
     "version of opticalflow cv2 optical flow example changing S and V for better visualization"
     magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
@@ -244,14 +242,14 @@ def HSVOpticalFlow2(flow, save_path,name):
     plt.axis("off")
     # change size
 
-    #plt.show()
-    
-    #create otput folder if it does not exist
+    # plt.show()
+
+    # create otput folder if it does not exist
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    
-    #save the plot
-    plt.savefig(save_path + 'OF_hsv_'+name+'.png')
 
-    #close the plot
+    # save the plot
+    plt.savefig(save_path + 'OF_hsv_' + name + '.png')
+
+    # close the plot
     plt.close(fig)

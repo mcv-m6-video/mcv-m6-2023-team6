@@ -14,11 +14,9 @@
 # {5.0: [0.3666943288806497, 0.2923283266021336]}
 
 
-
 # To do grid search
 # task_1
 # python main.py -r task_1 -m Gaussian -p 0.25 -c gray -g True -a 5 10
-
 
 
 import argparse
@@ -37,7 +35,8 @@ def main(cfg):
     current_path = os.path.dirname(os.path.abspath(__file__))
     output_path = os.path.join(current_path, "results", f'{cfg["run_name"]}_{cfg["run_mode"]}')
     os.makedirs(output_path, exist_ok=True)
-    print(f"Run Name: {cfg['run_name']} - Run Mode: {cfg['run_mode']} - Colorspace: {cfg['colorspaces']} - Alphas :{cfg['alphas']} - Rhos: {cfg['rhos']} Output Path: {output_path}")
+    print(
+        f"Run Name: {cfg['run_name']} - Run Mode: {cfg['run_mode']} - Colorspace: {cfg['colorspaces']} - Alphas :{cfg['alphas']} - Rhos: {cfg['rhos']} Output Path: {output_path}")
     print("----------------------------------------")
 
     frames_modelling = int(TOTAL_FRAMES_VIDEO * cfg["percentatge"])
@@ -49,7 +48,7 @@ def main(cfg):
     dic = {}
 
     for alpha in alpha_list:
-    
+
         if cfg["run_mode"] == "Gaussian":
             print("Gaussian Function")
             print("----------------------------------------")
@@ -58,20 +57,22 @@ def main(cfg):
                 dic[alpha] = {}
 
                 for colorspace in colorspace_list:
-                    model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace=colorspace,
-                                    checkpoint=f"{colorspace}_{cfg['percentatge']}")
-                    map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
-                    dic[alpha][colorspace] = [map,iou]
+                    model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha),
+                                     colorspace=colorspace,
+                                     checkpoint=f"{colorspace}_{cfg['percentatge']}")
+                    map, iou = rendering_video(cfg, model, frames_modelling, output_path,
+                                               cfg['paths']['annotations_path'])
+                    dic[alpha][colorspace] = [map, iou]
 
                     print("Done for colorspace = ", colorspace)
                     print("----------------------------------------")
-            
+
             elif cfg["run_name"] == "task_1":
                 model = Gaussian(cfg['paths']['video_path'], frames_modelling, alpha=float(alpha), colorspace="gray",
-                                checkpoint=f"gray_{cfg['percentatge']}")
-                map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
-                dic[alpha] = [map,iou]
-            
+                                 checkpoint=f"gray_{cfg['percentatge']}")
+                map, iou = rendering_video(cfg, model, frames_modelling, output_path, cfg['paths']['annotations_path'])
+                dic[alpha] = [map, iou]
+
             else:
                 raise ValueError("Invalid run name")
 
@@ -84,14 +85,14 @@ def main(cfg):
                     if colorspace == "gray":
                         print("Adaptive Gaussian Function")
                         print("----------------------------------------")
-                        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=float(rho), alpha=float(alpha),
-                                                colorspace=colorspace, checkpoint=f"{colorspace}_{cfg['percentatge']}")
-                        
-                        map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
-                        dic[alpha][rho] = [map,iou]
+                        model = AdaptiveGaussian(cfg['paths']['video_path'], frames_modelling, p=float(rho),
+                                                 alpha=float(alpha),
+                                                 colorspace=colorspace, checkpoint=f"{colorspace}_{cfg['percentatge']}")
 
-                    
-                
+                        map, iou = rendering_video(cfg, model, frames_modelling, output_path,
+                                                   cfg['paths']['annotations_path'])
+                        dic[alpha][rho] = [map, iou]
+
                 print("Done for rho = ", rho)
                 print("----------------------------------------")
 
@@ -100,17 +101,14 @@ def main(cfg):
 
         elif cfg["run_mode"] == "SOTA":
             model = SOTA(cfg['paths']['video_path'], frames_modelling, checkpoint=None, method=cfg['sota_method'])
-            map,iou = rendering_video(cfg, model, frames_modelling, output_path ,cfg['paths']['annotations_path'])
+            map, iou = rendering_video(cfg, model, frames_modelling, output_path, cfg['paths']['annotations_path'])
 
         else:
             raise ValueError("Invalid run mode")
 
-            
-
         print("Done for alpha = ", alpha)
         print("----------------------------------------")
 
-        
     print("Done for all alphas")
     print(dic)
     if cfg['grid']:
@@ -122,6 +120,7 @@ def main(cfg):
             visualizeTask4(dic, output_path)
     print("----------------------------------------")
 
+
 if __name__ == "__main__":
     # check ffmepg in your system
 
@@ -131,11 +130,14 @@ if __name__ == "__main__":
     parser.add_argument("--config", default="configs/config.yml")
     parser.add_argument("-s", "--save", default=True, type=bool, help="Save the video or not")
     parser.add_argument("-d", "--display", default=False, type=bool, help="Show the video or not")
-    parser.add_argument("-p", "--percentatge", required=True, default=False, type=float, help="Percentatge of video to use background")
-    parser.add_argument("-e", "--sota_method", default="MOG", type=str, help="SOTA method to use (MOG, MOG2, LSBP, KNN, GMG)")
+    parser.add_argument("-p", "--percentatge", required=True, default=False, type=float,
+                        help="Percentatge of video to use background")
+    parser.add_argument("-e", "--sota_method", default="MOG", type=str,
+                        help="SOTA method to use (MOG, MOG2, LSBP, KNN, GMG)")
     parser.add_argument("-a", "--alpha", default=5, nargs="+", type=float, help="Alpha Thresholding")
-    parser.add_argument("--rho", default=0.05, nargs="+",type=float, help="Rho Thresholding")
-    parser.add_argument("-c", "--colorspaces", nargs='+', default="gray", type=str, help="Colorspace to use (gray, RGB, YCRCB, HSV, YUV)")
+    parser.add_argument("--rho", default=0.05, nargs="+", type=float, help="Rho Thresholding")
+    parser.add_argument("-c", "--colorspaces", nargs='+', default="gray", type=str,
+                        help="Colorspace to use (gray, RGB, YCRCB, HSV, YUV)")
     parser.add_argument("-g", "--grid", default=False, type=bool, help="Show the grid or not")
 
     args = parser.parse_args()

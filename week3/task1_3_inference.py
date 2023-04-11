@@ -1,6 +1,5 @@
 # Some basic setup:
 # Setup detectron2 logger
-import detectron2
 from detectron2.utils.logger import setup_logger
 
 setup_logger()
@@ -9,29 +8,21 @@ import argparse
 
 # import some common libraries
 import os
-import random
-import copy
-import pandas as pd
-import wandb
-import torch
-import numpy as np
-from datetime import datetime as dt
 
 import cv2
 from detectron2.config import get_cfg
-from detectron2.data import MetadataCatalog,DatasetCatalog,build_detection_test_loader, build_detection_train_loader
-from detectron2.engine import DefaultPredictor,  DefaultTrainer, HookBase
+from detectron2.data import MetadataCatalog
+from detectron2.engine import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer
-from detectron2.utils import comm
 from CityAI_dataset import get_CityAI_dicts
-from detectron2.evaluation import COCOEvaluator, DatasetEvaluators, inference_on_dataset
+from detectron2.evaluation import COCOEvaluator
 
 # import some common detectron2 utilities
 from detectron2 import model_zoo
 
-        
 # Obtain the path of the current file
 current_path = os.path.dirname(os.path.abspath(__file__))
+
 
 # Modify COCOEvaluator to compute only the AP of the bounding boxes, not the masks (we want object detection, not instance segmentation)
 class MyEvaluator(COCOEvaluator):
@@ -40,26 +31,21 @@ class MyEvaluator(COCOEvaluator):
         self._tasks = ("bbox",)
 
 
-
-
-
 if __name__ == '__main__':
 
-    
     # --------------------------------- ARGS --------------------------------- #
     parser = argparse.ArgumentParser(description='Task 1_3: Fine-tuning')
     parser.add_argument('--task', type=str, default='Task_1_4', help='Task to perform: task_1_3')
-    parser.add_argument('--network',  type=str, default='retinaNet', help='Network to use: faster_RCNN or mask_RCNN')
+    parser.add_argument('--network', type=str, default='retinaNet', help='Network to use: faster_RCNN or mask_RCNN')
     parser.add_argument("--save_vis", type=bool, default=True, help="Save visualizations")
     parser.add_argument("--strategy", type=str, default='C_3', help="A, B_2, B_3, B_4, C_1, C_2, C_3, C_4")
     parser.add_argument("--lr", type=float, default=0.01, help="Learning rate")
     args = parser.parse_args()
 
-
-
     # --------------------------------- OUTPUT --------------------------------- #
 
-    output_path = os.path.join(current_path, f'Results/{args.task}/{args.network}/{args.strategy}/{args.lr}/image_examples')
+    output_path = os.path.join(current_path,
+                               f'Results/{args.task}/{args.network}/{args.strategy}/{args.lr}/image_examples')
 
     os.makedirs(output_path, exist_ok=True)
 
@@ -69,13 +55,12 @@ if __name__ == '__main__':
     # for subset in ["train", "val", "val_subset"]:
     #     DatasetCatalog.register(f"CityAI_{subset}",lambda subset=subset: get_CityAI_dicts(subset, pretrained=False, strategy=args.strategy))
     #     MetadataCatalog.get(f"CityAI_{subset}").set(thing_classes=classes)
-    
+
     # metadata = MetadataCatalog.get("CityAI_train")
 
     # --------------------------------- MODEL --------------------------------- #
     cfg = get_cfg()
 
-    
     if args.network == 'faster_RCNN':
         cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")
@@ -98,10 +83,6 @@ if __name__ == '__main__':
 
     cfg.OUTPUT_DIR = output_path
 
-
-
-
-
     # --------------------------------- EVALUATION --------------------------------- #
 
     cfg.MODEL.WEIGHTS = '/ghome/group03/mcv-m6-2023-team6/week3/Results/Task_1_4/retinaNet/C_3/0.01/model_final.pth'
@@ -109,12 +90,10 @@ if __name__ == '__main__':
 
     predictor = DefaultPredictor(cfg)
 
-
-
     # --------------------------------- INFERENCE --------------------------------- #
     dataset_dicts = get_CityAI_dicts("val", pretrained=False, strategy=args.strategy)
 
-    for i,d in enumerate(dataset_dicts):
+    for i, d in enumerate(dataset_dicts):
         num = int(d["file_name"].split('/')[-1].split('.')[0])
         if num < 850 or num > 1000:
             continue
@@ -137,7 +116,6 @@ if __name__ == '__main__':
         v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TEST[0]), scale=1.2)
         out = v.draw_instance_predictions(car_instances)
 
-
         if args.save_vis:
             cv2.imwrite(output_path + '/' + d["file_name"].split('/')[-1], out.get_image()[:, :, ::-1])
 
@@ -145,17 +123,11 @@ if __name__ == '__main__':
         v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TEST[0]), scale=1.2)
         out = v.draw_dataset_dict(d)
 
-
         if args.save_vis:
             im_out = out.get_image()[:, :, ::-1]
             # # pass the image to cv2 format
             # im_out = cv2.cvtColor(im_out, cv2.COLOR_RGB2BGR)
             # cv2.line(im_out, (0, 230), (im_out.shape[1], 230), (0, 0, 255), 2)
-            cv2.imwrite(output_path + '/gt'+ d["file_name"].split('/')[-1], im_out)
+            cv2.imwrite(output_path + '/gt' + d["file_name"].split('/')[-1], im_out)
 
         print("Processed image: " + d["file_name"].split('/')[-1])
-    
-
-
-
-

@@ -7,9 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from utils.metrics import (
     mean_AP_Pascal_VOC,
-    mean_IoU_nonrestricted,
     mean_IoU_nonrestricted_2,
-    mean_IoU_restricted,
 )
 
 

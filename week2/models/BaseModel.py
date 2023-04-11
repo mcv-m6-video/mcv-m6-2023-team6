@@ -25,12 +25,12 @@ class BaseModel:  # Base class for the models
         elif colorspace == 'RGB':
             self.colorspace_conversion = cv2.COLOR_BGR2RGB
             self.channels = 3
-            self.ch_used = [0,1,2]
+            self.ch_used = [0, 1, 2]
 
         elif colorspace == 'YCRCB':
             self.colorspace_conversion = cv2.COLOR_BGR2YCrCb
             self.channels = 3
-            self.ch_used = [1,2]
+            self.ch_used = [1, 2]
 
         elif colorspace == 'HSV':
             self.colorspace_conversion = cv2.COLOR_BGR2HSV
@@ -40,7 +40,7 @@ class BaseModel:  # Base class for the models
         elif colorspace == 'YUV':
             self.colorspace_conversion = cv2.COLOR_BGR2YUV
             self.channels = 3
-            self.ch_used = [1,2]
+            self.ch_used = [1, 2]
 
 
         else:

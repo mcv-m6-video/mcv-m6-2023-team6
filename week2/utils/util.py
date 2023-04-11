@@ -1,13 +1,12 @@
 import os
 from collections import defaultdict
+from datetime import datetime
 
 import cv2
-import xmltodict
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
-
-from datetime import datetime
+import xmltodict
 
 """ def load_from_xml(path):
 
@@ -38,7 +37,7 @@ def load_from_xml(path):
         label = track["@label"]
         boxes = track["box"]
         for box in boxes:
-            if label == "car" and box['attribute']['#text'].lower() == 'false' :
+            if label == "car" and box['attribute']['#text'].lower() == 'false':
                 frame = int(box["@frame"])
                 frame = f"f_{frame}"
                 gt[frame].append(
@@ -114,8 +113,8 @@ def bounding_box_visualization(path, gt_boxes, predicted_boxes, video_capture, f
 
 
 def noise_reduction(frame):
-    #frame = cv2.erode(frame, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
-    #frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
+    # frame = cv2.erode(frame, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
+    # frame = cv2.dilate(frame,  cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7)))
 
     kernel_m = 3
     kernel_g = (5, 5)
@@ -125,13 +124,11 @@ def noise_reduction(frame):
     return frame
 
 
-
 def findBBOX(mask):
-
     minH = 50
-    maxH =  1080/2 # 1080--> height frame
-    minW = 100#120
-    maxW =1920/2# 1920--> width frame
+    maxH = 1080 / 2  # 1080--> height frame
+    minW = 100  # 120
+    maxW = 1920 / 2  # 1920--> width frame
 
     if len(mask.shape) > 2:
         # Sum over the channels to create a single channel mask
@@ -144,14 +141,13 @@ def findBBOX(mask):
     for c in contours:
         x, y, w, h = cv2.boundingRect(c)
         if minW < w < maxW and minH < h < maxH:
-            if 0.2 < w/h < 10:
+            if 0.2 < w / h < 10:
                 box.append([x, y, x + w, y + h])
 
     return box
 
 
-
-def visualizeTask1(dict,output_path):
+def visualizeTask1(dict, output_path):
     "dict: keys the value of alpha and for values [mIoU, mAP]"
     # create the output path : output_path + '/GridSearch' + time
     time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
@@ -160,39 +156,38 @@ def visualizeTask1(dict,output_path):
     # create the directory output 
     os.makedirs(ouput_path_grid)
 
-    #plot mIoU scatter plot
+    # plot mIoU scatter plot
     plt.figure()
     plt.scatter(list(dict.keys()), [x[1] for x in dict.values()], label='IoU')
     plt.xlabel('alpha')
     plt.ylabel('IoU')
     plt.title('IoU vs alpha')
     plt.xticks(list(dict.keys()))
-    plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
+    plt.savefig(os.path.join(ouput_path_grid, 'IoU.png'))
 
-    #plot mAP
+    # plot mAP
     plt.figure()
     plt.scatter(list(dict.keys()), [x[0] for x in dict.values()], label='mAP')
     plt.xlabel('alpha')
     plt.ylabel('mAP')
     plt.title('mAP vs alpha')
     plt.xticks(list(dict.keys()))
-    plt.savefig(os.path.join(ouput_path_grid,'mAP.png'))
+    plt.savefig(os.path.join(ouput_path_grid, 'mAP.png'))
 
-    #the two metrics together
+    # the two metrics together
     plt.figure()
     plt.scatter(list(dict.keys()), [x[0] for x in dict.values()], label='mAP', color='orange')
     plt.scatter(list(dict.keys()), [x[1] for x in dict.values()], label='IoU', color='blue')
     plt.xlabel('alpha')
     plt.ylabel("metric's value")
     plt.title('mAP and IoU vs alpha')
-    plt.xticks(list(dict.keys())) # set x-axis ticks to dictionary keys
+    plt.xticks(list(dict.keys()))  # set x-axis ticks to dictionary keys
     plt.legend()
-    plt.savefig(os.path.join(ouput_path_grid,'mAP_IoU.png'))
+    plt.savefig(os.path.join(ouput_path_grid, 'mAP_IoU.png'))
 
-    #create a table with pandas and save it as a csv file
+    # create a table with pandas and save it as a csv file
     df = pd.DataFrame.from_dict(dict, orient='index', columns=['mAP', 'IoU'])
-    df.to_csv(os.path.join(ouput_path_grid,'task1_2.csv'))
-
+    df.to_csv(os.path.join(ouput_path_grid, 'task1_2.csv'))
 
 
 def visualizeTask2(dict, output_path):
@@ -205,7 +200,7 @@ def visualizeTask2(dict, output_path):
     # create the directory
     os.makedirs(ouput_path_grid)
 
-    #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # plot mIoU scatter plot in 3D, for each alpha the rho values
     # extract the alpha, rho, and value data from the results dictionary
     alphas = []
     rhos = []
@@ -218,7 +213,6 @@ def visualizeTask2(dict, output_path):
             valuesMAP.append(float(value2[0]))
             valuesIoU.append(float(value2[1]))
 
-
     # create a 3D scatter plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -229,9 +223,9 @@ def visualizeTask2(dict, output_path):
     ax.set_ylabel('rho')
     ax.set_zlabel('mAP')
     ax.set_title('Grid Search Results for the mAP')
-    plt.savefig(os.path.join(ouput_path_grid,'mAP.png'))
+    plt.savefig(os.path.join(ouput_path_grid, 'mAP.png'))
 
-    #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # plot mIoU scatter plot in 3D, for each alpha the rho values
     # create a 3D scatter plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -242,8 +236,7 @@ def visualizeTask2(dict, output_path):
     ax.set_ylabel('rho')
     ax.set_zlabel('IoU')
     ax.set_title('Grid Search Results for the IoU')
-    plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
-
+    plt.savefig(os.path.join(ouput_path_grid, 'IoU.png'))
 
     fig = plt.figure(figsize=(20, 10))
     ax1 = fig.add_subplot(1, 2, 1, projection='3d')
@@ -267,26 +260,25 @@ def visualizeTask2(dict, output_path):
     ax2.set_ylabel('rho')
     ax2.set_zlabel('IoU')
     ax2.set_title('IoU')
-    #add colorbar
+    # add colorbar
     fig.colorbar(ax1.plot_surface(X, Y, Z1, cmap='coolwarm'), ax=ax1)
     fig.colorbar(ax2.plot_surface(X, Y, Z2, cmap='coolwarm'), ax=ax2)
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(ouput_path_grid,'task2_surfaces.png'))
 
-    #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
+    plt.tight_layout()
+    plt.savefig(os.path.join(ouput_path_grid, 'task2_surfaces.png'))
+
+    # create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
     # save the dictionary of dictionaries as a csv file
     df = pd.DataFrame()
-    
-    #append columns
+
+    # append columns
     df['alpha'] = alphas
     df['rho'] = rhos
     df['mAP'] = valuesMAP
     df['IoU'] = valuesIoU
     df = df[['alpha', 'rho', 'mAP', 'IoU']]
 
-    df.to_csv(os.path.join(ouput_path_grid,'task2.csv'))
-
+    df.to_csv(os.path.join(ouput_path_grid, 'task2.csv'))
 
 
 def visualizeTask4(dict, output_path):
@@ -299,7 +291,7 @@ def visualizeTask4(dict, output_path):
     # create the directory
     os.makedirs(ouput_path_grid)
 
-    #plot mIoU scatter plot in 3D, for each alpha the rho values
+    # plot mIoU scatter plot in 3D, for each alpha the rho values
     # extract the alpha, rho, and value data from the results dictionary
     alphas = []
     colors = []
@@ -312,19 +304,18 @@ def visualizeTask4(dict, output_path):
 
     values = np.array(values).T
 
-    #create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
+    # create a table with pandas and save it as a csv file to save the mAP and IoU for each alpha and rho
     # save the dictionary of dictionaries as a csv file
     df = pd.DataFrame()
-    
-    #append columns
+
+    # append columns
     df['alpha'] = alphas
     df['color'] = colors
     df['mAP'] = values[0]
     df['IoU'] = values[1]
     df = df[['alpha', 'color', 'mAP', 'IoU']]
 
-    df.to_csv(os.path.join(ouput_path_grid,'task4.csv'))
-
+    df.to_csv(os.path.join(ouput_path_grid, 'task4.csv'))
 
     # # create a 3D scatter plot
     # fig = plt.figure()
@@ -351,16 +342,10 @@ def visualizeTask4(dict, output_path):
     # ax.set_title('Grid Search Results for the IoU')
     # plt.savefig(os.path.join(ouput_path_grid,'IoU.png'))
 
-    
- 
-    
-    
-    
-def filter_boxes(boxes, max_aspect_ratio,nms_threshold):
-   
+
+def filter_boxes(boxes, max_aspect_ratio, nms_threshold):
     # Convert frame_bbox to a NumPy array and extract the boxes and confidence scores
-    #boxes = np.array([box for box in boxes if len(box) != 0])
-    
+    # boxes = np.array([box for box in boxes if len(box) != 0])
 
     # Filter boxes based on aspect ratio if the length of boxes is greater than 0
     filtered_boxes = []
@@ -372,23 +357,20 @@ def filter_boxes(boxes, max_aspect_ratio,nms_threshold):
             aspect_ratio = (box[3] - box[1]) / (box[2] - box[0])
             if aspect_ratio > max_aspect_ratio:
                 continue
-            else:   
+            else:
                 filtered_boxes.append(box)
-                
-    scores = np.ones(len(filtered_boxes))    
+
+    scores = np.ones(len(filtered_boxes))
     # Apply NMS on the filtered boxes
     nms_indices = cv2.dnn.NMSBoxes(filtered_boxes, scores, 0.0, nms_threshold)
-    #print(nms_indices)
+    # print(nms_indices)
 
     # Set the supressed boxes to be empty
     for i in range(len(filtered_boxes)):
         if i not in nms_indices:
             filtered_boxes[i] = []
-    
 
     return filtered_boxes
-
-
 
 
 if __name__ == "__main__":

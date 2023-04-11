@@ -3,7 +3,6 @@ import os
 
 import cv2
 import numpy as np
-
 from models.BaseModel import BaseModel
 
 
@@ -28,11 +27,12 @@ class AdaptiveGaussian(BaseModel):
     def compute_next_foreground(self, frame_aux):
         def _set_fg_mask_uint8_row(i, row, output_row):
             output_row[row] = 255
+
         if not self.modeled:
             print("[ERROR] Background has not been modeled yet.")
             return None
 
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux)          ##############################
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_aux)  ##############################
         success, I = self.cap.read()
         if not success:
             return None
@@ -41,7 +41,8 @@ class AdaptiveGaussian(BaseModel):
         b_mask = (np.abs(I - self.mean) < self.alpha * (self.std + 2))
         self.mean[b_mask] = (self.p * I[b_mask] + (1 - self.p) * self.mean[b_mask])
         img_aux = (I - self.mean)
-        self.std[b_mask] = np.sqrt(self.p * img_aux[b_mask] * img_aux[b_mask] + (1 - self.p) * (self.std[b_mask] * self.std[b_mask]))
+        self.std[b_mask] = np.sqrt(
+            self.p * img_aux[b_mask] * img_aux[b_mask] + (1 - self.p) * (self.std[b_mask] * self.std[b_mask]))
 
         fg_mask = np.abs(I - self.mean) >= self.alpha * (self.std + 2)
         fg_mask_uint8 = np.zeros_like(fg_mask, dtype=np.uint8)
@@ -55,8 +56,6 @@ class AdaptiveGaussian(BaseModel):
                 future.result()
 
         return fg_mask_uint8, I
-
-
 
     def save_checkpoint(self):
         if not os.path.exists(f"{self.base}/{self.checkpoint}"):

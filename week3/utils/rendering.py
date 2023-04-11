@@ -1,23 +1,20 @@
 import itertools
+import os
+# Import the path to the week3 folder
+import sys
 import time
 
 import cv2
 import imageio
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-
-# Import the path to the week3 folder
-import sys
 
 sys.path.append("../week3")
 
 from util import load_from_xml_rendering, load_from_txt_rendering
 from metrics import (
     mean_AP_Pascal_VOC,
-    mean_IoU_nonrestricted,
     mean_IoU_nonrestricted_2,
-    mean_IoU_restricted,
 )
 
 
@@ -47,7 +44,6 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
     # sort by key dictionary
     gt_boxes = {k: gt_boxes[k] for k in sorted(gt_boxes)}
 
-    
     # Get the IoU score for each frame in format dict {frame_id: [iou_score1, iou_score2, ...]}
     mAP_all = []
     mIOU_all = []
@@ -67,7 +63,6 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
         for i in range(len(predicted_boxes)):
             f.write(f'{label[i]},{mAP_all[i]},{mIOU_all[i]}\n')
 
-
     # Create a frame_id list from 535 to 2140
     frames_id = []
     frames_num = []
@@ -79,8 +74,6 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
     for i in range(len(predicted_boxes)):
         iou_scores = [np.mean(mIOU_frame_all[i][frame]) for frame in frames_id]
         iou_scores_all.append(iou_scores)
-
-
 
     # Open the video
     video_capture = cv2.VideoCapture(video_capture)
@@ -123,7 +116,6 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
         fig.show()
     fig.canvas.draw()
 
-    
     # Loop through each frame
     for i, frame_id in enumerate(frames_id):
         if i == 0:
@@ -138,10 +130,10 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
             for box in gt_boxes[frame_id]:
                 cv2.rectangle(frame, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
             # Draw the predicted boxes
-            
+
             # for box in predicted_boxes_group[frame_id]:
-    
-            for box in predicted_boxes_group[-1][f'f_{frames_num[i-1]}']:
+
+            for box in predicted_boxes_group[-1][f'f_{frames_num[i - 1]}']:
                 cv2.rectangle(frame, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])), (0, 0, 255), 2)
             # Draw the IoU score
             iou_score = round(iou_scores_all[-1][i], 2)
@@ -201,9 +193,6 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
         line_iou[i].set_data(frames_num, iou_scores_all[i])
     fig.savefig(path + 'iou.png')
 
-
-
-    
     # print("mAP: ", AP)
     # print("mIOU: ", mIOU)
     time_end = time.time()
@@ -218,10 +207,6 @@ def rendering_video(path, annotations, predicted_boxes, label, video_capture, sa
     print("Time_Finished: ", time_end - time_start)
 
 
-
-
-
-
 if __name__ == "__main__":
 
     output_path = '/ghome/group03/mcv-m6-2023-team6/week3/Results/Video_IoU/'
@@ -233,21 +218,19 @@ if __name__ == "__main__":
                       '/ghome/group03/mcv-m6-2023-team6/week3/Results/Task_1_1/faster_RCNN/A/bbox_faster_RCNN_A.txt',
                       '/ghome/group03/mcv-m6-2023-team6/week3/Results/Task_1_1/mask_RCNN/A/bbox_mask_RCNN_A.txt',
                       '/ghome/group03/mcv-m6-2023-team6/week3/Results/Task_1_1/retinaNet/A/bbox_retinaNet_A.txt']
-                      
-                  
-    label = ['SSD512_given', 'YOLO3_given', 'MaskRCNN_given', 'FasterRCNN_X101', 'MaskRCNN_X101', 'RetinaNet_X101']        
+
+    label = ['SSD512_given', 'YOLO3_given', 'MaskRCNN_given', 'FasterRCNN_X101', 'MaskRCNN_X101', 'RetinaNet_X101']
 
     # If output_path does not exist, create it
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-
 
     gt_boxes, total = load_from_xml_rendering(annotations_xml)
     gt = [gt_boxes, total]
 
     predicted_boxes = []
     for i in range(len(detection_path)):
-        if i>2:
+        if i > 2:
             # for each detection file, delete the spaces ' ' and save it in a new file on output_path
             with open(detection_path[i], 'r') as f:
                 lines = f.readlines()
@@ -257,7 +240,7 @@ if __name__ == "__main__":
             predicted_boxes.append(load_from_txt_rendering(output_path + 'det_' + label[i] + '.txt'))
         else:
             predicted_boxes.append(load_from_txt_rendering(detection_path[i]))
-    
+
     rendering_video(
         output_path,
         gt,
@@ -269,7 +252,7 @@ if __name__ == "__main__":
     )
 
     for i in range(len(detection_path)):
-        if i>2:
+        if i > 2:
             output_path_i = output_path + label[i] + '/'
             if not os.path.exists(output_path_i):
                 os.makedirs(output_path_i)
@@ -282,6 +265,3 @@ if __name__ == "__main__":
                 save=True,
                 display=False,
             )
-
-
-

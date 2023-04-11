@@ -24,7 +24,7 @@ def video2gif(video_path, gif_path, start_time, duration, fps):
 
 
 video2gif('/ghome/group03/mcv-m6-2023-team6/week3/Results/Video_IoU/FasterRCNN_X101/video.mp4',
-           '/ghome/group03/mcv-m6-2023-team6/week3/Results/Video_IoU/FasterRCNN_X101/video_gif.gif', 0, None, 5)
+          '/ghome/group03/mcv-m6-2023-team6/week3/Results/Video_IoU/FasterRCNN_X101/video_gif.gif', 0, None, 5)
 
 
 # resize gif
@@ -46,7 +46,6 @@ def resize_gif(gif_path, new_gif_path, start_time, duration, fps):
     else:
         gif = gif.subclip(start_time)
     gif.speedx(10).to_gif(new_gif_path, fps=fps)
-
 
 # resize_gif('../../week2/pixelevolution_vid.gif', '../../week2/pixelevolution_resize.gif', 0, None, 5)
 # resize_gif('/ghome/group03/mcv-m6-2023-team6/week3/Results/Video_IoU/iou.gif',

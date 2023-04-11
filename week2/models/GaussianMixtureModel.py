@@ -3,7 +3,6 @@ import os
 import cv2
 import joblib
 import numpy as np
-
 from models.BaseModel import BaseModel
 
 

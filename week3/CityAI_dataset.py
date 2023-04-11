@@ -2,16 +2,12 @@ import os
 import random
 
 import cv2
-import numpy as np
-import pycocotools.mask as mask_utils
-from detectron2.data import DatasetCatalog, MetadataCatalog
 from detectron2.structures.boxes import BoxMode
 from detectron2.utils.visualizer import Visualizer
-from tqdm import tqdm
 import xmltodict
 
 
-def parse_xml_bb(path_xml, includeParked = True):
+def parse_xml_bb(path_xml, includeParked=True):
     """
     Input:
         - Path to xml in Pascal VOC format annotations
@@ -42,7 +38,7 @@ def parse_xml_bb(path_xml, includeParked = True):
 
             if frame not in frame_dict:
                 frame_dict[frame] = []
-                
+
             frame_dict[frame].append({
                 'conf': 1,
                 'bbox': [float(bbox['@xtl']), float(bbox['@ytl']), float(bbox['@xbr']), float(bbox['@ybr'])],
@@ -61,9 +57,9 @@ def create_splits(total_frames, strategy):
         - list of k splits
     """
     # Set seed for reproducibility
-    x_25 = int(total_frames*0.25)
+    x_25 = int(total_frames * 0.25)
 
-    if strategy == 'A': 
+    if strategy == 'A':
         # Fold 1: 0-25% of the frames is train and 25-100% is val
         start = 0
         end = x_25
@@ -73,21 +69,21 @@ def create_splits(total_frames, strategy):
         # K-Fold cross validation use K=3. Split the dataset into 3 folds
         # Fold 2: 25-50% of the frames is train and 0-25% and 50-100% is val
         start = x_25
-        end = 2*x_25
+        end = 2 * x_25
         train = list(range(start, end))
         val = list(range(0, start)) + list(range(end, total_frames))
     elif strategy == 'B_3':
         # K-Fold cross validation use K=3. Split the dataset into 3 folds
         # Fold 3: 50-75% of the frames is train and 0-50% and 75-100% is val
-        start = 2*x_25
-        end = 3*x_25
+        start = 2 * x_25
+        end = 3 * x_25
         train = list(range(start, end))
         val = list(range(0, start)) + list(range(end, total_frames))
     elif strategy == 'B_4':
         # K-Fold cross validation use K=3. Split the dataset into 3 folds
         # Fold 4: 75-100% of the frames is train and 0-75% is val
-        start = 3*x_25
-        end = 4*x_25
+        start = 3 * x_25
+        end = 4 * x_25
         train = list(range(start, end))
         val = list(range(0, start)) + list(range(end, total_frames))
     elif strategy == 'C_1':
@@ -96,42 +92,42 @@ def create_splits(total_frames, strategy):
         # Random split 25% train and 75% val
         list_total = list(range(total_frames))
         random.shuffle(list_total)
-        train = list_total[:int(total_frames*0.25)]
-        val = list_total[int(total_frames*0.25):]
+        train = list_total[:int(total_frames * 0.25)]
+        val = list_total[int(total_frames * 0.25):]
     elif strategy == 'C_2':
         random.seed(2)
         # K-Fold cross validation use K=4. Split the dataset into 4 folds
         # Random split 25% train and 75% val
         list_total = list(range(total_frames))
         random.shuffle(list_total)
-        train = list_total[:int(total_frames*0.25)]
-        val = list_total[int(total_frames*0.25):]
+        train = list_total[:int(total_frames * 0.25)]
+        val = list_total[int(total_frames * 0.25):]
     elif strategy == 'C_3':
         random.seed(3)
         # K-Fold cross validation use K=4. Split the dataset into 4 folds
         # Random split 25% train and 75% val
         list_total = list(range(total_frames))
         random.shuffle(list_total)
-        train = list_total[:int(total_frames*0.25)]
-        val = list_total[int(total_frames*0.25):]
+        train = list_total[:int(total_frames * 0.25)]
+        val = list_total[int(total_frames * 0.25):]
     elif strategy == 'C_4':
         random.seed(4)
         # K-Fold cross validation use K=4. Split the dataset into 4 folds
         # Random split 25% train and 75% val
         list_total = list(range(total_frames))
         random.shuffle(list_total)
-        train = list_total[:int(total_frames*0.25)]
-        val = list_total[int(total_frames*0.25):]
+        train = list_total[:int(total_frames * 0.25)]
+        val = list_total[int(total_frames * 0.25):]
     elif strategy == 'D':
         random.seed(6)
         list_total = list(range(total_frames))
         random.shuffle(list_total)
-        train = list_total[:int(total_frames*0.9)]
-        val = list_total[int(total_frames*0.9):]
+        train = list_total[:int(total_frames * 0.9)]
+        val = list_total[int(total_frames * 0.9):]
 
     # Create a subset : 10% of the val set
     random.seed(5)
-    val_subset = random.sample(val, int(len(val)*0.1))
+    val_subset = random.sample(val, int(len(val) * 0.1))
 
     return train, val, val_subset
 
@@ -153,19 +149,18 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
     else:
         raise ValueError("Subset must be train, val or val_subset")
 
-
     if pretrained:
         class_id = 2
     else:
         class_id = 0
 
     dataset_dicts = []
- 
+
     for seq_id in list_frames:
-            
+
         record = {}
 
-        filename = os.path.join(images, str(seq_id) + ".jpg"	)
+        filename = os.path.join(images, str(seq_id) + ".jpg")
 
         # plot the image cv2
         im = cv2.imread(filename)  # Llegeix be les imatges
@@ -183,7 +178,7 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
 
             # Draw the bounding box in the image
             cv2.rectangle(im, (int(bb[0]), int(bb[1])), (int(bb[2]), int(bb[3])), (0, 255, 0), 2)
- 
+
             obj = {
                 "bbox": list(map(int, bb)),
                 "bbox_mode": BoxMode.XYXY_ABS,
@@ -223,9 +218,9 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
 #         class_id = 0
 
 #     dataset_dicts = []
- 
+
 #     for seq_id in list_frames:
-            
+
 #         record = {}
 
 #         filename = os.path.join(images, str(seq_id) + ".jpg"	)
@@ -246,7 +241,7 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
 
 #             # Draw the bounding box in the image
 #             cv2.rectangle(im, (int(bb[0]), int(bb[1])), (int(bb[2]), int(bb[3])), (0, 255, 0), 2)
- 
+
 #             obj = {
 #                 "bbox": list(map(int, bb)),
 #                 "bbox_mode": BoxMode.XYXY_ABS,
@@ -270,9 +265,9 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
 #     list_frames = list(range(0, 4072))
 
 #     dataset_dicts = []
- 
+
 #     for seq_id in list_frames:
-            
+
 #         record = {}
 
 #         filename = os.path.join(images, str(seq_id) + ".jpg"	)
@@ -290,7 +285,6 @@ def get_CityAI_dicts(subset, pretrained=True, strategy="A"):
 #         dataset_dicts.append(record)
 
 #     return dataset_dicts
-
 
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
-import itertools
 import csv
-from collections import defaultdict
-import xmltodict
+import itertools
 import json
+from collections import defaultdict
+
+import xmltodict
+
 
 def load_from_xml(path):
     """
@@ -23,18 +25,18 @@ def load_from_xml(path):
         label = track["@label"]
         boxes = track["box"]
         for box in boxes:
-            if label == "car" :
+            if label == "car":
                 frame = int(box["@frame"])
                 frame = frame
                 gt.append(
-                    [   frame,
-                        float(box["@xtl"]),
-                        float(box["@ytl"]),
-                        float(box["@xbr"]),
-                        float(box["@ybr"]),
-                        confidence,
-                        track_id
-                    ]
+                    [frame,
+                     float(box["@xtl"]),
+                     float(box["@ytl"]),
+                     float(box["@xbr"]),
+                     float(box["@ybr"]),
+                     confidence,
+                     track_id
+                     ]
                 )
                 num_iter += 1
 
@@ -46,6 +48,7 @@ def load_from_xml(path):
     gt = {k: list(v) for k, v in gt}
 
     return gt
+
 
 def load_from_txt(path, threshold):
     """
@@ -78,6 +81,7 @@ def load_from_txt(path, threshold):
     detections = {k: list(v) for k, v in detections}
 
     return detections
+
 
 def load_from_txt_rendering(path):
     """
@@ -166,14 +170,13 @@ def load_from_json(path):
                 d["score"],
             ]
         )
-    
+
     """Group the detected boxes by frame_id as a dictionary"""
     detections.sort(key=lambda x: x[0])
     detections = itertools.groupby(detections, key=lambda x: x[0])
     detections = {k: list(v) for k, v in detections}
 
     return detections
-    
 
 
 # INTERSECTION OVER UNION
@@ -197,30 +200,27 @@ def iou(box1, box2, threshold=0.9):
     # respective area of ​​the two boxes
     box1Area = (x12 - x11) * (y12 - y11)
     box2Area = (x22 - x21) * (y22 - y21)
-    
 
     # IOU
     iou_score = interArea / (box1Area + box2Area - interArea)
 
-
-    return iou_score,iou_score >= threshold
-
+    return iou_score, iou_score >= threshold
 
 
-def discard_overlaps(frame_boxes,threshold=0.9):
+def discard_overlaps(frame_boxes, threshold=0.9):
     discard = []
     for i in range(len(frame_boxes)):
-        boxA = [frame_boxes[i][1],frame_boxes[i][2],frame_boxes[i][3],frame_boxes[i][4]]
+        boxA = [frame_boxes[i][1], frame_boxes[i][2], frame_boxes[i][3], frame_boxes[i][4]]
         for j in range(len(frame_boxes)):
-            boxB = [frame_boxes[j][1],frame_boxes[j][2],frame_boxes[j][3],frame_boxes[j][4]]
+            boxB = [frame_boxes[j][1], frame_boxes[j][2], frame_boxes[j][3], frame_boxes[j][4]]
             if i == j:
                 continue
             elif any(j in sublist for sublist in discard):
                 continue
             else:
-                _,score = iou(boxA,boxB,threshold)
+                _, score = iou(boxA, boxB, threshold)
                 if score == True:
-                    discard.append([i,j])
+                    discard.append([i, j])
 
     discard.sort(key=lambda x: x[1], reverse=True)
     for d in discard:
@@ -252,22 +252,18 @@ def write_to_csv_file(filename, data):
                     ob_id = object_data[6]
                 # Write the object data to the CSV file
                 writer.writerow([frame, ob_id, left, top, width, height, conf, -1, -1, -1])
-                
-                
-                
-def filter_boxes(frame_boxes,r=1.25,y=230):
+
+
+def filter_boxes(frame_boxes, r=1.25, y=230):
     discard = []
     for i in range(len(frame_boxes)):
-        h = frame_boxes[i][4] -  frame_boxes[i][2]
-        w =  frame_boxes[i][3] -  frame_boxes[i][1]
-        if ( frame_boxes[i][2] + h > y) and (h/w > r):
+        h = frame_boxes[i][4] - frame_boxes[i][2]
+        w = frame_boxes[i][3] - frame_boxes[i][1]
+        if (frame_boxes[i][2] + h > y) and (h / w > r):
             discard.append(i)
-            
+
     discard.sort(reverse=True)
     for d in discard:
         del frame_boxes[d]
 
     return frame_boxes
-        
-
-
