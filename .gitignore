@@ -38,6 +38,10 @@ __pycache__/
 ./week4/pytorch-liteflownet
 ./week4/deq-flow
 ./week4/Results/Task1_1
+./week4/Results/Task1_2
+./week4/Results/Task1_3
+./week4/Results/Task2 
+./week4/Results/Task3
 
 # C extensions
 *.so
@@ -97,6 +101,8 @@ local_settings.py
 .TrackEval/
 .TrackEval2_1/
 .TrackEval2_2/
+.TrackEval3_1/
+.TrackEval3_4/
 
 
 # Flask stuff:
