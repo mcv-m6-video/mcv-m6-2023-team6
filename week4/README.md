@@ -5,11 +5,27 @@
 ![Alt Text](path/to/gif/file.gif)
 
 #### Task 1.1: Block Matching
+```bash
+python task_1_1.py
+```
 
-+ Exhauastive search (SSD, SAD)
-+ Template matching (NCC)
-+ Grid search to optimize hyperparameters: motion type (forward, backward), block size (8, 16, .., 128) and search
-  area (8, 16, .., 128)
++ Grid search to optimize hyperparameters with optuna: block size = [2, 4, 8, 16, 32, 64, 128] and search
+  area =[2, 4, 8, 16, 32, 64, 128], step size = [1, 2, 4, 8, 16, 32, 64, 128], distance type = ['NCC', 'SAD', 'SSD']
+
+```bash
+python task_1_1_optuna.py
+```
+
++ To extract visual results
+```bash
+python task_1_1_bbdd.py
+```
+
+
+|         Best parameters                   | MSEN | PEPN  | 
+|:-----------------------------------------:|:----:|:-----:|
+|block size 16, search area 32, step 8, NCC | 2.71 | 13.67%|   
+
 
 #### Task 1.2: Off-the-shelf
 
