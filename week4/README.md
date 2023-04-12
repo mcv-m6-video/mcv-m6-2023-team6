@@ -81,5 +81,20 @@ python task_1_3.py
 
 For AI City Challenge
 
-+ With and without optical flow
+Using MaskFlowNet:
+
+```bash
+python task_2.py --optical_flow_method maskflownet
+```
+
+### Task 3: Multi Target Multi Camera Tracking (Optional)
+```bash
+python task_3.py --optical_flow_method maskflownet
+```
+```bash
+python task_3_1.py --optical_flow_method maskflownet
+```
+
+Future work(Post Processing methods to increase performance)
+
 
