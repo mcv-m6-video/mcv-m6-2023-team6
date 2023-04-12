@@ -43,6 +43,9 @@ __pycache__/
 ./week4/Results/Task3
 ./week4/TrackEval_task3_1_test
 ./week4/TrackEval_task3_4_test
+./week4/TrackEval/TrackEval_task3_1_test
+./week4/TrackEval/TrackEval_task3_4_test
+./week4/OpticalFlow
 
 # C extensions
 *.so
