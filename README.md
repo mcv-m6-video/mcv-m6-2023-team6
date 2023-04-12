@@ -22,7 +22,7 @@ segmentation, motion estimation and compensation, and video object tracking.
 
 ### [Week 3: Object detection and tracking](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3)
 
-### [Week 4: Optical Flow](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week4)
+### [Week 4: Optical Flow and Multi-Target Single Camera Tracking](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week4)
 
 ### [Week 5: Multi-Target Multi-Camera Tracking](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5)
 
