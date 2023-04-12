@@ -18,7 +18,7 @@ python task_1_1_optuna.py
 
 + To extract visual results
 ```bash
-python task_1_1_bbdd.py
+python task_1_1_bbdd.ipynb
 ```
 
 
