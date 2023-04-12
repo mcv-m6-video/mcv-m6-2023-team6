@@ -148,10 +148,10 @@ def filter_boxes(frame_boxes, r=1.25, y=230):
     return frame_boxes
 
 
-def video(det_boxes, method):
+def video(det_boxes, method, fps):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_out = cv2.VideoWriter("/export/home/group03/mcv-m6-2023-team6/week4/Results/Task1_3/" + f"{method}.mp4",
-                                fourcc, 10, (1920, 1080))
+                                fourcc, fps, (1920, 1080))
     tracker_colors = {}
 
     for frame_id in det_boxes:
