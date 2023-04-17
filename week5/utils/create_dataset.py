@@ -12,16 +12,19 @@ def create_dataset(path):
 
     for f in range(1,frames+1):
         if f in gt:
-            print(f)
             file = open(path+'/labels/'+str(f)+'.txt','w')
             for det in gt[f]:
-                print(det)
                 line = f'{det[0]} {det[1]} {det[2]} {det[3]} {det[4]} \n'
                 file.write(line)
 
             file.close()
-        else:
-            with open(path+'/labels/'+str(f)+'.txt','w') as file:
-                pass
 
-create_dataset('C:/Users/AnaHarris/Documents/MASTER/M6/project/dataset/seqs/S01/c001')
+
+seqs = ['S01','S04']
+path = '/export/home/group03/dataset/aic19-track1-mtmc-train/train/'
+
+
+
+for seq in seqs:
+    for c in os.listdir(path+'/'+seq):
+        create_dataset(path+'/'+seq+'/'+c)
