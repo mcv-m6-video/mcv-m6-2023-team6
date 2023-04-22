@@ -8,7 +8,7 @@
 eval "$(conda shell.bash hook)"
 conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job 
-python detections/finetuning_S01_S04.py
+python inference_yolov8.py
 
 
 

@@ -1,6 +1,6 @@
 import os
 import pickle
-from utils.util import write_csv
+from util import write_csv
 
 
 def load_pkl_file(file_path):
@@ -22,7 +22,7 @@ def read_all_pkl_files(folder_path):
 
 
 # Replace 'your_folder_path' with the path to the folder containing the .pkl files
-folder_path = '../Results/Task3/S04'
+folder_path = '../Results/tracking/'
 all_data = read_all_pkl_files(folder_path)
 
 for file_name, data in all_data.items():

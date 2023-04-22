@@ -1,4 +1,7 @@
 import itertools
+import pandas as pd
+import os
+import pickle
 
 def load_from_txt(path):
     """
@@ -36,51 +39,49 @@ def load_from_txt(path):
 
     return final_dict
 
-# INTERSECTION OVER UNION
-def iou(box1, box2, threshold=0.9):
-    if len(box1) > 4:
-        box1 = box1[:4]
-    """Return iou for a single a pair of boxes"""
-    x11, y11, x12, y12 = box1
-    x21, y21, x22, y22 = box2
 
-    xA = max(x11, x21)
-    yA = max(y11, y21)
-    xB = min(x12, x22)
-    yB = min(y12, y22)
+def write_csv(detections, out_path):
+    df_list = []
+    for frame_id in detections:
+        for track in detections[frame_id]:
+            width = track[3] - track[1]
+            height = track[4] - track[2]
+            bb_left = track[1]
+            bb_top = track[2]
+            df_list.append(
+                pd.DataFrame({'frame': int(frame_id), 'id': int(track[-1]), 'bb_left': bb_left, 'bb_top': bb_top,
+                              'bb_width': width, 'bb_height': height, 'conf': track[-2], "x": -1, "y": -1,
+                              "z": -1}, index=[0]))
 
-    if xB < xA or yB < yA:
-        interArea = 0
-    else:
-        interArea = max(xB - xA, 0) * max(yB - yA, 0)
+    df = pd.concat(df_list, ignore_index=True)
+    df = df.sort_values(by=['frame'])
+        
+    # save the csv file without the header
+    df.to_csv(out_path, index=False,header=False)
 
-    # respective area of ​​the two boxes
-    box1Area = (x12 - x11) * (y12 - y11)
-    box2Area = (x22 - x21) * (y22 - y21)
+def load_pkl_file(file_path):
+    with open(file_path, 'rb') as f:
+        data = pickle.load(f)
+    return data
 
-    # IOU
-    iou_score = interArea / (box1Area + box2Area - interArea)
 
-    return iou_score, iou_score >= threshold
+def read_all_pkl_files(folder_path):
+    pkl_files = [f for f in os.listdir(folder_path) if f.endswith('.pkl')]
 
-def discard_overlaps(frame_boxes, threshold=0.9):
-    discard = []
-    for i in range(len(frame_boxes)):
-        boxA = [frame_boxes[i][1], frame_boxes[i][2], frame_boxes[i][3], frame_boxes[i][4]]
-        for j in range(len(frame_boxes)):
-            boxB = [frame_boxes[j][1], frame_boxes[j][2], frame_boxes[j][3], frame_boxes[j][4]]
-            if i == j:
-                continue
-            elif any(j in sublist for sublist in discard):
-                continue
-            else:
-                _, score = iou(boxA, boxB, threshold)
-                if score == True:
-                    discard.append([i, j])
+    all_data = {}
+    for file_name in pkl_files:
+        file_path = os.path.join(folder_path, file_name)
+        data = load_pkl_file(file_path)
+        all_data[file_name] = data
 
-    discard.sort(key=lambda x: x[1], reverse=True)
-    for d in discard:
-        del frame_boxes[d[1]]
+    return all_data
 
-    return frame_boxes
+def convert_pkl_to_txt(pkl_folder, txt_folder):
+    all_data = read_all_pkl_files(pkl_folder)
 
+    for file_name, data in all_data.items():
+        fname = file_name.split('.')[0]
+        print(f"Writing content of {fname}: in txt format for TrackEval")
+
+        # delete the first line of the csv file and save it to txt
+        write_csv(data, f"{txt_folder}/{fname}.txt")
