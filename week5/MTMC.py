@@ -128,7 +128,8 @@ def create_embeddings():
             # Mean of the histograms
             # mean_histogram_tracks[c,id] = np.mean(histograms,axis=0)
             # TODO: pick 5 random histograms
-            print('TODO: pick 5 random histograms')
+            
+            mean_histogram_tracks[c,id] = np.mean(histograms,axis=0)
 
 
 
@@ -137,13 +138,13 @@ def create_embeddings():
 
 
 
-# create_embeddings()
+#create_embeddings()
 
 cameras_dict = pkl.load(open(f'{results_path}/cameras_embeddings_S01.pkl','rb'))
 
-# normalized = normalize(np.stack(cameras_dict.values()))
+normalized = normalize(np.stack(cameras_dict.values()))
 # clustering = DBSCAN(eps=3,min_samples=2).fit(normalized)
-clustering = DBSCAN(eps=0.1,min_samples=2).fit(np.stack(cameras_dict.values()))
+clustering = DBSCAN(eps=1,min_samples=1).fit(normalized)
 
 
 groups = defaultdict(list)
