@@ -1,3 +1,8 @@
+dataset_path = "/export/home/group03/dataset/aic19-track1-mtmc-train/train"
+tracking_path = "/export/home/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC"
+results_path = "/export/home/group03/mcv-m6-2023-team6/week5/Results/trackings/MTMC"
+
+import argparse
 import os
 import cv2
 import pickle as pkl
@@ -11,23 +16,6 @@ import torchvision
 from torch import nn
 import torch
 import random
-
-
-dataset_path = "/export/home/group03/dataset/aic19-track1-mtmc-train/train"
-tracking_path = "/export/home/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC"
-results_path = "/export/home/group03/mcv-m6-2023-team6/week5/Results/trackings/MTMC"
-
-
-
-seq = "S01"
-
-
-
-def crop_from_detection(box,frame):
-    image = cv2.cvtColor(cv2.imread(frame),cv2.COLOR_BGR2HSV)
-    cropped = image[box[1]:box[3], box[0]:box[2]]
-    return cropped
-
 
 class EmbeddingNetImage(nn.Module):
     def _init_(self, weights, dim_out_fc, network_image = 'RESNET'):   # dim_out_fc = 'as_image' or 'as_text'
@@ -50,7 +38,6 @@ class EmbeddingNetImage(nn.Module):
         output = self.model(x)   # 2048
         return output
    
-
 seq = "S01"
 
 def crop_from_detection(box,frame):
@@ -119,7 +106,10 @@ def create_embeddings():
             model = model.module
 
         # MULTIPROCESSING JOHNNY TODO:
-        for frame,track in tqdm(tracking_boxes.items(),186):
+        for frame,track in tqdm(tracking_boxes.items()):
+            if frame == 186:
+                break
+            
             for b in track:
                 id = int(b[-1])
                 bbox = b[1:-1]
@@ -152,8 +142,9 @@ def create_embeddings():
 
 
 
-#create_embeddings()
-cameras_dict = pkl.load(open('/ghome/group03/mcv-m6-2023-team6/embedings_resnet_c001.pkl','rb'))
+create_embeddings()
+cameras_dict = pkl.load(open(f'{results_path}/embedings_resnet_c001.pkl','rb'))
+
 new_dict = {}
 for c_id,data in cameras_dict.items():
     new_data = np.concatenate(data.detach().numpy())
@@ -170,12 +161,11 @@ for id, label in zip(new_dict.keys(), clustering.labels_):
 groups = list(groups.values())  
 
 
-tracking_boxes = pkl.load(open('/ghome/group03/mcv-m6-2023-team6/embedings_resnet_c001.pkl','rb'))
-
+tracking_boxes = pkl.load(open(f'{tracking_path}/c001.pkl','rb'))
+"""
 results = defaultdict(list)
 for global_id, group in enumerate(groups):
     for cam, id in group:
         track = tracking_boxes[id]
-        print(track)
-        #for det in track:
-        #results[cam].append(track)
+        for det in track:
+        results[cam].append(track)"""

@@ -41,7 +41,7 @@ def video(det_boxes, fps, seq, camera,output_path):
         video_out.write(im)
     video_out.release()
 
-
+"""
 
 cameras = ['c010','c011','c012','c013', 'c014', 'c015']
 output_path = '/ghome/group03/mcv-m6-2023-team6/week5/Results/videos'
@@ -51,3 +51,5 @@ for camera in cameras:
     seq = 'S03'
     
     video(detections, fps,seq,camera, output_path)
+"""
+
