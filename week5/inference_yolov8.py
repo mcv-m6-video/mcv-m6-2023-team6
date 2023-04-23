@@ -9,7 +9,6 @@ import pickle
 SEQS = ['S01','S04','S03']
 
 def extract_results(frame_results,n_frame,f,confidence=0.6):
-    detections = []
     detections_frame = frame_results[0].boxes.cpu().numpy()
     for det in detections_frame:
         if det.cls[-1] == 2 or det.cls[-1] == 7: # CAR & TRUCK Classes
