@@ -16,8 +16,13 @@ export PYTHONPATH=$("./week5/vehicle_mtmc")
 
 ### If you want to run all experiments, use our job.
 
+For SLURM:
 ```bash
 sbatch --gres gpu:1 -n 10 job
+```
+For bash:  
+```bash
+bash job
 ```
 
 ### End-to-End experiment
