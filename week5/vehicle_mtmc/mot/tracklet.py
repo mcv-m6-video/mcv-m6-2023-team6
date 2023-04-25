@@ -84,9 +84,11 @@ class Tracklet:
         for i, f in enumerate(self.features):
             if method == "area_avg":
                 area = self.bboxes[i][2] * self.bboxes[i][3]
-                self._mean_feature += f * (area / div)
+                #self._mean_feature += f * (area / div)
+                self._mean_feature = np.concatenate((self._mean_feature, f * (area / div)), axis=0)
             else:
-                self._mean_feature += f
+                #self._mean_feature += f
+                self._mean_feature = np.concatenate((self._mean_feature, f), axis=0)
 
         norm = np.linalg.norm(self._mean_feature)
         self._mean_feature = self._mean_feature / norm
@@ -185,3 +187,9 @@ class Tracklet:
                     enter = fr
                 leave = fr
         return enter, leave
+
+
+
+
+
+

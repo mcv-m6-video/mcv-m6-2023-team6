@@ -7,7 +7,7 @@ def load_from_txt(path):
     """
     :param path: path file
 
-    :return: list = [[class,x1, y1, x2, y2]]
+    :return: list = [[class,x1, y1, x2, y2, conf]]
     """
     detections = []
     with open(path) as f:
@@ -24,6 +24,7 @@ def load_from_txt(path):
                 float(ll[3]),
                 float(ll[2]) + float(ll[4]),
                 float(ll[3]) + float(ll[5]),
+                float(ll[6])
             ]
         )
 
@@ -40,24 +41,6 @@ def load_from_txt(path):
     return final_dict
 
 
-def write_csv(detections, out_path):
-    df_list = []
-    for frame_id in detections:
-        for track in detections[frame_id]:
-            width = track[3] - track[1]
-            height = track[4] - track[2]
-            bb_left = track[1]
-            bb_top = track[2]
-            df_list.append(
-                pd.DataFrame({'frame': int(frame_id), 'id': int(track[-1]), 'bb_left': bb_left, 'bb_top': bb_top,
-                              'bb_width': width, 'bb_height': height, 'conf': track[-2], "x": -1, "y": -1,
-                              "z": -1}, index=[0]))
-
-    df = pd.concat(df_list, ignore_index=True)
-    df = df.sort_values(by=['frame'])
-        
-    # save the csv file without the header
-    df.to_csv(out_path, index=False,header=False)
 
 def load_pkl_file(file_path):
     with open(file_path, 'rb') as f:
@@ -81,7 +64,15 @@ def convert_pkl_to_txt(pkl_folder, txt_folder):
 
     for file_name, data in all_data.items():
         fname = file_name.split('.')[0]
+        f = open(pkl_folder+'/'+fname+'.txt','w')
         print(f"Writing content of {fname}: in txt format for TrackEval")
+        for frame,dets in data.items():
+            for det in dets:
+                w = det[3] - det[1]
+                h = det[4] - det[2]
+                f.write(f'{frame},{det[-1]},{det[1]},{det[2]},{w},{h},{det[-2]},-1,-1,-1 \n')
 
-        # delete the first line of the csv file and save it to txt
-        write_csv(data, f"{txt_folder}/{fname}.txt")
+        f.close()
+
+
+

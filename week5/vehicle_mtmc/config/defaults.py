@@ -68,7 +68,7 @@ C.MOT.DETECTOR = "yolov5l"
 
 # classes that are kept from detection
 # only bike, car, motorbike, bus, truck classes are default (yolov5)
-C.MOT.TRACKED_CLASSES = [1, 2, 3, 5, 7]
+C.MOT.TRACKED_CLASSES = [2, 7]
 
 # tracker to use ('deepsort' 'bytetrack_iou')
 C.MOT.TRACKER = "deepsort"

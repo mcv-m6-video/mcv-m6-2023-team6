@@ -77,7 +77,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
     """
     track_id = 0
     tracked_objects = {}
-    memory = 5
+    memory_check = 5
 
     # sequence = [seq for seq,cam in seqs.items() if camera in cam][0]
     tracked_iou = {}
@@ -159,21 +159,12 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
                         tracked_objects[f'{track_id_best}']['frame'] = frame_id
                         tracked_objects[f'{track_id_best}']['iou'] = best_iou
 
-        if frame_id == memory:
+        """if frame_id == memory_check:
             track_memory(tracked_objects)
-            memory = memory + frame_id
+            memory_check = memory_check + frame_id"""
 
         previous_tracked_objects = copy.deepcopy(tracked_objects)
 
-    # for each tracked object, compute the mean iou of all the frames it has been tracked. So iterate the bounding boxes of each frame and compute the iou with the tracked object
-    """for track_id, track in tracked_objects.items():
-        iou_list = []
-        for frame_id, boxes in det_boxes.items():
-            for box in boxes:
-                if box[-1] == int(track_id):
-                    iou_score, _ = iou(track['bbox'], box[1:5])
-                    iou_list.append(iou_score)
-        tracked_iou[track_id] = np.mean(iou_list)"""
     
     # for each track id put the boxes in a list (det_boxes is a dictionary with frame_id as key and the boxes as value)
     track_boxes = {}

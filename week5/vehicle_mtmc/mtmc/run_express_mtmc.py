@@ -52,13 +52,14 @@ def run_express_mtmc(cfg: CfgNode):
     log.info("Express: Running MOT on all cameras finished. Running MTMC...")
 
     # run MTMC
-    pickle_paths = [os.path.join(
-        path, f"{MOT_OUTPUT_NAME}.pkl") for path in cam_dirs]
+    pickle_paths = [os.path.join(path, f"{MOT_OUTPUT_NAME}.pkl") for path in cam_dirs]
     mtmc_cfg = cfg.clone()
     mtmc_cfg.defrost()
     mtmc_cfg.MTMC.PICKLED_TRACKLETS = pickle_paths
     mtmc_cfg.freeze()
     mtracks = run_mtmc(mtmc_cfg)
+    
+    log.info("mtrackes: "+ str(mtracks))
 
     log.info("Express: Running MTMC on all cameras finished. Saving final results ...")
 

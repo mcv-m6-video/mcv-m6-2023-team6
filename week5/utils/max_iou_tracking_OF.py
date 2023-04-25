@@ -1,13 +1,14 @@
 import copy
 import os
-from utils.RAFT import flow_raft
 import numpy as np 
 from tqdm import tqdm
 from PIL import Image
 
+from utils.RAFT import flow_raft
+
 
 # INTERSECTION OVER UNION
-def iou(box1, box2, threshold=0.9):
+def iou_func(box1, box2, threshold=0.9):
     if len(box1) > 4:
         box1 = box1[:4]
     """Return iou for a single a pair of boxes"""
@@ -44,7 +45,7 @@ def discard_overlaps(frame_boxes, threshold=0.9):
             elif any(j in sublist for sublist in discard):
                 continue
             else:
-                _, score = iou(boxA, boxB, threshold)
+                _, score = iou_func(boxA, boxB, threshold)
                 if score == True:
                     discard.append([i, j])
 
@@ -135,7 +136,7 @@ def max_iou_tracking(det_boxes,frames_path,fps, iou_threshold=0.5):
 
                 for data in previous_tracked_objects.items():
                     id, boxB = data
-                    iou_score, _ = iou(boxA, boxB['new_bbox'])
+                    iou_score, _ = iou_func(boxA, boxB['new_bbox'])
 
                     if iou_score > best_iou and iou_score >= iou_threshold:
                         best_iou = iou_score
@@ -218,7 +219,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
 
     for frame_id in tqdm(det_boxes):
 
-        total_frames += 1
+        # total_frames += 1
         # REMOVE OVERLAPPING BOUNDING BOXES 
         boxes = det_boxes[frame_id]
         frame_boxes = discard_overlaps(boxes)
@@ -239,7 +240,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
             current_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id}.jpg')))
             previous_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id - 1}.jpg')))
 
-            flow = flow_raft(previous_frame, current_frame, colType=1)
+            flow = flow_raft(previous_frame, current_frame, colType=1)[0]
 
             for data in previous_tracked_objects.items():
                 id, boxB = data
@@ -267,7 +268,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
 
                 for data in previous_tracked_objects.items():
                     id, boxB = data
-                    iou_score, _ = iou(boxA, boxB['new_bbox'])
+                    iou_score, _ = iou_func(boxA, boxB['new_bbox'])
 
                     if iou_score > best_iou and iou_score >= iou_threshold:
                         best_iou = iou_score
@@ -320,7 +321,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
                         tracked_objects[f'{track_id_best}']['iou'] = best_iou
 
         if frame_id == memory:
-            track_memory(tracked_objects)
+            track_memory(tracked_objects, threshold=10)
             memory = memory + frame_id
 
         previous_tracked_objects = copy.deepcopy(tracked_objects)
@@ -331,7 +332,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
         for frame_id, boxes in det_boxes.items():
             for box in boxes:
                 if box[-1] == int(track_id):
-                    iou_score, _ = iou(track['bbox'], box[1:5])
+                    iou_score, _ = iou_func(track['bbox'], box[1:5])
                     iou_list.append(iou_score)
         tracked_iou[track_id] = np.mean(iou_list)
     

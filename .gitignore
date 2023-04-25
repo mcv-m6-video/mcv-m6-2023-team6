@@ -39,6 +39,7 @@ __pycache__/
 ./week4/TrackEval/TrackEval_task3_1_test
 ./week4/TrackEval/TrackEval_task3_4_test
 ./week4/OpticalFlow
+*.avi
 
 # C extensions
 *.so

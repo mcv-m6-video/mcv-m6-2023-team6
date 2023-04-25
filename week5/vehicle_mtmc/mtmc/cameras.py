@@ -86,7 +86,7 @@ class CameraLayout:
     
 if __name__ == "__main__":
     # test a layout file
-    path = "../config/mtmc_camera_layout.txt"
+    path = "/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/config/AI_city/s01_camera_layout.txt"
     cam = CameraLayout(path)
     print(f"n_cams: {cam.n_cams}")
     print(f"offset: {cam.offset}")
