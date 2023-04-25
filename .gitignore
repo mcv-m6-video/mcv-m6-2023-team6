@@ -17,6 +17,7 @@ dataset/
 *.csv
 *.lock
 *.txt
+*.avi
 *last_checkpoint
 *events.out*
 *sort*
