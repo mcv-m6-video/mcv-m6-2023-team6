@@ -25,6 +25,27 @@ For bash:
 bash job
 ```
 
+### Inference with Yolov8
+```
+python inference_yolov8.py
+```
+
+### If you run our algorithms
+Extract Features manually from bounding boxes
+without Optical Flow.
+```bash
+python pre_MTMC.py --OF False
+python MTSM.py --OF False
+```
+
+Extract Features manually from bounding boxes
+with Optical Flow.
+
+```bash
+python pre_MTMC.py --OF True
+python MTSM.py --OF True
+```
+
 ### End-to-End experiment
 
 ```bash
@@ -46,6 +67,8 @@ python mtmc/mtmc.py --config AI_city/express_s01.yaml
 ------------
 ## Yamls in this readme are examples. You can find our yaml's [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/AI_city).
 
+--------
+## You can find HyperParameters explanations [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/defaults.py).
 
 
 
