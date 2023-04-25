@@ -10,7 +10,7 @@ conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job 
 
 echo "Starting pre_MTMC.py"
-python pre_MTMC.py --OF False
+python pre_MTMC.py
 
 echo "Starting mtmc/run_express_mtmc.py s01"
 python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml

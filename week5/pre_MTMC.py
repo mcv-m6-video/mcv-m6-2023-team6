@@ -71,8 +71,9 @@ if __name__ == '__main__':
                 cam = pkl.load(open(f'{path}/input/{seq}/{c}','rb'))
 
                 tracklets_sort = defaultdict(list)
+                
 
-                for frame_num,data in tqdm(cam.items()[:3]):
+                for frame_num,data in tqdm(cam.items()):
                     frame = cv2.imread(f"/export/home/group03/dataset/aic19-track1-mtmc-train/train/{seq}/{c_name}/frames/{frame_num}.jpg")
                     for det in data:
                         id = int(det[-1])
