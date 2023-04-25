@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH -n 4 # Number of cores
-#SBATCH --mem 1000 # 2GB solicitados.
+#SBATCH -n 10 # Number of cores
+#SBATCH --mem 60GB # 2GB solicitados.
 #SBATCH -p mhigh,mhigh # or mlow Partition to submit to master low prioriy queue
 #SBATCH --gres gpu:1 # Para pedir Pascales MAX 8
 #SBATCH -o %x_%u_%j.out # File to which STDOUT will be written
@@ -8,7 +8,17 @@
 eval "$(conda shell.bash hook)"
 conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job 
-python inference_yolov8.py
+python pre_MTMC.py --OF False
+python pre_MTMC.py --OF True 
+python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml
+python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml
+python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml
 
+python mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou.yaml
+python mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou.yaml
+python mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou.yaml
 
+python mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou_OF.yaml
+python mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou_OF.yaml
+python mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml
 

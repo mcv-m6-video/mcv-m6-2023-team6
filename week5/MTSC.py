@@ -56,6 +56,9 @@ if __name__ == '__main__':
 
             with open(f'{output_path}/{c}.pkl','wb') as h:
                 pkl.dump(tracking_boxes,h,protocol=pkl.HIGHEST_PROTOCOL)
+                
+            break
+        break
 
             
 

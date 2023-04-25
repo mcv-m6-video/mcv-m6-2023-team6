@@ -4,8 +4,8 @@ import numpy as np
 from tqdm import tqdm
 from PIL import Image
 
+# from utils.RAFT import flow_raft
 from utils.RAFT import flow_raft
-# from utils.maskflow import maskflownet
 
 
 # INTERSECTION OVER UNION

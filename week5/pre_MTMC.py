@@ -50,7 +50,6 @@ if __name__ == '__main__':
                             model=reid_model)
 
     ################ COMPUTE THE FEATURES IF THEY DO NOT EXIST #################
-    # if not os.path.exists(f'{path}/features'):
     
     for seq in os.listdir(f'{path}/input'):
         # EXTRACTION OF FEATURES FOR EACH TRACKLET
@@ -93,9 +92,6 @@ if __name__ == '__main__':
                 with open(f'{output_path_features}/features_{c}','wb') as h:
                     pkl.dump(tracklets_sort,h,protocol = pkl.HIGHEST_PROTOCOL)
                     
-                break
-
-        break
     
 
     # TRACKLETS TO TRACKS
