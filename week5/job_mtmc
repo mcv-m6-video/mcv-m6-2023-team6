@@ -12,5 +12,5 @@ cd /ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc
 export PYTHONPATH=$(pwd)
 python mtmc/run_express_mtmc.py --config AI_city/express_s04.yaml
 
-# if pkl are available: python mtmc/run_mtmc.py --config AI_city/express_s01.yaml
+# if pkl are available: python mtmc/run_mtmc.py --config AI_city/mtmc_s01.yaml
 # to run the whole mtmc pipeline: python mtmc/run_express_mtmc.py --config AI_city/express_s01.yaml

@@ -27,7 +27,9 @@ reid_model.eval()
 extractor = create_extractor(FeatureExtractor, batch_size=1,
                             model=reid_model)
 
-for c in os.listdir(path):
+
+# EXTRACTION OF FEATURES FOR EACH TRACKLET
+"""for c in os.listdir(path):
     
     if c.endswith('.pkl'):
         
@@ -56,36 +58,51 @@ for c in os.listdir(path):
                 tracklets_sort[id].append({'frame':frame_num,'bbox':np.array(box_tlwh),'conf':det[-2],'features':features}) 
                 
             #if frame_num == len()
+
+        with open(f'/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/features_{c}','wb') as h:
+            pkl.dump(tracklets_sort,h,protocol=pkl.HIGHEST_PROTOCOL) """
+
+
+
+# TRACKLETS TO TRACKS
+for c in os.listdir(path):
+        tracklets = []
+
+        if c.endswith('.pkl'):
         
-        #tracklets_sort = pkl.load(open('/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/tracks_2_tracklets.pkl','rb'))
-        for id in tracklets_sort.keys():
+            c_name = c.split('.pkl')[0]
+        
+            tracklets_sort = pkl.load(open(f'/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/features_{c}','rb'))
+            for id in tracklets_sort.keys():
 
-            frames = [track['frame'] for track in tracklets_sort[id]]
-            confs = [track['conf'] for track in tracklets_sort[id]]
-            bboxes = [track['bbox'] for track in tracklets_sort[id]]
-            features = [track['features'] for track in tracklets_sort[id]]
+                frames = [track['frame'] for track in tracklets_sort[id]]
+                confs = [track['conf'] for track in tracklets_sort[id]]
+                bboxes = [track['bbox'] for track in tracklets_sort[id]]
+                features = [np.array(track['features'].squeeze(0)) for track in tracklets_sort[id]]
 
-            ### COMPUTE MEAN FEATURES 
-            """ # compute mean features for tracks and delete frame-by-frame re-id features
-                for track in final_tracks:
-                    track.compute_mean_feature()
-                    track.features = [] """
-            
+                ### COMPUTE MEAN FEATURES 
+                """ # compute mean features for tracks and delete frame-by-frame re-id features
+                    for track in final_tracks:
+                        track.compute_mean_feature()
+                        track.features = [] """
                 
-            tracklet = Tracklet(id)
-            tracklet.frames = frames
-            tracklet.conf = confs
-            tracklet.bboxes = bboxes
-            tracklet.features = features
-            tracklet.compute_mean_feature()
-            #tracklet.predict_final_static_attributes()
-            #tracklet.finalize_speed()
-            tracklets.append(tracklet)
+                    
+                tracklet = Tracklet(id)
+                tracklet.frames = frames
+                tracklet.conf = confs
+                tracklet.bboxes = bboxes
+                tracklet.features = features
+                tracklet.compute_mean_feature()
+
+                
+                #tracklet.predict_final_static_attributes()
+                #tracklet.finalize_speed()
+                tracklets.append(tracklet)
 
 
 
-        with open(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/mot_max_iou/S01/mot_{c}','wb') as h:
-            pkl.dump(tracklets,h,protocol=pkl.HIGHEST_PROTOCOL) 
+            with open(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/mot_max_iou/S01/mot_{c}','wb') as h:
+                pkl.dump(tracklets,h,protocol=pkl.HIGHEST_PROTOCOL) 
 
 
 

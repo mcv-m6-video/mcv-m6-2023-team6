@@ -70,6 +70,63 @@ def run_mtmc(cfg: CN):
     return multicam_tracks
 
 
+def run_mtmc():
+    args = parse_args(
+        "Run MTMC matching with MOT results already available on all cameras.")
+    cfg = get_cfg_defaults()
+    if args.config:
+        cfg.merge_from_file(os.path.join(cfg.SYSTEM.CFG_DIR, args.config))
+    cfg = expand_relative_paths(cfg)
+    cfg.freeze()
+
+    # initialize output directory and logging
+    if not global_checks["OUTPUT_DIR"](cfg.OUTPUT_DIR):
+        log.error(
+            "Invalid param value in: OUTPUT_DIR. Provide an absolute path to a directory, whose parent exists.")
+        sys.exit(2)
+    if not os.path.exists(cfg.OUTPUT_DIR):
+        os.makedirs(cfg.OUTPUT_DIR)
+
+    log_path = os.path.join(cfg.OUTPUT_DIR, args.log_filename)
+    log.log_init(log_path, args.log_level, not args.no_log_stdout)
+
+    mtracks = run_mtmc(cfg)
+
+    log.info("Saving per camera results ...")
+    
+    # save per camera results
+    pkl_paths = []
+    for i, pkl_path in enumerate(cfg.MTMC.PICKLED_TRACKLETS):
+        mtmc_pkl_path = os.path.join(cfg.OUTPUT_DIR, f"{i}_{os.path.split(pkl_path)[1]}")
+        pkl_paths.append(mtmc_pkl_path)
+    csv_paths = [pth.split(".")[0] + ".csv" for pth in pkl_paths]
+    txt_paths = [pth.split(".")[0] + ".txt" for pth in pkl_paths]
+    save_tracklets_per_cam(mtracks, pkl_paths)
+    save_tracklets_csv_per_cam(mtracks, csv_paths)
+    save_tracklets_txt_per_cam(mtracks, txt_paths)
+
+    log.info("Results saved.")
+
+    if len(cfg.EVAL.GROUND_TRUTHS) == 0:
+        sys.exit(0)
+        
+    log.info("Ground truth annotations are provided, trying to evaluate MTMC ...")
+
+    if len(cfg.EVAL.GROUND_TRUTHS) != len(cfg.MTMC.PICKLED_TRACKLETS):
+        log.error("Number of ground truth files != number of cameras, aborting ...")
+        sys.exit(1)
+
+    cfg.defrost()
+    cfg.EVAL.PREDICTIONS = txt_paths
+    cfg.freeze()
+    eval_res = run_evaluation(cfg)
+    if eval_res:
+        log.info("Evaluation successful.")
+    else:
+        log.error("Evaluation unsuccessful: probably EVAL config had some errors.")
+        
+        
+
 if __name__ == "__main__":
     args = parse_args(
         "Run MTMC matching with MOT results already available on all cameras.")

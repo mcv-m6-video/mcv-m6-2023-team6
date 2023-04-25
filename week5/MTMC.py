@@ -1,181 +1,112 @@
-import argparse
-import os
-import cv2
+import sys
+
+# Insert path to the root of the repository
+sys.path.insert(0, '/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc')
+
 import pickle as pkl
-import itertools
 from collections import defaultdict
 import numpy as np
+from mot.tracklet import Tracklet
+from mtmc.run_mtmc import run_mtmc
+import os
+from reid.vehicle_reid.load_model import load_model_from_opts
+import torch
+from reid.feature_extractor import FeatureExtractor
+from tools.preprocessing import create_extractor
+import cv2
 from tqdm import tqdm
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import normalize
-import torchvision
-from torch import nn
 
-class EmbeddingNetImage(nn.Module):
-    def __init__(self, weights, dim_out_fc, network_image = 'RESNET'):   # dim_out_fc = 'as_image' or 'as_text'
-        super(EmbeddingNetImage, self).__init__()
-        
-        self.network_image = network_image
-        
-        if network_image == 'RESNET50':
-            self.model = torchvision.models.resnet50(pretrained=True)
-            in_features = self.model.fc.in_features
-            self.model.fc = nn.Identity()
-            
-        elif network_image == 'RESNET101':
-            self.model = torchvision.models.resnet101(pretrained=True)
-            in_features = self.model.fc.in_features
-            self.model.fc = nn.Identity()
-        
-        # self.fc = nn.Linear(in_features, dim_out_fc)
-    def forward(self, x):
-        output = self.model(x)   # 2048
-        return output
-   
 
-dataset_path = "/export/home/group03/dataset/aic19-track1-mtmc-train/train"
-tracking_path = "/export/home/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC"
-results_path = "/export/home/group03/mcv-m6-2023-team6/week5/Results/trackings/MTMC"
 
-seq = "S01"
 
-def crop_from_detection(box,frame):
-    image = cv2.cvtColor(cv2.imread(frame),cv2.COLOR_BGR2HSV)
-    cropped = image[box[1]:box[3], box[0]:box[2]]
-    return cropped
+path = '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC/Max_IoU_Old/S01'
+device = torch.device('cuda')
 
-def compute_mr_histogram(img, splits=(1, 1), bins=256,sqrt=False):
-    num_splits_x, num_splits_y = splits
-    small_img_height = img.shape[0] // num_splits_x
-    small_img_width = img.shape[1] // num_splits_y
+# initialize reid model
+reid_model = load_model_from_opts('/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/vehicle_models/resnet50_mixstyle/opts.yaml',
+                                    ckpt='/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/vehicle_models/resnet50_mixstyle/net_19.pth',
+                                    remove_classifier=True)
 
-    histograms = []
 
-    hist = np.array([
-                    np.histogram(
-                        img[..., channel],
-                        bins=bins,
-                        density=True
-                    )[0] for channel in range(img.shape[2])
-                ])
-    histograms.append(hist.ravel())
+reid_model.to(device)
+reid_model.eval()
+extractor = create_extractor(FeatureExtractor, batch_size=1,
+                            model=reid_model)
+
+
+# EXTRACTION OF FEATURES FOR EACH TRACKLET
+for c in os.listdir(path):
     
-    for i in range(num_splits_x):
-        for j in range(num_splits_y):
-            small_img = img[i * small_img_height : (i + 1) * small_img_height,
-                            j * small_img_width : (j + 1) * small_img_width]
-
-            if len(small_img.shape) == 3:
-                small_hist = np.array([
-                    np.histogram(
-                        small_img[..., channel],
-                        bins=bins,
-                        density=True
-                    )[0] for channel in range(small_img.shape[2])
-                ])
-                histograms.append(small_hist.ravel())
-            else:
-                raise ValueError("Image should have more than one channel")
-            
-            
-
-
-    histograms = [np.sqrt(hist) if sqrt else hist for hist in histograms]
-    return np.concatenate(histograms, axis=0)
-
-def create_embeddings():
-    mean_histogram_tracks = defaultdict(list)
-    sequence_path = os.path.join(dataset_path,seq)
-
-    for c in os.listdir(sequence_path):
-        print(c)
-
-        frames_path = os.path.join(sequence_path,c,'frames')
-        cap = cv2.VideoCapture(os.path.join(sequence_path,c,'vdo.avi'))
-        fps = cap.get(cv2.CAP_PROP_FPS)
-
-        tracking_boxes = pkl.load(open(f'{tracking_path}/{c}.pkl','rb'))
-
-        tracking_boxes_sorted_id = defaultdict(list)
+    if c.endswith('.pkl'):
         
-        method = 'histogram'
-        if method == 'resnet':
-            model = EmbeddingNetImage(weights=None, dim_out_fc=2048, network_image='RESNET101')
-            model.eval()
-            model.cuda()
-            model = nn.DataParallel(model)
-            model = model.module
+        c_name = c.split('.pkl')[0]
 
-        # MULTIPROCESSING JOHNNY TODO:
-        for frame,track in tqdm(tracking_boxes.items()):
-            for b in track:
-                id = int(b[-1])
-                bbox = b[1:-1]
-                box = [int(bbox[0]),int(bbox[1]),int(bbox[2]),int(bbox[3])]
+        print(c_name)
 
-                cropped = crop_from_detection(box,f'{frames_path}/{frame}.jpg')
-                resized = cv2.resize(cropped,[150,150])
+        tracklets = []
 
-                if method == 'histogram':
-                    histogram = compute_mr_histogram(resized,(2,2))
-                elif method == 'resnet':
-                    histogram 
+        cam = pkl.load(open(f'{path}/{c}','rb'))
 
-                tracking_boxes_sorted_id[id].append(histogram)
+        tracklets_sort = defaultdict(list)
+
+        for frame_num,data in tqdm(cam.items()):
+            frame = cv2.imread(f"/export/home/group03/dataset/aic19-track1-mtmc-train/train/S01/{c_name}/frames/{frame_num}.jpg")
+            for det in data:
+                id = int(det[-1])
+                w = det[3] - det[1]
+                h = det[4] - det[2]
+
+                box_tlwh = [det[1],det[2],w,h]
+
+                features = extractor(frame, [box_tlwh])
+                features = torch.tensor(features)
+
+                tracklets_sort[id].append({'frame':frame_num,'bbox':np.array(box_tlwh),'conf':det[-2],'features':features}) 
+                
+            #if frame_num == len()
+
+        with open(f'/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/features_{c}','wb') as h:
+            pkl.dump(tracklets_sort,h,protocol=pkl.HIGHEST_PROTOCOL)
+
+
+
+# TRACKLETS TO TRACKS
+for c in os.listdir(path):
+        tracklets = []
+
+        if c.endswith('.pkl'):
+        
+            c_name = c.split('.pkl')[0]
+        
+            tracklets_sort = pkl.load(open(f'/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/features_{c}','rb'))
+            for id in tracklets_sort.keys():
+
+                frames = [track['frame'] for track in tracklets_sort[id]]
+                confs = [track['conf'] for track in tracklets_sort[id]]
+                bboxes = [track['bbox'] for track in tracklets_sort[id]]
+                features = [np.array(track['features'].squeeze(0)) for track in tracklets_sort[id]]
+
+                ### COMPUTE MEAN FEATURES 
+                """ # compute mean features for tracks and delete frame-by-frame re-id features
+                    for track in final_tracks:
+                        track.compute_mean_feature()
+                        track.features = [] """
+                
+                    
+                tracklet = Tracklet(id)
+                tracklet.frames = frames
+                tracklet.conf = confs
+                tracklet.bboxes = bboxes
+                tracklet.features = features
+                tracklet.compute_mean_feature()
 
                 
-        for id,histograms in tracking_boxes_sorted_id.items():
-            # Mean of the histograms
-            # mean_histogram_tracks[c,id] = np.mean(histograms,axis=0)
-            # TODO: pick 5 random histograms
-            
-            mean_histogram_tracks[c,id] = np.mean(histograms,axis=0)
+                #tracklet.predict_final_static_attributes()
+                #tracklet.finalize_speed()
+                tracklets.append(tracklet)
 
 
 
-    with open(f'{results_path}/cameras_embeddings_S01.pkl','wb') as h:
-        pkl.dump(mean_histogram_tracks,h,protocol=pkl.HIGHEST_PROTOCOL)
+            with open(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/mot_max_iou/S01/mot_{c}','wb') as h:
+                pkl.dump(tracklets,h,protocol=pkl.HIGHEST_PROTOCOL) 
 
-
-
-#create_embeddings()
-
-cameras_dict = pkl.load(open(f'{results_path}/cameras_embeddings_S01.pkl','rb'))
-
-normalized = normalize(np.stack(cameras_dict.values()))
-# clustering = DBSCAN(eps=3,min_samples=2).fit(normalized)
-clustering = DBSCAN(eps=1,min_samples=1).fit(normalized)
-
-
-groups = defaultdict(list)
-for id, label in zip(cameras_dict.keys(), clustering.labels_):
-    groups[label].append(id)
-groups = list(groups.values())
-
-
-""" results = defaultdict(list)
-for global_id, group in enumerate(groups):
-    for cam, id in group:
-        track = tracks_by_cam[cam][id]
-        for det in track:
-            det.id = global_id
-        results[cam].append(track) """
-                
-
-        
-        
-
-    
-
-
-
-
-
-
-
-
-
-
-
-        
-        

@@ -18,7 +18,6 @@ else:
 
 
 sequences = ["S01","S04","S03"]
-# sequences = ["S03"]
 
 for s in sequences:
     sequence_path = os.path.join(dataset_path,s)
@@ -33,12 +32,11 @@ for s in sequences:
             tracking_boxes = max_iou_tracking_OF.max_iou_tracking_withoutParked(det_boxes,frames_path,fps)
         else:
             tracking_boxes = max_iou_tracking.max_iou_tracking_withoutParked(det_boxes,frames_path,fps)
+            
 
         with open(f'{results_path}/{c}.pkl','wb') as h:
             pkl.dump(tracking_boxes,h,protocol=pkl.HIGHEST_PROTOCOL)
 
-        #open pkl file
-        
         
 
 util.convert_pkl_to_txt(results_path,results_path)
