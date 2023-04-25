@@ -5,7 +5,7 @@ from tqdm import tqdm
 from PIL import Image
 
 # from utils.RAFT import flow_raft
-from utils.RAFT import flow_raft
+from utils.maskflow import maskflownet
 
 
 # INTERSECTION OVER UNION
@@ -109,7 +109,7 @@ def max_iou_tracking(det_boxes,frames_path,fps, iou_threshold=0.5):
             current_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id}.jpg')))
             previous_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id - 1}.jpg')))
 
-            flow = flow_raft(previous_frame, current_frame, colType=1)
+            flow = maskflownet(previous_frame, current_frame, colType=1)
 
             for data in previous_tracked_objects.items():
                 id, boxB = data
@@ -241,7 +241,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
             current_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id}.jpg')))
             previous_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id - 1}.jpg')))
 
-            flow = flow_raft(previous_frame, current_frame, colType=1)[0]
+            flow = maskflownet(previous_frame, current_frame, colType=1)[0]
 
             for data in previous_tracked_objects.items():
                 id, boxB = data

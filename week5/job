@@ -8,16 +8,27 @@
 eval "$(conda shell.bash hook)"
 conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job 
+
+echo "Starting pre_MTMC.py"
 python pre_MTMC.py --OF False
-python pre_MTMC.py --OF True 
+
+echo "Starting mtmc/run_express_mtmc.py s01"
 python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml
+
+echo "Starting mtmc/run_express_mtmc.py s03"
 python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml
+
+echo "Starting mtmc/run_express_mtmc.py s03"
 python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml
 
-python mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou.yaml
-python mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou.yaml
-python mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou.yaml
 
+echo "Starting MTSC.py for OF"
+conda activate m6_clone
+python MTSC.py --OF True
+python pre_MTMC.py --OF True 
+
+echo "Starting mtmc/run_express_mtmc.py s01"
+conda activate m6
 python mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou_OF.yaml
 python mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou_OF.yaml
 python mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml
