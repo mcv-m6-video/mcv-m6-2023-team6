@@ -39,7 +39,7 @@ python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s0
 
 echo "Starting MTSC.py for OF"
 conda activate m6_clone
-python MTSC.py
+python MTSC.py --OF 0
 python pre_MTMC.py --OF 1 
 
 echo "Starting mtmc/run_express_mtmc.py s01"

@@ -29,19 +29,19 @@ python TrackEval.py --seq S01 --endToEnd True --csv_name mtsc_byTrack_s01.csv --
 
 echo "Starting TrackEval for MTMC"
 echo "MAX IOU S01"
-python TrackEval.py --seq S01 --endToEnd True --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s01_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --MTMC True --evaluated False 
+python TrackEval.py --seq S01 --endToEnd False --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s01_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --MTMC True --evaluated False 
 python /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/scripts/run_mot_challenge.py --DO_PREPROC False --METRICS HOTA Identity
-python TrackEval.py --seq S01 --endToEnd True --csv_name mtsc_MaxIoU_s01.csv --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s01_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --evaluated True
+python TrackEval.py --seq S01 --endToEnd False --csv_name mtsc_MaxIoU_s01.csv --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s01_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --evaluated True
 
 #echo "MAX IOU S03"
-#python TrackEval.py --seq S03 --endToEnd True --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S03/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --MTMC True --evaluated False 
+#python TrackEval.py --seq S03 --endToEnd False --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S03/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --MTMC True --evaluated False 
 #python /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S03/scripts/run_mot_challenge.py --DO_PREPROC False --METRICS HOTA Identity
-#python TrackEval.py --seq S03 --endToEnd True --csv_name mtsc_MaxIoU_s03.csv --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S03/data/trackers/mot_challenge/MOT17-train/MPNTrack/  --evaluated True
+#python TrackEval.py --seq S03 --endToEnd False --csv_name mtsc_MaxIoU_s03.csv --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S03/data/trackers/mot_challenge/MOT17-train/MPNTrack/  --evaluated True
 
 #echo "MAX IOU S04"
-#python TrackEval.py --seq S04 --endToEnd True --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s04_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S04/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --MTMC True --evaluated False 
+#python TrackEval.py --seq S04 --endToEnd False --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s04_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S04/data/trackers/mot_challenge/MOT17-train/MPNTrack/ --MTMC True --evaluated False 
 #python /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S04/scripts/run_mot_challenge.py --DO_PREPROC False --METRICS HOTA Identity
-#python TrackEval.py --seq S04 --endToEnd True --csv_name mtsc_MaxIoU_s04.csv --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S04/data/trackers/mot_challenge/MOT17-train/MPNTrack/  --evaluated True
+#python TrackEval.py --seq S04 --endToEnd False --csv_name mtsc_MaxIoU_s04.csv --input /ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou/ --output /ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S04/data/trackers/mot_challenge/MOT17-train/MPNTrack/  --evaluated True
 
 
 

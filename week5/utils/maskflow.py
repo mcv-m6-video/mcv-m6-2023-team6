@@ -141,7 +141,7 @@ def maskflownet(image1, image2, colType=None, flow_filepath=None, video_filepath
     parser.add_argument('--resize', type=str, default='', help='shape to resize image frames before inference')
     parser.add_argument('--threads', type=str, default=8,
                         help='Number of threads to use when writing flow video to file')
-    parser.add_argument("--OF", type=int)
+    parser.add_argument("--OF", type=int, default=0, help='1 for optical flow, 0 for warped image')
     parser.add_argument("--output_path", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC')
     parser.add_argument("--detections_path", type=str, default = '/export/home/group03/mcv-m6-2023-team6/week5/Results/detections')
     parser.add_argument("--dataset_path", type=str, default = '/export/home/group03/dataset/aic19-track1-mtmc-train/train')
