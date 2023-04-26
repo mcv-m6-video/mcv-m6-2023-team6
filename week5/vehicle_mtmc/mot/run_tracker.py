@@ -79,6 +79,59 @@ def box_change_skewed(box, prev_box, skew_ratio=0.1, eps=1e-5):
     ud = max(up_diff, 1) / max(down_diff, 1)
     return min(lr, ud) <= skew_ratio or max(lr, ud) >= 1 / skew_ratio
 
+def iou_func(box1_in, box2_in, threshold=0.9):
+    # Input boxes are in the format [x1, y1, w, h]
+    # Convert to [x1, y1, x2, y2]
+    box1 = [box1_in[0], box1_in[1], box1_in[0] + box1_in[2], box1_in[1] + box1_in[3]]
+    box2 = [box2_in[0], box2_in[1], box2_in[0] + box2_in[2], box2_in[1] + box2_in[3]]
+    
+    if len(box1) > 4:
+        box1 = box1[:4]
+    """Return iou for a single a pair of boxes"""
+    x11, y11, x12, y12 = box1
+    x21, y21, x22, y22 = box2
+
+    xA = max(x11, x21)
+    yA = max(y11, y21)
+    xB = min(x12, x22)
+    yB = min(y12, y22)
+
+    if xB < xA or yB < yA:
+        interArea = 0
+    else:
+        interArea = max(xB - xA, 0) * max(yB - yA, 0)
+
+    # respective area of ??the two boxes
+    box1Area = (x12 - x11) * (y12 - y11)
+    box2Area = (x22 - x21) * (y22 - y21)
+
+    # IOU
+    iou_score = interArea / (box1Area + box2Area - interArea)
+
+    return iou_score, iou_score >= threshold
+
+
+def filter_parked_cars(track_boxes):
+    mean_iou = {}
+    for tracklet in track_boxes:
+        boxes = tracklet.bboxes
+        if len(boxes) == 1:
+            mean_iou[tracklet.track_id] = 0
+            continue
+        iou_score, _ = iou_func(boxes[0], boxes[-1])
+        mean_iou[tracklet.track_id] = iou_score
+        
+    new_track_boxes = []
+    # remove the tracked objects with mean iou > 0.85
+    for track_id, iou_score in mean_iou.items():
+        if iou_score > 0.85:
+            continue
+        # Find the tracklet with track_id=track_id
+        
+        new_track_boxes.append([track_box for track_box in track_boxes if track_box.track_id == track_id][0])
+    
+    return new_track_boxes
+
 
 def run_mot(cfg: CfgNode):
     """Run Multi-object tracking, defined by a config."""
@@ -216,6 +269,7 @@ def run_mot(cfg: CfgNode):
     fps_counter = FrameRateCounter()
     benchmark = Benchmark()
     timer = Timer()
+    
 
     for frame_num, frame in enumerate(video_in):
         if cfg.DEBUG_RUN and frame_num >= 100:
@@ -328,6 +382,7 @@ def run_mot(cfg: CfgNode):
         fps_counter.step()
         print("\rFrame: {}/{}, fps: {:.3f}".format(
             frame_num, video_frames, fps_counter.value()), end="")
+        
 
     time_taken = f"{int(timer.elapsed() / 60)} min {int(timer.elapsed() % 60)} sec"
     avg_fps = video_frames / timer.elapsed()
@@ -349,6 +404,9 @@ def run_mot(cfg: CfgNode):
     final_tracks = list(tracker.tracks.values())
     final_tracks = list(filter(lambda track: len(
         track.frames) >= cfg.MOT.MIN_FRAMES, final_tracks))
+    
+    # filter out tracklets that are always in the same position (parked cars etc.)
+    final_tracks = filter_parked_cars(final_tracks)
 
     # finalize static attributes and speed
     for track in final_tracks:

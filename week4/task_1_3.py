@@ -6,6 +6,10 @@ from tqdm import tqdm
 from task_1_2 import *
 from utils.util import load_from_txt, discard_overlaps, filter_boxes, iou
 
+from utils.max_iou_tracking import max_iou_tracking_withParked
+
+
+
 estimate_flow = {
     'LK': flow_LK,
     'maskflownet': maskflownet,
@@ -183,7 +187,8 @@ if __name__ == '__main__':
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    methods = ['LK', 'maskflownet', 'RAFT', 'liteflownet']
+    # methods = ['LK', 'maskflownet', 'RAFT', 'liteflownet']
+    method = ['iou']
 
     # perform grid using the multiple combinations of the parameters using product show progress in tqdm
     for method in methods:
