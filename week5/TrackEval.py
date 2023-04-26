@@ -7,32 +7,27 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="evaluate the tracking")
     parser.add_argument("--seq", type=str)
-    parser.add_argument("--endToEnd", type=str, default = "False")
+    parser.add_argument("--endToEnd", type=bool, default = False)
     parser.add_argument("--csv_name", type=str, default = "mtmc.csv")
     parser.add_argument("--input", type=str)
     parser.add_argument("--output", type=str)
-    parser.add_argument("--evaluated", type=str, default = "False")
-    parser.add_argument("--MTMC", type=str, default = "False")
+    parser.add_argument("--evaluated", type=bool, default = False)
+    parser.add_argument("--MTMC", type=bool, default = False)
     parser.add_argument("--evalOutput", type=str, default = "/ghome/group03/mcv-m6-2023-team6/week5/Results/TrackEvalResults")
     args = parser.parse_args()
 
    
     cams = {"S01":['c001', 'c002', 'c003', 'c004', 'c005'], "S03": ['c010', 'c011', 'c012', 'c013', 'c014', 'c015'], "S04": ['c016', 'c017', 'c018', 'c019', 'c020','c021', 'c022', 'c023', 'c024', 'c025', 'c026', 'c027', 'c028', 'c029', 'c030', 'c031', 'c032',  'c033', 'c034', 'c035','c036',  'c037', 'c038', 'c039','c040']}
 
-
-    use_end2end = bool(args.endToEnd)
-    eval = bool(args.evaluated)
-    multicam = bool(args.MTMC)
-
-    if not eval:
+    if not args.evaluated:
         print("Evaluating the tracking")
-        if use_end2end:
+        if args.endToEnd:
             print("Using EndToEnd")
             for folder in os.listdir(args.input):
                 if os.path.isdir(os.path.join(args.input, folder)):
                     #copy the file named mtmc.txt to another txt file named the cam name for the seq 
                     os.remove(os.path.join(args.output + "data/", cams[args.seq][int(folder.split("_")[0])] + ".txt"))
-                    if multicam:
+                    if args.MTMC:
                         os.system("cp " + os.path.join(args.input, folder, "mtmc.txt") + " " + os.path.join(args.output + "data/", cams[args.seq][int(folder.split("_")[0])] + ".txt"))
                     else:
                         os.system("cp " + os.path.join(args.input, folder, "mot.txt") + " " + os.path.join(args.output + "data/", cams[args.seq][int(folder.split("_")[0])] + ".txt"))
@@ -43,7 +38,7 @@ if __name__ == '__main__':
                 if file.endswith(".txt"):
                     #copy the file named mtmc.txt to another txt file named the cam name for the seq 
                     # delete the file output txt file before, if it already exists
-                    if multicam:
+                    if args.MTMC:
                         os.remove(os.path.join(args.output + "data/", cams[args.seq][int(file.split("_")[0])] + ".txt"))
                         os.system("cp " + os.path.join(args.input, file) + " " + os.path.join(args.output + "data/", cams[args.seq][int(file.split("_")[0])] + ".txt"))
 

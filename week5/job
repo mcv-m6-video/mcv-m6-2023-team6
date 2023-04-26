@@ -14,16 +14,16 @@ conda activate m6
 
 # python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou.yaml  # DONE
 # python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou.yaml  # DONE
-python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou.yaml    # HA PETAT LINIA 81 ERROR    [2023-04-25 23:51:15,597]: Evaluation unsuccessful: probably EVAL config had some errors.
+# python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou.yaml    # HA PETAT LINIA 81 ERROR    [2023-04-25 23:51:15,597]: Evaluation unsuccessful: probably EVAL config had some errors.
 
 # echo "Starting mtmc/run_express_mtmc.py s01"
 # python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml # DONE
 
-echo "Starting mtmc/run_express_mtmc.py s03"
-python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml # Era un error de yaml, en teoria ha de funcionar
+# echo "Starting mtmc/run_express_mtmc.py s03"
+#python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml # Era un error de yaml, en teoria ha de funcionar
 
-echo "Starting mtmc/run_express_mtmc.py s03"
-python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml  # Era un error de yaml, en teoria ha de funcionar
+# echo "Starting mtmc/run_express_mtmc.py s03"
+#python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml  # Era un error de yaml, en teoria ha de funcionar
 
 #echo "Starting mtmc/run_express_mtmc.py s01"
 #python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s01.yaml
@@ -39,7 +39,7 @@ python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s0
 
 echo "Starting MTSC.py for OF"
 conda activate m6_clone
-python MTSC.py --OF 0
+python MTSC.py --OF 1
 python pre_MTMC.py --OF 1 
 
 echo "Starting mtmc/run_express_mtmc.py s01"
