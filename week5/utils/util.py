@@ -2,6 +2,7 @@ import itertools
 import pandas as pd
 import os
 import pickle
+from collections import defaultdict
 
 def load_from_txt(path):
     """
@@ -19,7 +20,7 @@ def load_from_txt(path):
         detections.append(
             [
                 frame,
-                0,
+                float(ll[1]),
                 float(ll[2]),
                 float(ll[3]),
                 float(ll[2]) + float(ll[4]),
@@ -40,6 +41,31 @@ def load_from_txt(path):
 
     return final_dict
 
+
+def load_from_txt_video(path):
+    """
+    :param path: path file
+
+    :return: dict[frame] = [[t_id,x1, y1, x2, y2]]
+    """
+    detections = defaultdict(list)
+    with open(path) as f:
+        lines = f.readlines()
+
+    for l in lines:
+        ll = l.split(",")
+        frame = int(ll[0]) 
+        detections[frame].append(
+            [
+                float(ll[1]),
+                float(ll[2]),
+                float(ll[3]),
+                float(ll[2]) + float(ll[4]),
+                float(ll[3]) + float(ll[5]),
+            ]
+        )
+
+    return detections
 
 
 def load_pkl_file(file_path):
@@ -73,6 +99,3 @@ def convert_pkl_to_txt(pkl_folder, txt_folder):
                 f.write(f'{frame},{det[-1]},{det[1]},{det[2]},{w},{h},{det[-2]},-1,-1,-1 \n')
 
         f.close()
-
-
-

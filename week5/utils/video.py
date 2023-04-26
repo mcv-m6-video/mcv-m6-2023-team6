@@ -1,38 +1,54 @@
 import os
-import pickle
-
+from util import load_from_txt_video
+import argparse
 import cv2
 import numpy as np
 from skimage import io
 from tqdm import tqdm
 
+colors =  {1:(255,0,0),2:(0,255,0),3:(0,0,255),4:(255, 255, 0),5: (128, 0, 128),6:(0, 255, 255),7:(255, 0, 255),8:(255, 165, 0),9:(255, 20, 147),10:(165, 42, 42),11:(0, 128, 128),12:(75, 0, 130),
+            13:(238, 130, 238),14:(128, 128, 0),15:(128, 0, 0),16:(255, 215, 0),17:(192, 192, 192),18:(0, 0, 128),19:(0, 255, 255),20:(255, 127, 80),21:(0, 255, 0),22:(255, 0, 255),23:(64, 224, 208),24:(245, 245, 220),25: (221, 160, 221)} 
 
-def video(det_boxes, fps, seq, camera,output_path):
+colors = np.random.uniform(0, 255, size=(25, 3))
+
+def video(args,fps=10.0):
+    if args.cam == 'c015':
+        fps = 8.0
+        
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter(f"{output_path}/{seq}_{camera}.mp4", fourcc, fps, (1920, 1080))
-    tracker_colors = {}
+    video_out = cv2.VideoWriter(f"/ghome/group03/mcv-m6-2023-team6/week5/Results/{args.output}/{args.seq}_{args.cam}.mp4", fourcc, fps, (1920, 1080))
+
+    tracks = load_from_txt_video(args.tracking)
+    tracks_ids = [det[0][0] for det in tracks.values()]
 
     #get the frames in order
-
-    frames = os.listdir(f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{seq}/{camera}/frames')
+    frames = os.listdir(f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{args.seq}/{args.cam}/frames')
     frames = sorted(frames, key=lambda x: int(x.split('.')[0]))
     
     # current path file
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    for frame_id in tqdm(frames):
-        fn = f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{seq}/{camera}/frames/{frame_id}'
-        im = io.imread(fn)
-        im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
-        id = int(frame_id.split('.')[0])
-        if id in det_boxes.keys():
-            frame_boxes = det_boxes[id]
+    for frame in tqdm(frames):
+        frames_path = f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{args.seq}/{args.cam}/frames/{frame}'
+        im = io.imread(frames_path)
+        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+        id = int(frame.split('.')[0])
 
+        if args.from_repo:
+            id = id -1
+
+        c = 1
+        if id in tracks.keys():
+            frame_boxes = tracks[id]
             for box in frame_boxes:
-                track_id = box[-1]
-                if track_id not in tracker_colors:
-                    tracker_colors[track_id] = np.random.rand(3)
-                color = tracker_colors[track_id]
-                color = (int(color[0] * 255), int(color[1] * 255), int(color[2] * 255))
+                track_id = box[0]
+
+                if track_id not in colors:
+                    color = colors[c]
+                    c += 1
+
+                    if c == 24:
+                        c = 1
+                else:
+                    color = colors[track_id]
 
                 cv2.rectangle(im, (int(box[1]), int(box[2])), (int(box[3]), int(box[4])), color, 2)
                 cv2.putText(im, str(track_id), (int(box[1]), int(box[2])), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2,
@@ -43,20 +59,20 @@ def video(det_boxes, fps, seq, camera,output_path):
 
 
 
-"""cameras = ['c010','c011','c012','c013', 'c014', 'c015']
-output_path = '/ghome/group03/mcv-m6-2023-team6/week5/Results/videos'
-for camera in cameras:
-    fps = 10
-    detections = pickle.load(open(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/{camera}.pkl', 'rb'))
-    seq = 'S03'
-    
-    video(detections, fps,seq,camera, output_path)"""
 
-cameras = ['c001']
-output_path = '/ghome/group03/mcv-m6-2023-team6/week5/Results/videos'
-for camera in cameras:
-    fps = 10
-    detections = pickle.load(open(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/{camera}.pkl', 'rb'))
-    seq = 'S01'
-    
-    video(detections, fps,seq,camera, output_path)
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Video generation')
+    parser.add_argument('--dataset_path', type=str, default='/export/home/group03/dataset/aic19-track1-mtmc-train/train/', help='Dataset directory')
+    parser.add_argument('--output', type=str, required=True, help='Folder to save results')
+    parser.add_argument('--seq', type=str, required=True, help='Sequence to use')
+    parser.add_argument('--cam', type=str, required=True, help='Camera within the sequence')
+    parser.add_argument('--tracking', type=str, required=True, help='Text files with tracking results')
+    parser.add_argument('--from_repo', type=str, required=False, default=None)
+
+    args = parser.parse_args()
+
+    """ if not os.path.exists(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/{args.output}'):
+        os.makedirs(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/{args.output}') """
+
+    video(args)

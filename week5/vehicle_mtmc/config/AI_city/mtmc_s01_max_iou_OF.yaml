@@ -10,7 +10,7 @@ MTMC:
   LINKAGE: 'mean_feature'
   MIN_SIM: 0.5
 EVAL:
-  MIN_IOU: 0.35
+  MIN_IOU: 0.5
   IGNORE_FP: true
   DROP_SINGLE_CAM: false
   GROUND_TRUTHS:

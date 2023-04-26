@@ -23,20 +23,18 @@ if __name__ == '__main__':
 
 
 
-    args.csv_name = "mtmc_MaxIoU_s01.csv"
+    """args.csv_name = "mtmc_MaxIoU_s01.csv"
     args.input = "/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s01_maxiou/"
-    args.output ="/ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/data/trackers/mot_challenge/MOT17-train/MPNTrack/ "
-    args.evaluated = 1
+    args.output ="/ghome/group03/mcv-m6-2023-team6/week5/TrackEval/S01/data/trackers/mot_challenge/MOT17-train/MPNTrack/"
+    args.evaluated = 0
     args.MTMC = 1
     args.endToEnd = 0
-    args.seq = "S01"
-
+    args.seq = "S01"""
 
 
     use_end2end = bool(args.endToEnd)
     eval = bool(args.evaluated)
     multicam = bool(args.MTMC)
-
     if not eval:
         print("Evaluating the tracking")
         if use_end2end:
@@ -57,7 +55,7 @@ if __name__ == '__main__':
         else:
             print("Not EndToEnd")
             for file in os.listdir(args.input):
-                if file.endswith(".txt"):
+                if file.endswith(".txt") and file.count("c0"):
                     #copy the file named mtmc.txt to another txt file named the cam name for the seq 
                     # delete the file output txt file before, if it already exists
                     if multicam:

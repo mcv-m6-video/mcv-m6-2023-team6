@@ -43,7 +43,7 @@ EXPRESS:
       "detection_mask": "/export/home/group03/dataset/aic19-track1-mtmc-train/train/S03/c015/roi.jpg"
       "calibration": "/export/home/group03/dataset/aic19-track1-mtmc-train/train/S03/c015/calibration.txt"
 EVAL:
-  MIN_IOU: 0.34
+  MIN_IOU: 0.5
   IGNORE_FP: true
   DROP_SINGLE_CAM: false
   GROUND_TRUTHS:

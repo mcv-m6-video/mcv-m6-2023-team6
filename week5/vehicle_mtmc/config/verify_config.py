@@ -29,7 +29,7 @@ common_mot_checks = {
     "REID_FP16": _is(bool),
     "REID_BATCHSIZE": lambda x: _is(int)(x) and x >= 1,
     "DETECTOR": lambda x: x.startswith("yolov5") or x.startswith("yolov8"),
-    "TRACKER": lambda x: x in ["deepsort", "bytetrack_iou"],
+    "TRACKER": lambda x: x in ["deepsort", "bytetrack_iou", "max_iou"],
     "SHOW": _is(bool),
     "ONLINE_VIDEO_OUTPUT": _is(bool),
     "VIDEO_OUTPUT": _is(bool),
