@@ -6,6 +6,22 @@ import numpy as np
 from skimage import io
 from tqdm import tqdm
 
+def load_motchallenge_format(file_path, frame_offset=1):
+    """Loads a MOTChallenge annotation txt, with frame_offset being the index of the first frame of the video"""
+    res = []
+    with open(file_path, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip().split(",")
+            line = [int(x) for x in line[:6]] + [float(x) for x in line[6:]]
+
+            # Subtract frame offset from frame indices. If indexing starts at one, we convert
+            # it to start from zero.
+            line[0] -= frame_offset
+            res.append(tuple(line))
+    return detection_list_to_dict(res)
+
+
 colors =  {1:(255,0,0),2:(0,255,0),3:(0,0,255),4:(255, 255, 0),5: (128, 0, 128),6:(0, 255, 255),7:(255, 0, 255),8:(255, 165, 0),9:(255, 20, 147),10:(165, 42, 42),11:(0, 128, 128),12:(75, 0, 130),
             13:(238, 130, 238),14:(128, 128, 0),15:(128, 0, 0),16:(255, 215, 0),17:(192, 192, 192),18:(0, 0, 128),19:(0, 255, 255),20:(255, 127, 80),21:(0, 255, 0),22:(255, 0, 255),23:(64, 224, 208),24:(245, 245, 220),25: (221, 160, 221)} 
 
@@ -22,10 +38,12 @@ def video(args,fps=10.0):
 
     tracks = load_from_txt_video(args.tracking)
     tracks_ids = [det[0][0] for det in tracks.values()]
-
+    
+    
     #get the frames in order
     frames = os.listdir(f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{args.seq}/{args.cam}/frames')
     frames = sorted(frames, key=lambda x: int(x.split('.')[0]))
+    tracks_offsets = load_motchallenge_format(frames, frame_offset=offsets[args.cam])
     
     # current path file
     for frame in tqdm(frames):
