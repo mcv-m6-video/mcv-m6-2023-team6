@@ -10,7 +10,6 @@ repoRoot = '/ghome/group03/mcv-m6-2023-team6/week5/MaskFlownet'
 # SET REPO PATH
 sys.path.append(repoRoot)
 
-import argparse
 import time
 import yaml
 import mxnet as mx
@@ -121,63 +120,138 @@ def predict_video_flow(video_filename, batch_size, pipe, resize=None):
     return flow_video, fps
 
 
-def maskflownet(image1, image2, colType=None, flow_filepath=None, video_filepath=None, cfg='MaskFlownet.yaml',
-                device='0', checkp='8caNov12'):  # 5adNov03 8caNov12
+class Config:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--flow_filepath', type=str, help='destination filepath of the flow image/video',
-                        default=flow_filepath)
-    parser.add_argument('config', type=str, nargs='?', default=cfg)
-    parser.add_argument('--image_1', type=str, help='filepath of the first image', default=image1)
-    parser.add_argument('--image_2', type=str, help='filepath of the second image', default=image2)
-    parser.add_argument('--video_filepath', type=str, help='filepath of the input video', default=video_filepath)
-    parser.add_argument('-g', '--gpu_device', type=str, default='0', help='Specify gpu device(s)')
-    parser.add_argument('-c', '--checkpoint', type=str, default=checkp,
-                        help='model checkpoint to load; by default, the latest one.'
-                             'You can use checkpoint:steps to load to a specific steps')
-    parser.add_argument('--clear_steps', action='store_true')
-    parser.add_argument('-n', '--network', type=str, default='MaskFlownet', help='The choice of network')
-    parser.add_argument('--batch', type=int, default=8, help='minibatch size of samples per device')
-    parser.add_argument('--resize', type=str, default='', help='shape to resize image frames before inference')
-    parser.add_argument('--threads', type=str, default=8,
-                        help='Number of threads to use when writing flow video to file')
-    parser.add_argument("--OF", type=int, default=0, help='1 for optical flow, 0 for warped image')
-    parser.add_argument("--output_path", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC')
-    parser.add_argument("--detections_path", type=str, default = '/export/home/group03/mcv-m6-2023-team6/week5/Results/detections')
-    parser.add_argument("--dataset_path", type=str, default = '/export/home/group03/dataset/aic19-track1-mtmc-train/train')
 
-    args = parser.parse_args()
+class MaskFlownet:
+    def __init__(self, colType=None, flow_filepath=None, video_filepath=None, cfg='MaskFlownet.yaml',
+                device='0', checkp='8caNov12'):
+    
+        args = Config(
+            flow_filepath= flow_filepath,
+            config= cfg,
+            video_filepath= video_filepath,
+            gpu_device= '0',
+            checkpoint= checkp,
+            clear_steps= False,
+            network= 'MaskFlownet',
+            batch= 8,
+            resize= '',
+            threads= 8,
+            OF= 0,
+            output_path= '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC',
+            detections_path= '/export/home/group03/mcv-m6-2023-team6/week5/Results/detections',
+            dataset_path= '/export/home/group03/dataset/aic19-track1-mtmc-train/train'
+        )
+        
+        # Get desired image resize from the string argument
+        infer_resize = [int(s) for s in args.resize.split(',')] if args.resize else None
 
-    # Get desired image resize from the string argument
-    infer_resize = [int(s) for s in args.resize.split(',')] if args.resize else None
+        checkpoint, steps = find_checkpoint(args)
+        config = load_model(args.config)
+        pipe = instantiate_model(args.gpu_device, config, args)
+        pipe = load_checkpoint(pipe, config, checkpoint)
 
-    checkpoint, steps = find_checkpoint(args)
-    config = load_model(args.config)
-    pipe = instantiate_model(args.gpu_device, config, args)
-    pipe = load_checkpoint(pipe, config, checkpoint)
+        # Get desired image resize from the string argument
+        infer_resize = [int(s) for s in args.resize.split(',')] if args.resize else None
 
-    if image1 is not None:
-        # image_1 = cv2.imread(args.image_1)
-        # image_2 = cv2.imread(args.image_2)
-        # Convert image1 from PIL to cv2 image
+        checkpoint, steps = find_checkpoint(args)
+        config = load_model(args.config)
+        self.pipe = instantiate_model(args.gpu_device, config, args)
+        self.pipe = load_checkpoint(self.pipe, config, checkpoint)
+
+    def step(self, image1, image2):
+    
         image1 = cv2.cvtColor(image1, cv2.COLOR_RGB2BGR)
         image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
         start = time.time()
-        flow, occ_mask, warped = predict_image_pair_flow(image1, image2, pipe)
+        flow, occ_mask, warped = predict_image_pair_flow(image1, image2, self.pipe)
         end = time.time()
-        if flow_filepath is not None:
-            cv2.imwrite(args.flow_filepath, flow_vis.flow_to_color(flow, convert_to_bgr=False))
+     
         return flow, end - start
-    else:
-        flow_video, fps = predict_video_flow(args.video_filepath, batch_size=args.batch, pipe=pipe)
-        flow_video_visualisations = [flow_vis.flow_to_color(flow, convert_to_bgr=False) for flow in flow_video]
-        flow_video_clip = create_video_clip_from_frames(flow_video_visualisations, fps)
-        flow_video_clip.write_videofile(args.flow_filepath, threads=args.threads, logger=None)  # export the video
 
 
-if __name__ == '__main__':
-    # Cut the video into desired frames
 
-    maskflownet(image1=None, image2=None,
-                flow_filepath='/ghome/group03/mcv-m6-2023-team6/week4/Results/Task1_2/maskflownet/flow_video.mp4',
-                video_filepath='/ghome/group03/dataset/vdo_tallat.mp4')
+# def maskflownet(image1, image2, colType=None, flow_filepath=None, video_filepath=None, cfg='MaskFlownet.yaml',
+#                 device='0', checkp='8caNov12'):  # 5adNov03 8caNov12
+
+#     # parser = argparse.ArgumentParser()
+#     # parser.add_argument('--flow_filepath', type=str, help='destination filepath of the flow image/video',
+#     #                     default=flow_filepath)
+#     # parser.add_argument('config', type=str, nargs='?', default=cfg)
+#     # parser.add_argument('--image_1', type=str, help='filepath of the first image', default=image1)
+#     # parser.add_argument('--image_2', type=str, help='filepath of the second image', default=image2)
+#     # parser.add_argument('--video_filepath', type=str, help='filepath of the input video', default=video_filepath)
+#     # parser.add_argument('-g', '--gpu_device', type=str, default='0', help='Specify gpu device(s)')
+#     # parser.add_argument('-c', '--checkpoint', type=str, default=checkp,
+#     #                     help='model checkpoint to load; by default, the latest one.'
+#     #                          'You can use checkpoint:steps to load to a specific steps')
+#     # parser.add_argument('--clear_steps', action='store_true')
+#     # parser.add_argument('-n', '--network', type=str, default='MaskFlownet', help='The choice of network')
+#     # parser.add_argument('--batch', type=int, default=8, help='minibatch size of samples per device')
+#     # parser.add_argument('--resize', type=str, default='', help='shape to resize image frames before inference')
+#     # parser.add_argument('--threads', type=str, default=8,
+#     #                     help='Number of threads to use when writing flow video to file')
+#     # parser.add_argument("--OF", type=int, default=0, help='1 for optical flow, 0 for warped image')
+#     # parser.add_argument("--output_path", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC')
+#     # parser.add_argument("--detections_path", type=str, default = '/export/home/group03/mcv-m6-2023-team6/week5/Results/detections')
+#     # parser.add_argument("--dataset_path", type=str, default = '/export/home/group03/dataset/aic19-track1-mtmc-train/train')
+
+#     # args = parser.parse_args()
+    
+#     args = Config(
+#         flow_filepath: flow_filepath,
+#         config: cfg,
+#         image_1: image1,
+#         image_2: image2,
+#         video_filepath: video_filepath,
+#         gpu_device: '0',
+#         checkpoint: checkp,
+#         clear_steps: False,
+#         network: 'MaskFlownet',
+#         batch: 8,
+#         resize: '',
+#         threads: 8,
+#         OF: 0,
+#         output_path: '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC',
+#         detections_path: '/export/home/group03/mcv-m6-2023-team6/week5/Results/detections',
+#         dataset_path: '/export/home/group03/dataset/aic19-track1-mtmc-train/train'
+#     )
+    
+    
+
+#     # Get desired image resize from the string argument
+#     infer_resize = [int(s) for s in args.resize.split(',')] if args.resize else None
+
+#     checkpoint, steps = find_checkpoint(args)
+#     config = load_model(args.config)
+#     pipe = instantiate_model(args.gpu_device, config, args)
+#     pipe = load_checkpoint(pipe, config, checkpoint)
+
+#     if image1 is not None:
+#         # image_1 = cv2.imread(args.image_1)
+#         # image_2 = cv2.imread(args.image_2)
+#         # Convert image1 from PIL to cv2 image
+#         image1 = cv2.cvtColor(image1, cv2.COLOR_RGB2BGR)
+#         image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
+#         start = time.time()
+#         flow, occ_mask, warped = predict_image_pair_flow(image1, image2, pipe)
+#         end = time.time()
+#         if flow_filepath is not None:
+#             cv2.imwrite(args.flow_filepath, flow_vis.flow_to_color(flow, convert_to_bgr=False))
+#         return flow, end - start
+#     else:
+#         flow_video, fps = predict_video_flow(args.video_filepath, batch_size=args.batch, pipe=pipe)
+#         flow_video_visualisations = [flow_vis.flow_to_color(flow, convert_to_bgr=False) for flow in flow_video]
+#         flow_video_clip = create_video_clip_from_frames(flow_video_visualisations, fps)
+#         flow_video_clip.write_videofile(args.flow_filepath, threads=args.threads, logger=None)  # export the video
+
+
+# if __name__ == '__main__':
+#     # Cut the video into desired frames
+
+#     maskflownet(image1=None, image2=None,
+#                 flow_filepath='/ghome/group03/mcv-m6-2023-team6/week4/Results/Task1_2/maskflownet/flow_video.mp4',
+#                 video_filepath='/ghome/group03/dataset/vdo_tallat.mp4')

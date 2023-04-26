@@ -5,7 +5,7 @@ from tqdm import tqdm
 from PIL import Image
 
 # from utils.RAFT import flow_raft
-from utils.maskflow import maskflownet
+from utils.maskflow import MaskFlownet
 
 
 # INTERSECTION OVER UNION
@@ -67,137 +67,6 @@ def track_memory(tracked_objects,threshold):
         del tracked_objects[idx]
 
 
-def max_iou_tracking(det_boxes,frames_path,fps, iou_threshold=0.5):
-
-    """ 
-    MTSC: computes the maximum overlap tracking algorithm for Multi-Target Single-camera
-
-    camera: camera being evaluated
-    det_boxes: detected boxes = load_from_txt(.txt)
-    iou_threshold: minimum overlap between tracked bounding boxes
-
-    Returns: det_boxes with tracking ID.
-    """
-    delta_t = 1 / fps
-    track_id = 0
-    tracked_objects = {}
-    memory = 5
-
-    # sequence = [seq for seq,cam in seqs.items() if camera in cam][0]
-
-
-    for frame_id in tqdm(det_boxes):
-
-        total_frames += 1
-        # REMOVE OVERLAPPING BOUNDING BOXES 
-        boxes = det_boxes[frame_id]
-        frame_boxes = discard_overlaps(boxes)
-
-        # FIRST FRAME, WE INITIALIZE THE OBJECTS ID
-        if not tracked_objects:
-            for j in range(len(frame_boxes)):
-                # We add the tracking object ID at the end of the list  [[frame,x1, y1, x2, y2, conf, track_id]]
-                frame_boxes[j].append(track_id)
-                tracked_objects[f'{track_id}'] = {
-                    'bbox': [frame_boxes[j][1], frame_boxes[j][2], frame_boxes[j][3], frame_boxes[j][4]],
-                    'frame': frame_id, 'memory': 0, 'iou': 0}
-                track_id += 1
-
-        else:
-
-            # FRAME N+1 WE COMPARE TO OBJECTS IN FRAME N
-            current_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id}.jpg')))
-            previous_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id - 1}.jpg')))
-
-            flow = maskflownet(previous_frame, current_frame, colType=1)
-
-            for data in previous_tracked_objects.items():
-                id, boxB = data
-                boxB = np.array(boxB['bbox'])
-
-                # Optical flow estimation for each object
-                flow_boxB = flow[int(boxB[1]):int(boxB[3]) + 1, int(boxB[0]):int(boxB[2]) + 1]
-                flow_boxB = np.mean(flow_boxB, axis=(0, 1))
-
-                displacement = delta_t * flow_boxB
-
-                # UPDATE step: we add to the previous object position the motion estimated (from optical flow estimation)
-                new_bbox_B = [boxB[0] + displacement[0],
-                              boxB[1] + displacement[1],
-                              boxB[2] + displacement[0],
-                              boxB[3] + displacement[1]]
-
-                previous_tracked_objects[id]['new_bbox'] = new_bbox_B
-
-            for i in range(len(frame_boxes)):
-                frame_boxes[i][0] = frame_id
-                best_iou = 0
-                track_id_best = 0
-                boxA = [frame_boxes[i][1], frame_boxes[i][2], frame_boxes[i][3], frame_boxes[i][4]]
-
-                for data in previous_tracked_objects.items():
-                    id, boxB = data
-                    iou_score, _ = iou_func(boxA, boxB['new_bbox'])
-
-                    if iou_score > best_iou and iou_score >= iou_threshold:
-                        best_iou = iou_score
-                        track_id_best = id
-
-                if track_id_best == 0 and best_iou == 0:
-                    frame_boxes[i].append(track_id)
-                    tracked_objects[f'{track_id}'] = {'bbox': boxA, 'frame': frame_id, 'memory': 0, 'iou': best_iou}
-                    track_id += 1
-
-
-                else:
-                    if tracked_objects[f'{track_id_best}']['frame'] == frame_id:
-                        # CHECK IF THERE IS AN OBJECT WITH THE SAME ID IN THAT FRAME AND CHOOSE THE ONE WITH HIGHEST IOU
-                        if best_iou > tracked_objects[f'{track_id_best}']['iou']:
-                            tracked_objects[f'{track_id}'] = {'bbox': tracked_objects[f'{track_id_best}']['bbox'],
-                                                              'frame': frame_id, 'memory': 0, 'iou': best_iou}
-                            wrong_id = [i for i, det in enumerate(frame_boxes) if det[-1] == track_id_best][0]
-                            frame_boxes[wrong_id][-1] = track_id
-                            track_id += 1
-
-                            frame_boxes[i].append(track_id_best)
-                            tracked_objects[f'{track_id_best}']['bbox'] = boxA
-                            previous_f = tracked_objects[f'{track_id_best}']['frame']
-
-                            # CHECK IF OBJECTS APPEAR CONSECUTIVE
-                            if frame_id - previous_f == 1:
-                                tracked_objects[f'{track_id_best}']['memory'] = tracked_objects[f'{track_id_best}'][
-                                                                                    'memory'] + 1
-                            tracked_objects[f'{track_id_best}']['frame'] = frame_id
-                            tracked_objects[f'{track_id_best}']['iou'] = best_iou
-
-                        else:
-                            frame_boxes[i].append(track_id)
-                            tracked_objects[f'{track_id}'] = {'bbox': boxA, 'frame': frame_id, 'memory': 0,
-                                                              'iou': best_iou}
-                            track_id += 1
-
-
-                    else:
-                        frame_boxes[i].append(track_id_best)
-                        tracked_objects[f'{track_id_best}']['bbox'] = boxA
-                        previous_f = tracked_objects[f'{track_id_best}']['frame']
-
-                        # CHECK IF OBJECTS APPEAR CONSECUTIVE
-                        if frame_id - previous_f == 1:
-                            tracked_objects[f'{track_id_best}']['memory'] = tracked_objects[f'{track_id_best}'][
-                                                                                'memory'] + 1
-                        tracked_objects[f'{track_id_best}']['frame'] = frame_id
-                        tracked_objects[f'{track_id_best}']['iou'] = best_iou
-
-        if frame_id == memory:
-            track_memory(tracked_objects)
-            memory = memory + frame_id
-
-        previous_tracked_objects = copy.deepcopy(tracked_objects)
-
-
-    return det_boxes
-
 
 def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5):
 
@@ -217,6 +86,9 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
 
     # sequence = [seq for seq,cam in seqs.items() if camera in cam][0]
     tracked_iou = {}
+    
+    # Load the model
+    maskflownet = MaskFlownet()
 
     for frame_id in tqdm(det_boxes):
 
@@ -241,7 +113,7 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
             current_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id}.jpg')))
             previous_frame = np.array(Image.open(os.path.join(frames_path, f'{frame_id - 1}.jpg')))
 
-            flow = maskflownet(previous_frame, current_frame, colType=1)[0]
+            flow = maskflownet.step(previous_frame, current_frame)[0]
 
             for data in previous_tracked_objects.items():
                 id, boxB = data

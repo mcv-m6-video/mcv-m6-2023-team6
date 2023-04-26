@@ -32,7 +32,7 @@ MTMC:
 EVAL:
   MIN_IOU: 0.35
   IGNORE_FP: true
-  DROP_SINGLE_CAM: true
+  DROP_SINGLE_CAM: false
   GROUND_TRUTHS:
     - '/export/home/group03/dataset/aic19-track1-mtmc-train/train/S04/c016/gt/gt.txt'
     - '/export/home/group03/dataset/aic19-track1-mtmc-train/train/S04/c017/gt/gt.txt'
