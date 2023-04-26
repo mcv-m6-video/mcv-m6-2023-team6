@@ -9,8 +9,6 @@ eval "$(conda shell.bash hook)"
 conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job_video
 
-
-
 echo "Starting video max_iou"
 
 conda activate m6

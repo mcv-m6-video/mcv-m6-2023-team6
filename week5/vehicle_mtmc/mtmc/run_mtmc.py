@@ -5,6 +5,7 @@ import pickle
 from yacs.config import CfgNode as CN
 
 from config.defaults import get_cfg_defaults
+from mtmc.output import annotate_video_mtmc
 from config.verify_config import check_mtmc_config, global_checks
 from config.config_tools import expand_relative_paths
 from mtmc.cameras import CameraLayout
@@ -67,6 +68,8 @@ def run_mtmc(cfg: CN):
         pickle.dump(multicam_tracks, f, pickle.HIGHEST_PROTOCOL)
     log.info("MTMC result (%s tracks) saved to: %s",
              len(multicam_tracks), mtmc_pickle_path)
+    
+
     return multicam_tracks
 
         
