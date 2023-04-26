@@ -25,6 +25,15 @@ python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s0
 echo "Starting mtmc/run_express_mtmc.py s03"
 python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml  # Era un error de yaml, en teoria ha de funcionar
 
+#echo "Starting mtmc/run_express_mtmc.py s01"
+#python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s01.yaml
+
+# echo "Starting mtmc/run_express_mtmc.py s03"
+#python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s03.yaml
+
+#echo "Starting mtmc/run_express_mtmc.py s04"
+#python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s04.yaml
+
 
 
 
