@@ -9,17 +9,23 @@ eval "$(conda shell.bash hook)"
 conda activate m6
 # commanda terminal --> sbatch --gres gpu:1 -n 10 job 
 
-echo "Starting pre_MTMC.py"
-python pre_MTMC.py
+# echo "Starting pre_MTMC.py"
+# python pre_MTMC.py   # DONE
 
-echo "Starting mtmc/run_express_mtmc.py s01"
-python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml
+# python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou.yaml  # DONE
+# python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou.yaml  # DONE
+python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou.yaml    # HA PETAT LINIA 81 ERROR    [2023-04-25 23:51:15,597]: Evaluation unsuccessful: probably EVAL config had some errors.
+
+# echo "Starting mtmc/run_express_mtmc.py s01"
+# python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml # DONE
 
 echo "Starting mtmc/run_express_mtmc.py s03"
-python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml 
 
 echo "Starting mtmc/run_express_mtmc.py s03"
-python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml 
+
+
 
 
 echo "Starting MTSC.py for OF"
@@ -29,7 +35,7 @@ python pre_MTMC.py --OF True
 
 echo "Starting mtmc/run_express_mtmc.py s01"
 conda activate m6
-python mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou_OF.yaml
-python mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou_OF.yaml
-python mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml
+python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou_OF.yaml
+python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou_OF.yaml
+python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml  # REPETIR AQUEST PERQUE ESTAVA MAL ESCRIT
 
