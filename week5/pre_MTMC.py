@@ -22,14 +22,14 @@ if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser(
         description="annotate a video from multicam tracks")
-    parser.add_argument("--OF", type=bool, default = False)
+    parser.add_argument("--OF", type=int)
     parser.add_argument("--path", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC')
     parser.add_argument("--reid_model_opts", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/vehicle_models/resnet50_mixstyle/opts.yaml')
     parser.add_argument("--reid_model_weights", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/vehicle_mtmc/vehicle_models/resnet50_mixstyle/net_19.pth')
     args = parser.parse_args()
     
-    
-    if args.OF:
+    use_OF = bool(args.OF)
+    if use_OF:
         path = f'{args.path}/max_iou_OF'
     else:
         path = f'{args.path}/max_iou'
@@ -129,4 +129,3 @@ if __name__ == '__main__':
 
                     with open(f'{output_path_tracker}/mot_{c}','wb') as h:
                         pkl.dump(tracklets,h,protocol=pkl.HIGHEST_PROTOCOL) 
-

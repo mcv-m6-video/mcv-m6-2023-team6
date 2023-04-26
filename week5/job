@@ -20,22 +20,22 @@ python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou.yaml    #
 # python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml # DONE
 
 echo "Starting mtmc/run_express_mtmc.py s03"
-python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml 
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml # Era un error de yaml, en teoria ha de funcionar
 
 echo "Starting mtmc/run_express_mtmc.py s03"
-python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml 
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml  # Era un error de yaml, en teoria ha de funcionar
 
 
 
 
 echo "Starting MTSC.py for OF"
 conda activate m6_clone
-python MTSC.py --OF True
+python MTSC.py
 python pre_MTMC.py --OF True 
 
 echo "Starting mtmc/run_express_mtmc.py s01"
 conda activate m6
 python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou_OF.yaml
 python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou_OF.yaml
-python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml  # REPETIR AQUEST PERQUE ESTAVA MAL ESCRIT
+python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml 
 

@@ -11,18 +11,22 @@ if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser(
         description="annotate a video from multicam tracks")
-    parser.add_argument("--OF", type=bool, default = True)
+    parser.add_argument("--OF", type=int)
     parser.add_argument("--output_path", type=str, default = '/ghome/group03/mcv-m6-2023-team6/week5/Results/trackings/MTSC')
     parser.add_argument("--detections_path", type=str, default = '/export/home/group03/mcv-m6-2023-team6/week5/Results/detections')
     parser.add_argument("--dataset_path", type=str, default = '/export/home/group03/dataset/aic19-track1-mtmc-train/train')
     args = parser.parse_args()
     
-    if args.OF:
+    use_OF = bool(args.OF)
+    print(use_OF)
+    if use_OF:
+        print("Using: Optical Flow")
         path = f'{args.output_path}/max_iou_OF'
     else:
+        print("Not Using: Optical Flow")
         path = f'{args.output_path}/max_iou'
     
-    use_OF = args.OF
+    
     dataset_path = args.dataset_path
     detections_path = args.detections_path
 
@@ -56,9 +60,5 @@ if __name__ == '__main__':
 
             with open(f'{output_path}/{c}.pkl','wb') as h:
                 pkl.dump(tracking_boxes,h,protocol=pkl.HIGHEST_PROTOCOL)
-                
-    
-
-            
 
         util.convert_pkl_to_txt(output_path,output_path)
