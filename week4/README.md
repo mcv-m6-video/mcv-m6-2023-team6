@@ -2,7 +2,6 @@
 
 ### Task 1: Optical Flow & Multi-Target Single-Camera Tracking
 
-![Alt Text](path/to/gif/file.gif)
 
 #### Task 1.1: Block Matching
 ```bash
