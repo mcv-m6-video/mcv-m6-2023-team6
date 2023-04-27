@@ -29,11 +29,11 @@ python inference_yolov8.py
 ```
 
 #### Tracking 
-Tracking using the Max Iou Overlap (MIO) alogrithm developed in Week3: 
+Tracking using the Max Iou Overlap (MIO) alogrithm developed in [Week3](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week3): 
 ```bash
 python pre_MTMC.py --OF 0
 ```
-Tracking using the Max Iou Overlap with Optical Flow (MIO-OF) developed in Week4:
+Tracking using the Max Iou Overlap with Optical Flow (MIO-OF) developed in [Week4](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week4):
 ```bash
 python pre_MTMC.py --OF 1
 ```
