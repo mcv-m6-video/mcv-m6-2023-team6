@@ -36,7 +36,8 @@ if __name__ == '__main__':
         results_path = f'{args.output_path}/max_iou/input'
     
 
-    sequences = ["S01","S04","S03"]
+    #sequences = ["S01","S04","S03"]
+    sequences = ["S03"]
 
     for s in sequences:
         sequence_path = os.path.join(dataset_path,s)

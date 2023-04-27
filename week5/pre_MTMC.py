@@ -69,6 +69,11 @@ if __name__ == '__main__':
                 tracklets = []
 
                 cam = pkl.load(open(f'{path}/input/{seq}/{c}','rb'))
+                
+                
+                
+                
+                
 
                 tracklets_sort = defaultdict(list)
                 

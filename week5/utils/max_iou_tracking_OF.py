@@ -199,20 +199,59 @@ def max_iou_tracking_withoutParked(det_boxes,frames_path,fps, iou_threshold=0.5)
 
         previous_tracked_objects = copy.deepcopy(tracked_objects)
 
-    # for each tracked object, compute the mean iou of all the frames it has been tracked. So iterate the bounding boxes of each frame and compute the iou with the tracked object
-    for track_id, track in tracked_objects.items():
-        iou_list = []
-        for frame_id, boxes in det_boxes.items():
-            for box in boxes:
-                if box[-1] == int(track_id):
-                    iou_score, _ = iou_func(track['bbox'], box[1:5])
-                    iou_list.append(iou_score)
-        tracked_iou[track_id] = np.mean(iou_list)
+    # # for each tracked object, compute the mean iou of all the frames it has been tracked. So iterate the bounding boxes of each frame and compute the iou with the tracked object
+    # for track_id, track in tracked_objects.items():
+    #     iou_list = []
+    #     for frame_id, boxes in det_boxes.items():
+    #         for box in boxes:
+    #             if box[-1] == int(track_id):
+    #                 iou_score, _ = iou_func(track['bbox'], box[1:5])
+    #                 iou_list.append(iou_score)
+    #     tracked_iou[track_id] = np.mean(iou_list)
     
-    # remove the tracked objects with mean iou > 0.85
-    for track_id, iou in tracked_iou.items():
-        if iou > 0.85:
-            del tracked_objects[track_id]
+    # # remove the tracked objects with mean iou > 0.85
+    # for track_id, iou in tracked_iou.items():
+    #     if iou > 0.85:
+    #         del tracked_objects[track_id]
         
     
+    # return det_boxes
+    
+    # for each track id put the boxes in a list (det_boxes is a dictionary with frame_id as key and the boxes as value)
+    track_boxes = {}
+    for key in det_boxes.keys():
+        for box in det_boxes[key]:
+            track_id = box[-1]
+            track_id = int(track_id)
+            if track_id not in track_boxes.keys():
+                track_boxes[track_id] = [box]
+            else:
+                track_boxes[track_id].append(box)
+        
+    mean_iou = {}
+    # for each track id compute the mean iou of the first and last box
+    for track_id in track_boxes.keys():
+        boxes = track_boxes[track_id]
+        if len(boxes) == 1:
+            mean_iou[track_id] = 0
+            continue
+        iou_score, _ = iou_func(boxes[0][1:5], boxes[-1][1:5])
+        mean_iou[track_id] = iou_score
+
+    
+    # remove the tracked objects with mean iou > 0.85
+    for track_id, iou_score in mean_iou.items():
+        if iou_score > 0.85:
+            #remove from det_boxes the boxes with track_id = track_id 
+            for frame_id, boxes in det_boxes.items():
+                for box in boxes:
+                    if box[-1] == track_id or box[-1] == str(track_id):
+                        boxes.remove(box)
+                       
+        
+    # remove key from det_boxes if the list is empty
+    for key in list(det_boxes.keys()):
+        if len(det_boxes[key]) == 0:
+            del det_boxes[key]
+
     return det_boxes
