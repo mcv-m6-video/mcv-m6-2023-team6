@@ -74,7 +74,7 @@ python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml
 
 #### Run the experiments using DeepSort and ByteTrack tracking algorithms:
 
-For DeepSort, run the following commands in the same way as [vehicle_mtmc](https://github.com/regob/vehicle_mtmc):
+Run the following commands in the same way as [vehicle_mtmc](https://github.com/regob/vehicle_mtmc). For DeepSort:
 ```bash
 python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s01.yaml
 ```
