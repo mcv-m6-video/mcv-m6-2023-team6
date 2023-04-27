@@ -14,6 +14,11 @@
 export PYTHONPATH=$("./week5/vehicle_mtmc")
 ```
 
+### Inference with Yolov8 [here](https://github.com/ultralytics/ultralytics)
+```
+python inference_yolov8.py
+```
+
 ### If you want to run all experiments, run the job script:
 
 For SLURM:
@@ -25,21 +30,15 @@ For bash:
 bash job
 ```
 
-### Inference with Yolov8
-```
-python inference_yolov8.py
-```
 
 ### If you run our algorithms
-Extract Features manually from bounding boxes
-without Optical Flow.
+Extract Features manually from detected bounding boxes without Optical Flow.
 ```bash
 python pre_MTMC.py --OF False
 python MTSM.py --OF False
 ```
 
-Extract Features manually from bounding boxes
-with Optical Flow.
+Extract Features manually from bounding boxes from detected bounding boxes with Optical Flow.
 
 ```bash
 python pre_MTMC.py --OF True
