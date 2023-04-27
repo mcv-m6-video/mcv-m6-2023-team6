@@ -28,7 +28,7 @@ segmentation, motion estimation and compensation, and video object tracking.
 
 # Presentation
 
-The slides for the final presentation can be found [here]()
+The slides for the final presentation can be found [here](https://docs.google.com/presentation/d/1VUnAqW8aP2xe-8wNB0d8pItAyKALxL7KiVoqczYjzi0/edit?usp=sharing)
 
 # Report
 

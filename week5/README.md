@@ -63,6 +63,12 @@ python3 mot/run_tracker.py --config AI_city/mot.yaml
 python mtmc/mtmc.py --config AI_city/express_s01.yaml
 ```
 
+### Run Evaluation with TrackEval for individual cameras
+Note that the ground truth must be in the appropriate format and the directories as well, defined in the TrackEval library. You can find the documentation for the
+MOTChallenge and it's format [here](https://github.com/JonathonLuiten/TrackEval/tree/master/docs/MOTChallenge-Official). Once the directories are correctly created, run the evaluation with:
+```bash
+python run_mot_challenge.py --DO_PREPROC False 
+```
 
 ------------
 ## Yamls in this readme are examples. You can find our yaml's [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/AI_city).
