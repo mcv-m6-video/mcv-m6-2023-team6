@@ -42,18 +42,17 @@ python pre_MTMC.py --OF 1
 ```
 
 #### Feature extraction
-Extract Features from detected bounding boxes using Resnet50:
-For MIO:
+Extract Features from detected bounding boxes using Resnet50 for MIO:
 ```bash
 python pre_MTMC.py --OF 0
 ```
-For MIO-OF
+and for MIO-OF
 ```bash
 python pre_MTMC.py --OF 1
 ```
 
 #### Re-Id model (MTMC)
-For MIO:
+Run the Re-Id model based on computing the similarity matrix between all tracks, check the camera compatibility and perform a priority queue using [heapq](https://docs.python.org/3/library/heapq.html). For MIO:
 ```bash
 python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s01_max_iou.yaml
 ```
