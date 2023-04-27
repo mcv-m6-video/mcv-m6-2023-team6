@@ -51,6 +51,8 @@ With this environment, run the following command:
 python task_1_2_perceiver.py
 ```
 
+Here are the overall results:
+
 |    Method    | MSEN | PEPN  | Runtime |
 |:------------:|:----:|:-----:|:-------:|
 | MaskFlowNet  | 0.28 | 0.76  |  1.54   |
