@@ -18,10 +18,19 @@ def video(args,fps=10.0):
         fps = 8.0
         
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_out = cv2.VideoWriter(f"/ghome/group03/mcv-m6-2023-team6/week5/Results/{args.output}/{args.seq}_{args.cam}.mp4", fourcc, fps, (1920, 1080))
+    path = f"{args.output}/{args.seq}_{args.cam}.mp4"
+    frames = os.listdir(f'{args.dataset_path}/{args.seq}/{args.cam}/frames')
+    frames = sorted(frames, key=lambda x: int(x.split('.')[0]))
+    # print(f"Frame path: {frames_path}")
+    im = io.imread(f'{args.dataset_path}/{args.seq}/{args.cam}/frames/{frames[0]}')
+    width = im.shape[0]
+    height = im.shape[1]
+    video_out = cv2.VideoWriter(path, fourcc, fps, (height, width))
+    if not video_out.isOpened():
+        print("Error: Video writer not initialized.")
     
     #get the frames in order
-    frames = os.listdir(f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{args.seq}/{args.cam}/frames')
+    frames = os.listdir(f'{args.dataset_path}/{args.seq}/{args.cam}/frames')
     frames = sorted(frames, key=lambda x: int(x.split('.')[0]))
     
     # MODIFIED BY JOHNNY
@@ -30,7 +39,7 @@ def video(args,fps=10.0):
     
     # current path file
     for frame in tqdm(frames):
-        frames_path = f'/ghome/group03/dataset/aic19-track1-mtmc-train/train/{args.seq}/{args.cam}/frames/{frame}'
+        frames_path = f'{args.dataset_path}/{args.seq}/{args.cam}/frames/{frame}'
         im = io.imread(frames_path)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         id = int(frame.split('.')[0])
@@ -64,14 +73,16 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Video generation')
     parser.add_argument('--dataset_path', type=str, default='/export/home/group03/dataset/aic19-track1-mtmc-train/train/', help='Dataset directory')
-    parser.add_argument('--output', default='/ghome/group03/mcv-m6-2023-team6/week5/Results/videos/max_iou', type=str, required=True, help='Folder to save results')
+    parser.add_argument('--output', type=str, required=True, help='Folder to save results')
     parser.add_argument('--seq', type=str, default='S03', help='Sequence to use')
     parser.add_argument('--cam', type=str, required=True, help='Camera within the sequence')
     parser.add_argument('--tracking', type=str, required=True, help='Text files with tracking results')
 
     args = parser.parse_args()
 
-    if not os.path.exists(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/{args.output}'):
-        os.makedirs(f'/ghome/group03/mcv-m6-2023-team6/week5/Results/{args.output}') 
+    if not os.path.exists(f'{args.output}'):
+        os.makedirs(f'{args.output}') 
 
     video(args)
+
+

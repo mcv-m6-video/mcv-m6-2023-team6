@@ -23,8 +23,8 @@ def video2gif(video_path, gif_path, start_time, duration, fps):
     gif.speedx(1).to_gif(gif_path, fps=fps)
 
 
-""" video2gif('/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.mp4',
-          '/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif', 49, 59, 8) """
+video2gif('/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.mp4',
+          '/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif', 49, 59, 8) 
 
 
 # resize gif
@@ -48,5 +48,5 @@ def resize_gif(gif_path, new_gif_path, start_time, duration, fps):
     gif.speedx(10).to_gif(new_gif_path, fps=fps)
 
 
-resize_gif('/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif',
-            '/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif', 0, None, 5)
+""" resize_gif('/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif',
+            '/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif', 0, None, 5) """
