@@ -1,3 +1,0 @@
-[submodule "week5/week5/RAFT"]
-	path = week5/RAFT
-	url = https://github.com/princeton-vl/RAFT.git
