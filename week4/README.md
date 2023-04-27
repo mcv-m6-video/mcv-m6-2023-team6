@@ -37,14 +37,15 @@ Clone the following repos to use each algorithm:
 + [LiteFlowNet](https://github.com/sniklaus/pytorch-liteflownet)
 + [DEQ-Flow](https://github.com/locuslab/deq-flow)
 
+Run the following command:
+
 ```bash
 python task_1_2.py
 ```
-
+To check also the results from Perceiver, clone the this repo and follow the provided instructions to create perceiver-io environment
 + [Perceiver-IO](https://github.com/krasserm/perceiver-io.git)
 
-Follow the instructions of the original repo to create perceiver-io environment. Then with this environment, run the
-following command:
+With this environment, run the following command:
 
 ```bash
 python task_1_2_perceiver.py
