@@ -2,7 +2,7 @@
 
 ### Goal:
 
-- Learn about the databases to be used: AICityChallenge and KITTI
+- Learn about the databases to be used: [AICityChallenge](https://www.aicitychallenge.org/) and [KITTI](https://www.cvlibs.net/datasets/kitti/)
 - Implement evaluation metrics: Intersection over Union (IoU), Average Precision (AP), Mean Square Error in Non-Occluded
   areas, Percentage of Erroneous pixels in Non-occluded areas
 - Analyze: Effect of noise additions, IoU vs Time, Optical Flow
