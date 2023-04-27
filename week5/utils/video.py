@@ -18,7 +18,7 @@ def video(args,fps=10.0):
         fps = 8.0
         
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    path = f"{args.output}/{args.seq}_{args.cam}.mp4"
+    path = f"{args.output}/{args.seq}_{args.cam}_2.mp4"
     frames = os.listdir(f'{args.dataset_path}/{args.seq}/{args.cam}/frames')
     frames = sorted(frames, key=lambda x: int(x.split('.')[0]))
     # print(f"Frame path: {frames_path}")

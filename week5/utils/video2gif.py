@@ -1,6 +1,6 @@
 import moviepy.editor as mp
 
-
+# 49 y 59
 def video2gif(video_path, gif_path, start_time, duration, fps):
     """Convert a video to gif.
 
@@ -14,17 +14,20 @@ def video2gif(video_path, gif_path, start_time, duration, fps):
     # get the video
     video = mp.VideoFileClip(video_path)
     # resize the video
-    video = video.resize(0.5)
+    # video = video.resize(0.5)
     # get the gif
     if duration is not None:
         gif = video.subclip(start_time, start_time + duration)
     else:
         gif = video.subclip(start_time)
-    gif.speedx(1).to_gif(gif_path, fps=fps)
+    gif.speedx(3).write_gif(gif_path, fps=fps, program='ffmpeg')
+    gif.close()
 
 
-video2gif('/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.mp4',
-          '/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif', 49, 59, 8) 
+video2gif('./Results/video_slides/S03_c010_bytrack.mp4', './Results/video_slides/S03_c010_bytrack.gif', 49, 15, 5)
+video2gif('./Results/video_slides/S03_c010_deepsort.mp4', './Results/video_slides/S03_c010_deepsort.gif', 49, 15, 5)
+video2gif('./Results/video_slides/S03_c010_maxiou.mp4', './Results/video_slides/S03_c010_maxiou.gif', 49, 15, 5)
+video2gif('./Results/video_slides/S03_c010_OF.mp4', './Results/video_slides/S03_c010_OF.gif', 49, 15, 5)
 
 
 # resize gif
@@ -45,8 +48,8 @@ def resize_gif(gif_path, new_gif_path, start_time, duration, fps):
         gif = gif.subclip(start_time, start_time + duration)
     else:
         gif = gif.subclip(start_time)
-    gif.speedx(10).to_gif(new_gif_path, fps=fps)
+    gif.speedx(5).write_gif(new_gif_path, fps=fps, program='ffmpeg')
+    gif.close()
 
 
-""" resize_gif('/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif',
-            '/ghome/group03/mcv-m6-2023-team6/week5/Results/from_our_trackers/max_iou/AI_city_s03_maxiou_videos/S03_c010.gif', 0, None, 5) """
+# resize_gif('./Results/video_slides/', './Results/video_slides/S03_c010.gif', 0, None, 5)
