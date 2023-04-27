@@ -9,7 +9,7 @@ In this report, we explore the Multi-Object Single Camera and Multi-Object Multi
 Before starting with the project, please ensure the following steps are completed:
 
 ```bash
-export PYTHONPATH=$("./week5/vehicle_mtmc")
+export PYTHONPATH=$("./vehicle_mtmc")
 ```
 
 ## Run all experiments in one command:
