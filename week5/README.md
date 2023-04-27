@@ -112,10 +112,9 @@ python run_mot_challenge.py --DO_PREPROC False
 ```
 
 ------------
-## You can find our yaml's [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/AI_city).
-
---------
-## You can find HyperParameters explanations [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/defaults.py).
+### Notes: 
++ You can find our yaml's [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/AI_city).
++ You can find HyperParameters explanations [here](https://github.com/mcv-m6-video/mcv-m6-2023-team6/tree/main/week5/vehicle_mtmc/config/defaults.py).
 
 
 
