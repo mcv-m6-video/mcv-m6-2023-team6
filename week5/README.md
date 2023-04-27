@@ -14,7 +14,7 @@
 export PYTHONPATH=$("./week5/vehicle_mtmc")
 ```
 
-### If you want to run all experiments, use our job.
+### If you want to run all experiments, run the job script:
 
 For SLURM:
 ```bash
