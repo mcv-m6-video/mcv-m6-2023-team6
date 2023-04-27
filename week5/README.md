@@ -101,7 +101,7 @@ python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s0
 Note that the ground truth must be in the appropriate format and the directories as well, defined in the TrackEval library. You can find the documentation for the
 MOTChallenge and it's format [here](https://github.com/JonathonLuiten/TrackEval/tree/master/docs/MOTChallenge-Official). 
 
-To run multiple TrackEval's with the resulting .txt of each camera, we have created trackeval.py. run the following bash script:
+To run multiple TrackEval's with the resulting .txt of each camera, we have created one script to manage the directories (trackeval.py). Run the following bash script:
 ```bash
 sh job_trackEval
 ```
