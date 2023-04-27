@@ -13,10 +13,7 @@ export PYTHONPATH=$("./vehicle_mtmc")
 ```
 
 ## Run all experiments in one command:
-
-For SLURM:
-```bash
-sbatch --gres gpu:1 -n 10 job
+Run the following bash scrypt:
 ```
 For bash:  
 ```bash
