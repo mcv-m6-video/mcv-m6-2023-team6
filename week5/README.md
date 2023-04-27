@@ -14,7 +14,7 @@
 export PYTHONPATH=$("./week5/vehicle_mtmc")
 ```
 
-### Inference with Yolov8 [here](https://github.com/ultralytics/ultralytics)
+### Inference with [Yolov8](https://github.com/ultralytics/ultralytics)
 ```
 python inference_yolov8.py
 ```
