@@ -70,28 +70,43 @@ python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s03_max_iou_OF.yaml
 python vehicle_mtmc/mtmc/run_mtmc.py --config AI_city/mtmc_s04_max_iou_OF.yaml
 ```
 
-### Run the experiments using DeepSort and ByteTrack as trackers
 
+
+#### Run the experiments using DeepSort and ByteTrack tracking algorithms:
+
+For DeepSort, run the following commands in the same way as [vehicle_mtmc](https://github.com/regob/vehicle_mtmc):
 ```bash
-python mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s01.yaml
+```
+```bash
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s03.yaml
+```
+```bash
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_DeepSort_s04.yaml
 ```
 
-### Run Tracker (DeepSort or Bytrack)
+For ByteTrack
 ```bash
-python3 mot/run_tracker.py --config AI_city/mot.yaml
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s01.yaml 
 ```
-
-### Run MTMC
-
 ```bash
-python mtmc/mtmc.py --config AI_city/express_s01.yaml
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s03.yaml 
 ```
-
+```bash
+python vehicle_mtmc/mtmc/run_express_mtmc.py --config AI_city/end2end_ByTrack_s04.yaml 
+```
 
 
 ## Run Evaluation with TrackEval for individual cameras
 Note that the ground truth must be in the appropriate format and the directories as well, defined in the TrackEval library. You can find the documentation for the
-MOTChallenge and it's format [here](https://github.com/JonathonLuiten/TrackEval/tree/master/docs/MOTChallenge-Official). Once the directories are correctly created, run the evaluation with:
+MOTChallenge and it's format [here](https://github.com/JonathonLuiten/TrackEval/tree/master/docs/MOTChallenge-Official). 
+
+To run multiple TrackEval's with the resulting .txt of each camera, we have created trackeval.py. run the following bash script:
+```bash
+sh job_trackEval
+```
+
+Once the directories are correctly created, run the evaluation with:
 ```bash
 python run_mot_challenge.py --DO_PREPROC False 
 ```
